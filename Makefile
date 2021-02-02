@@ -20,3 +20,7 @@ $(TARG): $(OBJS)
 
 clean:
 	rm -f $(OBJS) $(TARG)
+	rm -f *.pdf *.out *.aux *.log
+
+docs:
+	pdflatex developers.tex

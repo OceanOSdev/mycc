@@ -32,7 +32,5 @@ int main(int argc, char* argv[]) {
     char* oFileName = NULL;
     parsed_args_t* pat = parseArgs(argc, argv, &oFileName);
     handleArgs(pat, oFileName);
-    // if (pat->useOutputFile)
-    //     printf("output file: %s\n", ofileName);
     return 0;
 }
