@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 #include "args_parser.h"
 
@@ -22,7 +23,6 @@ parsed_args_t* parseArgs(int argc, char* argv[], char** outputFileName) {
     parsed_args_t* pat = malloc(sizeof(parsed_args_t));
     pat->mode = MODE_ERR;
     pat->useOutputFile = 0;
-    outputFileName = NULL;
 
     int option;
     while ((option = getopt(argc, argv, "012345o:")) != -1) {
