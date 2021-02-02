@@ -20,6 +20,10 @@ const char* usage_str =
 
 parsed_args_t* parseArgs(int argc, char* argv[], char** outputFileName) {
     parsed_args_t* pat = malloc(sizeof(parsed_args_t));
+    pat->mode = MODE_ERR;
+    pat->useOutputFile = 0;
+    outputFileName = NULL;
+
     int option;
     while ((option = getopt(argc, argv, "012345o:")) != -1) {
         switch (option) {
@@ -37,6 +41,11 @@ parsed_args_t* parseArgs(int argc, char* argv[], char** outputFileName) {
                 fprintf(stderr, usage_str);
                 exit(EXIT_FAILURE);
         }
+    }
+
+    if (pat->mode == MODE_ERR) {
+        fprintf(stderr, usage_str);
+        exit(EXIT_FAILURE);
     }
 
     return pat;
