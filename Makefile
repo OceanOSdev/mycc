@@ -1,4 +1,4 @@
-SRCS = main.c
+SRCS = args_parser.c main.c
 
 TARG = mycc
 
