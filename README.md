@@ -1,5 +1,5 @@
 # Com S 440 Compiler Project
----
+
 ## How to build
 To build the project, simply run `make`. 
 To remove generated files, run `make clean`.
