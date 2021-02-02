@@ -1,14 +1,37 @@
 \documentclass{article}
 \usepackage[utf8]{inputenc}
+\usepackage{hyperref}
 
 \title{Compiler Documentation}
-\author{Thomas Maloney}
+\author{Thomas Maloney \\ 
+net-id \href{mailto:tmaloney@iastate.edu}{tmaloney@iastate.edu}}
 \date{February 2021}
 
 \begin{document}
 
 \maketitle
 
-\section{Introduction}
+\newcommand{\code}[1]{\texttt{#1}}
+
+\section{Part 0 Documentation}
+\subsection{main.c} \label{ssec:p0main}
+This file contains the entry point of the compiler.
+It passes the arguments from the command line to a method that parses them (described in section \ref{ssec:p0argparser}) and returns a \code{struct} that contains info about what flags were passed and what the possible output file might be (should that have been given).
+I then check which flag got passed in and whether the output should be written to a provided file or just \code{stdout}.
+The only \code{mode} flag that currently gets handled is \code{-0}.
+
+\subsection{args\_parser} \label{ssec:p0argparser}
+The header file contains a \code{struct}, an \code{enum} (both described in section \ref{ssec:p0datastructs}), and a method signature that gets implemented in \code{args\_parser.c}.
+Here I use \code{getopt} from \code{unistd.h} to read/parse each flag and then record which flag and whether there was an output file to a \code{struct} that I return.
+The potential output file gets passed back as an out-parameter.
+If no flags were passed in, or one that doesn't exist, I print out the string that describes how to use the program to \code{stderr}.
+
+\subsection{Data Structures} \label{ssec:p0datastructs}
+There is one \code{struct} and one \code{enum} that have been defined so far:
+\begin{itemize}
+    \item (\code{struct}) \code{parsed\_args\_t}: This data type holds what \code{mode} flag gets passed in by way of the \code{mode\_e enum}.
+    It also contains a flag that signals if there is a specific output file that should be written to instead of \code{stdout}.
+    \item (\code{enum}) \code{mode\_e}: This just represents the possible \code{mode} flags that can be passed in plus an extra one that is set by default to make it easier to check if none of the required flags were passed in.
+\end{itemize}
 
 \end{document}
