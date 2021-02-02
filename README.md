@@ -7,5 +7,5 @@ For convenience, to build the latex documentation, you can run `make docs`.
 
 ## Part 0 Features
 - [x] README entry for part 0
-- [ ] Switch handling in `mycc`
-- [ ] Updated LaTeX doc
+- [x] Switch handling in `mycc`
+- [x] Updated LaTeX doc
