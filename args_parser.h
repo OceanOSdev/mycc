@@ -14,6 +14,8 @@ typedef enum cmode {
 typedef struct parsed_args {
     mode_e mode;
     int useOutputFile; // 0 if false, 1 if true
+    char** inputFiles;
+    int numFiles;
 } parsed_args_t;
 
 /*

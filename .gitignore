@@ -1,5 +1,6 @@
 *.o
 mycc
+lexer.c
 
 ## Core latex/pdflatex auxiliary files:
 *.aux

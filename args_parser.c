@@ -23,12 +23,32 @@ parsed_args_t* parseArgs(int argc, char* argv[], char** outputFileName) {
     parsed_args_t* pat = malloc(sizeof(parsed_args_t));
     pat->mode = MODE_ERR;
     pat->useOutputFile = 0;
+    int fileStartInd = 0;
+    int fileCount = 0;
+    pat->numFiles = fileCount;
+    char** filenames;
 
     int option;
-    while ((option = getopt(argc, argv, "012345o:")) != -1) {
+    while ((option = getopt(argc, argv, "01:2345o:")) != -1) {
         switch (option) {
             case '0': pat->mode = MODE_ZERO; break;
-            case '1': pat->mode = MODE_ONE; break;
+            case '1':
+             pat->mode = MODE_ONE; 
+             // super hacky, had to take a shower after this one
+             fileStartInd = --optind;
+             for( ;optind < argc && *argv[optind] != '-'; optind++) {
+                 fileCount++;
+             }
+             filenames = malloc(fileCount * sizeof(char*));
+             pat->numFiles = fileCount;
+             fileCount = 0;
+             optind = fileStartInd;
+             for( ;optind < argc && *argv[optind] != '-'; optind++) {
+                 filenames[fileCount] = malloc(strlen(argv[optind]) * sizeof(char));
+                 filenames[fileCount++] = argv[optind];
+             }
+
+             break;
             case '2': pat->mode = MODE_TWO; break;
             case '3': pat->mode = MODE_THREE; break;
             case '4': pat->mode = MODE_FOUR; break;
@@ -47,6 +67,8 @@ parsed_args_t* parseArgs(int argc, char* argv[], char** outputFileName) {
         fprintf(stderr, usage_str);
         exit(EXIT_FAILURE);
     }
+
+    pat->inputFiles = filenames;
 
     return pat;
 }
