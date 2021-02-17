@@ -7,7 +7,6 @@ void log_lex_info(char* filename, int lineNum, char* text, token_e token) {
     printf("%s line %d text \'%s\' token %s\n", filename, lineNum, text, token_to_string(token));
 }
 
-
 void log_lex_err(char* errDesc, char* filename, int lineNum, char* text) {
     fprintf(stderr, "Error %s file %s line %d", errDesc, filename, lineNum);
     if (text)
