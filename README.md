@@ -9,3 +9,8 @@ For convenience, to build the latex documentation, you can run `make docs`.
 - [x] README entry for part 0
 - [x] Switch handling in `mycc`
 - [x] Updated LaTeX doc
+
+## Part 1 Features
+- [x] Can read and print tokens in files
+- [x] Now documentation gets built when running `make`
+- [x] Updated LaTeX doc

@@ -5,8 +5,16 @@
 const char* versionInfo =
 "My bare-bones C compiler (for COM 440)\n"
 "\tWritten by Thomas Maloney (tmaloney@iastate.edu)\n"
-"\tVersion 0.1\n"
-"\t2 February, 2021\n";
+"\tVersion 0.2\n"
+"\t16 February, 2021\n";
+
+char** input_comp_files;
+
+void runLexer(parsed_args_t* pat) {
+    input_comp_files = pat->inputFiles;
+    initfile(*input_comp_files);
+    yylex();
+}
 
 void handleArgs(parsed_args_t* pat, char* oFileName) {
     FILE *fout = pat->useOutputFile 
@@ -16,7 +24,7 @@ void handleArgs(parsed_args_t* pat, char* oFileName) {
     switch (pat->mode) {
         case MODE_ERR: break; // <-- Should literally never happen
         case MODE_ZERO: fprintf(fout, versionInfo); break;
-        case MODE_ONE: break;
+        case MODE_ONE: runLexer(pat); break;
         case MODE_TWO: break;
         case MODE_THREE: break;
         case MODE_FOUR: break;
