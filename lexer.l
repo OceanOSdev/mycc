@@ -9,6 +9,7 @@ extern char** input_comp_files;
 
 NUMBER [0-9]
 ID     [a-zA-Z_][a-zA-Z0-9_]*
+FNAME  [a-zA-Z0-9_]*\.[a-zA-Z0-9_]+
 
 %x COM
 %option yylineno
@@ -23,6 +24,13 @@ ID     [a-zA-Z_][a-zA-Z0-9_]*
 <COM>"*"                        { /* eat the lone star */ }
 <COM>\n                         { yylineno++; }
 "//.*\n"                        { /* ignore */ }
+"#include "\"{FNAME}\"          { /* ignore */ }
+"#define "{ID}.*                { /* ignore */ }
+"#undef "{ID}                   { /* ignore */ }
+"#ifdef "{ID}                   { /* ignore */ }
+"#ifndef "{ID}                  { /* ignore */ }
+"#else"                         { /* ignore */ }
+"#endif"                        { /* ignore */ }
 "void"|"char"|"int"|"float"     { log_lex_info(*input_comp_files,yylineno,yytext,TYPE); }
 "const"                         { log_lex_info(*input_comp_files,yylineno,yytext,CONST); } 
 "struct"                        { log_lex_info(*input_comp_files,yylineno,yytext,STRUCT); }        
@@ -74,6 +82,7 @@ ID     [a-zA-Z_][a-zA-Z0-9_]*
 "<"                             { log_lex_info(*input_comp_files,yylineno,yytext,LT); }
 "<="                            { log_lex_info(*input_comp_files,yylineno,yytext,LE); }
 {ID}                            { log_lex_info(*input_comp_files,yylineno,yytext,IDENT); }
+.                               { log_lex_err("Unexpected symbol",*input_comp_files,yylineno,yytext); }
 <<EOF>>                         {if(*++input_comp_files) yyin = fopen( *input_comp_files, "r" ); else yyterminate();}
 %%
 
