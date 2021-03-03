@@ -5,6 +5,8 @@ TARG = mycc
 CC = gcc
 FLAGS = -Wall -O
 
+BFLAGS = -d
+
 OBJS = $(SRCS:.c=.o)
 
 all: $(TARG) docs
@@ -12,6 +14,7 @@ all: $(TARG) docs
 nodoc: $(TARG)
 
 debug: FLAGS += -g
+debug: BFLAGS += --debug
 debug: $(TARG)
 
 $(TARG): mycc.tab.o lexer.o $(OBJS)
@@ -24,7 +27,7 @@ lexer.c: lexer.l
 	flex -o lexer.c lexer.l
 
 mycc.tab.h mycc.tab.c: mycc.y
-	bison -d mycc.y
+	bison $(BFLAGS) mycc.y
 
 clean:
 	rm -f $(OBJS) $(TARG)

@@ -11,8 +11,10 @@ char* filename = "BLANK";
 void yyerror(const char* mesg) {
     fprintf(stderr, "Error near %s line %d text '%s'\n\t%s\n", filename, yylineno, yytext, mesg);
 }
-
+/*%define parse.trace*/
 %}
+
+
 
 %token TYPE CONST STRUCT IDENT INTCONST REALCONST STRCONST CHARCONST
 %token FOR WHILE DO IF ELSE BREAK CONTINUE RETURN
@@ -31,6 +33,7 @@ void yyerror(const char* mesg) {
 
 %left COMMA
 %right ASSIGN PLUSASSIGN MINUSASSIGN STARASSIGN SLASHASSIGN
+%right QUEST COLON
 %left DPIPE
 %left DAMP
 %left PIPE
@@ -40,14 +43,14 @@ void yyerror(const char* mesg) {
 %left PLUS MINUS
 %left STAR SLASH MOD
 %right BANG TILDE UMINUS DECR INCR TYPE
-%left "()" "[]"
+%left LPAR RPAR LBRACKET RBRACKET
 
 %%
 
 prog :
-     | glob_var_decl
+     | glob_var_decl 
      | func_proto
-     | func_def
+     | func_def {printf("bruhhhhh\n");}
      ;
 
 glob_var_decl : var_decl;
@@ -123,7 +126,7 @@ l_val : IDENT
       | IDENT LBRACKET expr RBRACKET
       ;
 
-un_op : MINUS
+un_op : MINUS %prec UMINUS
       | BANG
       | TILDE
       ;

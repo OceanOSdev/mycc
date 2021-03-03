@@ -11,6 +11,8 @@ const char* versionInfo =
 char** input_comp_files;
 int yyparse();
 int yylex();
+extern int yydebug;
+extern FILE *yyin;
 
 void runLexer(parsed_args_t* pat) {
     input_comp_files = pat->inputFiles;
@@ -19,9 +21,13 @@ void runLexer(parsed_args_t* pat) {
 }
 
 void runParser(parsed_args_t* pat) {
-    input_comp_files = pat->inputFiles;
-    initfile(*input_comp_files);
-    yyparse();
+    int i;
+    for (i = 0; i < pat->numFiles; i ++) {
+        yyin = fopen(pat->inputFiles[i], "r");
+        printf("File: %s\n", pat->inputFiles[i]);
+        yyparse();
+        fclose(yyin);
+    }
 }
 
 void handleArgs(parsed_args_t* pat, char* oFileName) {
@@ -45,6 +51,10 @@ void handleArgs(parsed_args_t* pat, char* oFileName) {
 }
 
 int main(int argc, char* argv[]) {
+#ifdef YYDEBUG
+    yydebug = 1;
+#endif
+
     char* oFileName = NULL;
     parsed_args_t* pat = parseArgs(argc, argv, &oFileName);
     handleArgs(pat, oFileName);
