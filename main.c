@@ -21,6 +21,8 @@ void runLexer(parsed_args_t* pat) {
 }
 
 void runParser(parsed_args_t* pat) {
+    input_comp_files = pat->inputFiles;
+    initfile(*input_comp_files);
     int i;
     for (i = 0; i < pat->numFiles; i ++) {
         yyin = fopen(pat->inputFiles[i], "r");
@@ -39,7 +41,7 @@ void handleArgs(parsed_args_t* pat, char* oFileName) {
         case MODE_ERR: break; // <-- Should literally never happen
         case MODE_ZERO: fprintf(fout, versionInfo); break;
         case MODE_ONE: runLexer(pat); break;
-        case MODE_TWO: break;
+        case MODE_TWO: runParser(pat); break;
         case MODE_THREE: break;
         case MODE_FOUR: break;
         case MODE_FIVE: break;
@@ -51,9 +53,9 @@ void handleArgs(parsed_args_t* pat, char* oFileName) {
 }
 
 int main(int argc, char* argv[]) {
-#ifdef YYDEBUG
+//#ifdef YYDEBUG
     yydebug = 1;
-#endif
+//#endif
 
     char* oFileName = NULL;
     parsed_args_t* pat = parseArgs(argc, argv, &oFileName);

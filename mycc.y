@@ -47,17 +47,21 @@ void yyerror(const char* mesg) {
 
 %%
 
-prog :
-     | glob_var_decl 
-     | func_proto
-     | func_def {printf("bruhhhhh\n");}
-     ;
+prog : 
+     | com_unit prog
+
+com_unit : glob_var_decl 
+         | func_proto
+         | func_def {printf("bruhhhhh\n");}
+         ;
 
 glob_var_decl : var_decl;
 
 func_proto : func_decl SEMI;
 
-func_decl : TYPE IDENT LPAR formal_param_list RPAR;
+func_decl : TYPE IDENT LPAR formal_param_list RPAR
+          | TYPE IDENT LPAR RPAR
+          ;
 
 formal_param_list : formal_param
                   | formal_param COMMA formal_param_list
@@ -110,13 +114,13 @@ nonzero_expr_list : expr
 expr : LPAR expr RPAR
      | LPAR TYPE RPAR expr
      | expr QUEST expr COLON expr
-     | expr bin_op expr
-     | un_op expr
+     | bin_expr
+     | un_expr
      | INCR l_val
      | DECR l_val
      | l_val INCR
      | l_val DECR
-     | l_val assign_op expr
+     | l_val assign_op expr %prec ASSIGN
      | l_val
      | IDENT LPAR expr_list RPAR
      | literal_val
@@ -126,27 +130,27 @@ l_val : IDENT
       | IDENT LBRACKET expr RBRACKET
       ;
 
-un_op : MINUS %prec UMINUS
-      | BANG
-      | TILDE
-      ;
+un_expr : MINUS expr %prec UMINUS
+        | BANG expr
+        | TILDE expr
+        ;
 
-bin_op : EQUALS
-       | NEQUAL
-       | GT
-       | GE
-       | LT
-       | LE
-       | PLUS
-       | MINUS
-       | STAR
-       | SLASH
-       | MOD
-       | PIPE
-       | AMP
-       | DPIPE
-       | DAMP
-       ;
+bin_expr : expr DPIPE expr
+         | expr DAMP expr
+         | expr PIPE expr
+         | expr AMP expr
+         | expr EQUALS expr
+         | expr NEQUAL expr
+         | expr GT expr
+         | expr GE expr
+         | expr LT expr
+         | expr LE expr
+         | expr PLUS expr
+         | expr MINUS expr
+         | expr STAR expr
+         | expr SLASH expr
+         | expr MOD expr
+         ;
 
 assign_op : ASSIGN
           | PLUSASSIGN
