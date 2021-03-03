@@ -9,11 +9,19 @@ const char* versionInfo =
 "\t16 February, 2021\n";
 
 char** input_comp_files;
+int yyparse();
+int yylex();
 
 void runLexer(parsed_args_t* pat) {
     input_comp_files = pat->inputFiles;
     initfile(*input_comp_files);
     yylex();
+}
+
+void runParser(parsed_args_t* pat) {
+    input_comp_files = pat->inputFiles;
+    initfile(*input_comp_files);
+    yyparse();
 }
 
 void handleArgs(parsed_args_t* pat, char* oFileName) {
