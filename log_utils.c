@@ -1,9 +1,9 @@
 #include <stdio.h>
 #include "log_utils.h"
 
-char* token_to_string(token_e token);
+char* token_to_string(enum yytokentype token);
 
-void log_lex_info(char* filename, int lineNum, char* text, token_e token) {
+void log_lex_info(char* filename, int lineNum, char* text, enum yytokentype token) {
     printf("%s line %d text \'%s\' token %s\n", filename, lineNum, text, token_to_string(token));
 }
 
@@ -15,7 +15,7 @@ void log_lex_err(char* errDesc, char* filename, int lineNum, char* text) {
 }
 
 
-char* token_to_string(token_e token) {
+char* token_to_string(enum yytokentype token) {
     switch (token) {
         case TYPE:
             return "TYPE";

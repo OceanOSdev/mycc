@@ -1,7 +1,6 @@
 #ifndef LOG_UTILS_H
 #define LOG_UTILS_H
-#include "tokens.h"
-
+#include "mycc.tab.h"
 /*
  * Logs the current file name, the line number, the text, and the token
  * in the form:
@@ -10,7 +9,7 @@
  * 
  * To the output stream.
  */
-void log_lex_info(char* filename, int lineNum, char* text, token_e token);
+void log_lex_info(char* filename, int lineNum, char* text, enum yytokentype token);
 
 /*
  * Logs an error that occured in lexing provided a description, the file name,
