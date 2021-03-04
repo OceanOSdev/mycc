@@ -1,22 +1,49 @@
 %{
 #include <stdio.h>
+#include <string.h>
+#include "crude_symbols_list.h"
 
 int yylex();
 
+void init_variable_stack();
+void reset_variable_stack();
+void append_variable_stack(char* format, char* val);
+
+void init_param_stack();
+void reset_param_stack();
+void append_param_stack(char* format, char* val);
+
 extern int yylineno;
 extern char* yytext;
-
+extern symbol_parse_list_t* spl;
 char* filename = "BLANK";
 
+// vars to keep track of variables during parsing
+const int variable_stack_size = 253;
+char** variable_stack;
+int vstack_index = 0;
+
+// var to keep track of function name
+char* function_name;
+
+// var to keep track of parameters during parsing
+const int param_stack_size = 253;
+char** param_stack;
+int pstack_index = 0;
+
 void yyerror(const char* mesg) {
-    fprintf(stderr, "Error near %s line %d text '%s'\n\t%s\n", filename, yylineno, yytext, mesg);
+     append_parse_error(spl, filename, yylineno, yytext, mesg);
+     //fprintf(stderr, "Error near %s line %d text '%s'\n\t%s\n", filename, yylineno, yytext, mesg);
 }
 /*%define parse.trace*/
 %}
 
+%union {
+     char* sval;
+}
 
-
-%token TYPE CONST STRUCT IDENT INTCONST REALCONST STRCONST CHARCONST
+%token <sval> IDENT
+%token TYPE CONST STRUCT INTCONST REALCONST STRCONST CHARCONST
 %token FOR WHILE DO IF ELSE BREAK CONTINUE RETURN
 
 %token LPAR RPAR LBRACKET RBRACKET LBRACE RBRACE
@@ -27,6 +54,7 @@ void yyerror(const char* mesg) {
 
 %token ASSIGN PLUSASSIGN MINUSASSIGN STARASSIGN SLASHASSIGN INCR DECR
 %token EQUALS NEQUAL GT GE LT LE
+
 
 %nonassoc WITHOUT_ELSE
 %nonassoc ELSE
@@ -49,29 +77,31 @@ void yyerror(const char* mesg) {
 
 prog : 
      | com_unit prog
+     ;
 
-com_unit : glob_var_decl 
-         | func_proto
-         | func_def {printf("bruhhhhh : %s\n", $1);}
+com_unit : glob_var_decl                                              {append_global_variables(spl, vstack_index,variable_stack); reset_variable_stack();}
+         | func_proto                                                 {append_func_proto(spl,function_name,pstack_index,param_stack);reset_variable_stack(); reset_param_stack();}
+         | func_def                                                   {append_func_decl(spl,function_name,pstack_index,param_stack,vstack_index,variable_stack);reset_param_stack();reset_variable_stack();}
          ;
 
 glob_var_decl : var_decl;
 
 func_proto : func_decl SEMI;
 
-func_decl : TYPE IDENT LPAR formal_param_list RPAR
-          | TYPE IDENT LPAR RPAR
+func_decl : TYPE IDENT LPAR formal_param_list RPAR                    {function_name = $2;}
+          | TYPE IDENT LPAR RPAR                                      {function_name = $2; /*printf("function : %s()\n",$2);*/}
           ;
 
 formal_param_list : formal_param
                   | formal_param COMMA formal_param_list
                   ;
 
-formal_param : TYPE IDENT
-             | TYPE IDENT "[]"
+formal_param : TYPE IDENT                                             {append_param_stack("%s",$2);}
+             | TYPE IDENT "[]"                                        {append_param_stack("%s[]",$2);}
              ;
 
-func_def : func_decl LBRACE var_decl_list stmt_list RBRACE;
+func_def : func_decl LBRACE var_decl_list stmt_list RBRACE            
+         ;
 
 stmts : stmt
       | stmt_block
@@ -165,14 +195,59 @@ literal_val : INTCONST
             | CHARCONST
             ;
 
-var_decl : TYPE ident_list SEMI;
+var_decl : TYPE ident_list SEMI                                       {/*printf(" Done with that list.\n");*/}
+         ;
 
 ident_list : ident_c
            | ident_c COMMA ident_list
            ;
 
-ident_c : IDENT
-        | IDENT LBRACKET INTCONST RBRACKET
+ident_c : IDENT                                                       {append_variable_stack("%s",$1); /*printf("var %s,", $1);*/}
+        | IDENT LBRACKET INTCONST RBRACKET                            {append_variable_stack("%s[]",$1);/*printf("var %s[],", $1);*/}
         ;
 
 %%
+void init_variable_stack() {
+     variable_stack = malloc(variable_stack_size * sizeof(char*));
+     vstack_index = 0;
+     for (int i = 0; i < variable_stack_size; i ++) {
+          variable_stack[i] = NULL;
+     }
+}
+void reset_variable_stack() {
+     vstack_index = 0;
+     for (int i = 0; i < variable_stack_size; i ++) {
+          variable_stack[i] = NULL;
+     }
+}
+
+void init_param_stack() {
+     param_stack = malloc(param_stack_size * sizeof(char*));
+     pstack_index = 0;
+     for (int i = 0; i < param_stack_size; i ++) {
+          param_stack[i] = NULL;
+     }
+}
+void reset_param_stack() {
+     pstack_index = 0;
+     for (int i = 0; i < param_stack_size; i ++) {
+          param_stack[i] = NULL;
+     }
+}
+
+void append_variable_stack(char* format, char* val) {
+     if (vstack_index < variable_stack_size) {
+          variable_stack[vstack_index] = malloc((strlen(format) + strlen(val))*sizeof(char));
+          sprintf(variable_stack[vstack_index++], format, val);
+     } else {
+          fprintf(stderr, "stack overflow in variable stack\n");
+     }
+}
+void append_param_stack(char* format, char* val) {
+     if (pstack_index < param_stack_size) {
+          param_stack[pstack_index] = malloc((strlen(format) + strlen(val))*sizeof(char));
+          sprintf(param_stack[pstack_index++], format, val);
+     } else {
+          fprintf(stderr, "stack overflow in parameter stack\n");
+     }
+}

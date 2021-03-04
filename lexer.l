@@ -84,7 +84,7 @@ FNAME  [a-zA-Z0-9_]*\.[a-zA-Z0-9_]+
 ">="                            { add_token(head,input_comp_file,yylineno,strdup(yytext),GE); return GE; }
 "<"                             { add_token(head,input_comp_file,yylineno,strdup(yytext),LT); return LT; }
 "<="                            { add_token(head,input_comp_file,yylineno,strdup(yytext),LE); return LE; }
-{ID}                            { add_token(head,input_comp_file,yylineno,strdup(yytext),IDENT); return IDENT; }
+{ID}                            { yylval.sval = strdup(yytext); add_token(head,input_comp_file,yylineno,strdup(yytext),IDENT); return IDENT; }
 .                               { add_token_err(head,"Unexpected symbol",input_comp_file,yylineno,strdup(yytext)); }
 <COM><<EOF>>                    { add_token_err(head,"Unclosed comment",input_comp_file,openingCommentLine,NULL); return 1;}
 <<EOF>>                         { yyterminate();}

@@ -3,21 +3,27 @@
 #include "args_parser.h"
 #include "token_list.h"
 #include "log_utils.h"
+#include "crude_symbols_list.h"
 
 const char* versionInfo =
 "My bare-bones C compiler (for COM 440)\n"
 "\tWritten by Thomas Maloney (tmaloney@iastate.edu)\n"
-"\tVersion 0.2\n"
-"\t16 February, 2021\n";
+"\tVersion 0.3\n"
+"\t3 March, 2021\n";
 
 char** input_comp_files;
 char* input_comp_file;
 token_list_node_t* head;
+symbol_parse_list_t* spl;
 int yyparse();
 int yylex();
 extern int yydebug;
 extern FILE *yyin;
 extern int yylineno;
+extern void reset_variable_stack();
+extern void init_variable_stack();
+extern void reset_param_stack();
+extern void init_param_stack();
 
 void print_token_list() {
     token_list_node_t* cur = head->next;
@@ -28,6 +34,63 @@ void print_token_list() {
             log_lex_info(cur->filename, cur->lineNum, cur->text, cur->token);
         
         cur = cur->next;
+    }
+}
+
+void print_string_list(FILE* fout, char* argv[]) {
+    int i = 0;
+    while (argv[i]) {
+        fprintf(fout, "%s", argv[i]);
+        if (argv[++i]) fprintf(fout,",");
+        fprintf(fout, " ");
+    }
+}
+
+void print_func_decl_symbol(FILE* fout, func_decl_symbol_t* fds) {
+    fprintf(fout, "Function %s\n\t", fds->func_name);
+    fprintf(fout, "Parameters: ");
+    print_string_list(fout, fds->func_params);
+    fprintf(fout, "\n\tLocal variables: ");
+    print_string_list(fout, fds->func_local_vars);
+    fprintf(fout, "\n");
+}
+
+void print_func_proto_symbol(FILE* fout, func_proto_symbol_t* fps) {
+    fprintf(fout, "Prototype %s\n\t", fps->func_name);
+    fprintf(fout, "Parameters: ");
+    print_string_list(fout, fps->func_params);
+    fprintf(fout, "\n");
+}
+
+void print_parse_error_symbol(FILE* fout, parse_error_symbol_t* pes) {
+    fprintf(fout, "Error near %s line %d text '%s'\n\t%s\n", 
+        pes->filename, pes->line_number, pes->text, pes->msg);
+}
+
+void print_symbol_parse_list(FILE* fout, symbol_parse_list_t** spls, int numLists) {
+    for (int i = 0; i < numLists; i ++) {
+        fprintf(fout,"Global variables\n\t");
+        print_string_list(fout, spls[i]->global_variables);
+        fprintf(fout,"\n\n");
+        
+        symbol_parse_list_node_t* iter = spls[i]->head;
+        while (iter) {
+            switch (iter->symbol_type) {
+                case FUNC_DECL_SYMBOL:
+                    print_func_decl_symbol(fout, iter->symbol_data.fds_val);
+                    fprintf(fout, "\n");
+                    break;
+                case FUNC_PROTO_SYMBOL:
+                    print_func_proto_symbol(fout, iter->symbol_data.fps_val);
+                    fprintf(fout, "\n");
+                    break;
+                case PARSE_ERROR_SYMBOL:
+                    print_parse_error_symbol(fout != stdout ? fout : stderr, iter->symbol_data.pes_val);
+                    fprintf(fout != stdout ? fout : stderr, "\n");
+                    break;
+            }
+            iter = iter->next;
+        }
     }
 }
 
@@ -45,16 +108,25 @@ void runLexer(parsed_args_t* pat) {
     print_token_list();
 }
 
-void runParser(parsed_args_t* pat) {
+void runParser(parsed_args_t* pat, FILE* fout) {
     input_comp_files = pat->inputFiles;
+    init_variable_stack();
+    init_param_stack();
+    symbol_parse_list_t** spls = malloc(pat->numFiles * sizeof(symbol_parse_list_t*));
     int i;
     for (i = 0; i < pat->numFiles; i ++) {
+        reset_variable_stack();
+        reset_param_stack();
+        spls[i] = create_symbol_parse_list();
+        spl = spls[i];
         input_comp_file = pat->inputFiles[i];
         yyin = fopen(pat->inputFiles[i], "r");
         //printf("File: %s\n", pat->inputFiles[i]);
         yyparse();
         fclose(yyin);
     }
+
+    print_symbol_parse_list(fout, spls, pat->numFiles);
 }
 
 void handleArgs(parsed_args_t* pat, char* oFileName) {
@@ -66,7 +138,7 @@ void handleArgs(parsed_args_t* pat, char* oFileName) {
         case MODE_ERR: break; // <-- Should literally never happen
         case MODE_ZERO: fprintf(fout, versionInfo); break;
         case MODE_ONE: runLexer(pat); break;
-        case MODE_TWO: runParser(pat); break;
+        case MODE_TWO: runParser(pat, fout); break;
         case MODE_THREE: break;
         case MODE_FOUR: break;
         case MODE_FIVE: break;
@@ -79,7 +151,7 @@ void handleArgs(parsed_args_t* pat, char* oFileName) {
 
 int main(int argc, char* argv[]) {
 //#ifdef YYDEBUG
-//    yydebug = 1;
+    //yydebug = 1;
 //#endif
     head = init_token_list();
     char* oFileName = NULL;

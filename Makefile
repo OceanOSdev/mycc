@@ -1,4 +1,4 @@
-SRCS = args_parser.c log_utils.c token_list.c main.c
+SRCS = crude_symbols_list.c args_parser.c log_utils.c token_list.c main.c
 
 TARG = mycc
 
@@ -33,6 +33,7 @@ clean:
 	rm -f $(OBJS) $(TARG)
 	rm -f *.out *.aux *.log *.fls *.fdb_latexmk *.synctex*
 	rm -f lexer.c lexer.o mycc.tab.h mycc.tab.c mycc.tab.o
+	rm -f vgcore.*
 
 destroy: clean
 	rm -f *.pdf
