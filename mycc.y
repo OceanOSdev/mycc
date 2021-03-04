@@ -16,7 +16,7 @@ void append_param_stack(char* format, char* val);
 extern int yylineno;
 extern char* yytext;
 extern symbol_parse_list_t* spl;
-char* filename = "BLANK";
+extern char* input_comp_file;
 
 // vars to keep track of variables during parsing
 const int variable_stack_size = 253;
@@ -32,8 +32,8 @@ char** param_stack;
 int pstack_index = 0;
 
 void yyerror(const char* mesg) {
-     append_parse_error(spl, filename, yylineno, yytext, mesg);
-     //fprintf(stderr, "Error near %s line %d text '%s'\n\t%s\n", filename, yylineno, yytext, mesg);
+     append_parse_error(spl, input_comp_file, yylineno, yytext, mesg);
+     //fprintf(stderr, "Error near %s line %d text '%s'\n\t%s\n", input_comp_file, yylineno, yytext, mesg);
 }
 /*%define parse.trace*/
 %}
@@ -96,8 +96,8 @@ formal_param_list : formal_param
                   | formal_param COMMA formal_param_list
                   ;
 
-formal_param : TYPE IDENT                                             {append_param_stack("%s",$2);}
-             | TYPE IDENT "[]"                                        {append_param_stack("%s[]",$2);}
+formal_param : TYPE IDENT                                         {append_param_stack("%s",$2);}
+             | TYPE IDENT LBRACKET RBRACKET                       {append_param_stack("%s[]",$2);}
              ;
 
 func_def : func_decl LBRACE var_decl_list stmt_list RBRACE            

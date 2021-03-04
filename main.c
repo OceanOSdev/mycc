@@ -20,6 +20,7 @@ int yylex();
 extern int yydebug;
 extern FILE *yyin;
 extern int yylineno;
+//char* current_filename;
 extern void reset_variable_stack();
 extern void init_variable_stack();
 extern void reset_param_stack();
@@ -47,18 +48,24 @@ void print_string_list(FILE* fout, char* argv[]) {
 }
 
 void print_func_decl_symbol(FILE* fout, func_decl_symbol_t* fds) {
-    fprintf(fout, "Function %s\n\t", fds->func_name);
-    fprintf(fout, "Parameters: ");
-    print_string_list(fout, fds->func_params);
-    fprintf(fout, "\n\tLocal variables: ");
-    print_string_list(fout, fds->func_local_vars);
+    fprintf(fout, "Function %s", fds->func_name);
+    if (fds->num_params > 0) {
+        fprintf(fout, "\n\tParameters: ");
+        print_string_list(fout, fds->func_params);
+    }
+    if (fds->num_lvars > 0) {
+        fprintf(fout, "\n\tLocal variables: ");
+        print_string_list(fout, fds->func_local_vars);
+    }
     fprintf(fout, "\n");
 }
 
 void print_func_proto_symbol(FILE* fout, func_proto_symbol_t* fps) {
-    fprintf(fout, "Prototype %s\n\t", fps->func_name);
-    fprintf(fout, "Parameters: ");
-    print_string_list(fout, fps->func_params);
+    fprintf(fout, "Prototype %s", fps->func_name);
+    if (fps->num_params > 0) {
+        fprintf(fout, "\n\tParameters: ");
+        print_string_list(fout, fps->func_params);
+    }
     fprintf(fout, "\n");
 }
 
@@ -69,9 +76,11 @@ void print_parse_error_symbol(FILE* fout, parse_error_symbol_t* pes) {
 
 void print_symbol_parse_list(FILE* fout, symbol_parse_list_t** spls, int numLists) {
     for (int i = 0; i < numLists; i ++) {
-        fprintf(fout,"Global variables\n\t");
-        print_string_list(fout, spls[i]->global_variables);
-        fprintf(fout,"\n\n");
+        if (spls[i]->num_glob_vars > 0) {
+            fprintf(fout,"Global variables\n\t");
+            print_string_list(fout, spls[i]->global_variables);
+            fprintf(fout,"\n\n");
+        }
         
         symbol_parse_list_node_t* iter = spls[i]->head;
         while (iter) {
@@ -101,7 +110,6 @@ void runLexer(parsed_args_t* pat) {
         yylineno = 1;
         input_comp_file = pat->inputFiles[i];
         yyin = fopen(pat->inputFiles[i], "r");
-        //printf("File: %s\n", pat->inputFiles[i]);
         while (yylex() > 1) {}
         fclose(yyin);
     }
@@ -121,7 +129,6 @@ void runParser(parsed_args_t* pat, FILE* fout) {
         spl = spls[i];
         input_comp_file = pat->inputFiles[i];
         yyin = fopen(pat->inputFiles[i], "r");
-        //printf("File: %s\n", pat->inputFiles[i]);
         yyparse();
         fclose(yyin);
     }

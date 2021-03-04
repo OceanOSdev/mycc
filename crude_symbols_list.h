@@ -11,7 +11,9 @@
  */ 
 typedef struct func_decl_symbol {
     char* func_name;
+    int num_params; // how many params are actually stored
     char* func_params[253]; // C standard
+    int num_lvars; // how many local variables are actually stored
     char* func_local_vars[LOCAL_VAR_STACK_SIZE]; // Not from C standard 
 } func_decl_symbol_t;
 
@@ -23,6 +25,7 @@ typedef struct func_decl_symbol {
  */ 
 typedef struct func_proto_symbol {
     char* func_name;
+    int num_params; // how many params are actually stored
     char* func_params[253]; // C standard
 } func_proto_symbol_t;
 
@@ -116,7 +119,7 @@ void append_func_proto(symbol_parse_list_t* spl, char* func_name, int num_params
  * Creates and appends a new parse error symbol
  * to the symbol parse list.
  */
-void append_parse_error(symbol_parse_list_t* spl, char* filename, int line_number, char* text, char* msg);
+void append_parse_error(symbol_parse_list_t* spl, char* filename, int line_number, char* text, const char* msg);
 
 
 #endif
