@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "args_parser.h"
+#include "token_list.h"
+#include "log_utils.h"
 
 const char* versionInfo =
 "My bare-bones C compiler (for COM 440)\n"
@@ -9,24 +11,47 @@ const char* versionInfo =
 "\t16 February, 2021\n";
 
 char** input_comp_files;
+char* input_comp_file;
+token_list_node_t* head;
 int yyparse();
 int yylex();
 extern int yydebug;
 extern FILE *yyin;
+extern int yylineno;
+
+void print_token_list() {
+    token_list_node_t* cur = head->next;
+    while (cur) {
+        if (cur->isError)
+            log_lex_err(cur->errDesc, cur->filename, cur->lineNum, cur->text);
+        else
+            log_lex_info(cur->filename, cur->lineNum, cur->text, cur->token);
+        
+        cur = cur->next;
+    }
+}
 
 void runLexer(parsed_args_t* pat) {
     input_comp_files = pat->inputFiles;
-    initfile(*input_comp_files);
-    yylex();
+    int i;
+    for (i = 0; i < pat->numFiles; i ++) {
+        yylineno = 1;
+        input_comp_file = pat->inputFiles[i];
+        yyin = fopen(pat->inputFiles[i], "r");
+        //printf("File: %s\n", pat->inputFiles[i]);
+        while (yylex() > 1) {}
+        fclose(yyin);
+    }
+    print_token_list();
 }
 
 void runParser(parsed_args_t* pat) {
     input_comp_files = pat->inputFiles;
-    initfile(*input_comp_files);
     int i;
     for (i = 0; i < pat->numFiles; i ++) {
+        input_comp_file = pat->inputFiles[i];
         yyin = fopen(pat->inputFiles[i], "r");
-        printf("File: %s\n", pat->inputFiles[i]);
+        //printf("File: %s\n", pat->inputFiles[i]);
         yyparse();
         fclose(yyin);
     }
@@ -54,11 +79,12 @@ void handleArgs(parsed_args_t* pat, char* oFileName) {
 
 int main(int argc, char* argv[]) {
 //#ifdef YYDEBUG
-    yydebug = 1;
+//    yydebug = 1;
 //#endif
-
+    head = init_token_list();
     char* oFileName = NULL;
     parsed_args_t* pat = parseArgs(argc, argv, &oFileName);
     handleArgs(pat, oFileName);
+    //unalloc_token_list(head);
     return 0;
 }

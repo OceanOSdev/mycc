@@ -52,7 +52,7 @@ prog :
 
 com_unit : glob_var_decl 
          | func_proto
-         | func_def {printf("bruhhhhh\n");}
+         | func_def {printf("bruhhhhh : %s\n", $1);}
          ;
 
 glob_var_decl : var_decl;

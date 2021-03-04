@@ -1,9 +1,12 @@
 %{
 #include <math.h>
 #include <stdio.h>
+#include <string.h>
 #include "log_utils.h"
+#include "token_list.h"
 #include "mycc.tab.h" // bison generated tokens
-extern char** input_comp_files;
+extern char*input_comp_file;
+extern token_list_node_t* head;
 int openingCommentLine = 0;
 %}
 
@@ -31,62 +34,58 @@ FNAME  [a-zA-Z0-9_]*\.[a-zA-Z0-9_]+
 "#ifndef "{ID}                  { /* ignore */ }
 "#else"                         { /* ignore */ }
 "#endif"                        { /* ignore */ }
-"void"|"char"|"int"|"float"     { log_lex_info(*input_comp_files,yylineno,yytext,TYPE); return TYPE; }
-"const"                         { log_lex_info(*input_comp_files,yylineno,yytext,CONST); return CONST; } 
-"struct"                        { log_lex_info(*input_comp_files,yylineno,yytext,STRUCT); return STRUCT; }        
-"for"                           { log_lex_info(*input_comp_files,yylineno,yytext,FOR); return FOR; }   
-"while"                         { log_lex_info(*input_comp_files,yylineno,yytext,WHILE); return WHILE; } 
-"do"                            { log_lex_info(*input_comp_files,yylineno,yytext,DO); return DO; }    
-"if"                            { log_lex_info(*input_comp_files,yylineno,yytext,IF); return IF; }    
-"else"                          { log_lex_info(*input_comp_files,yylineno,yytext,ELSE); return ELSE; }  
-"break"                         { log_lex_info(*input_comp_files,yylineno,yytext,BREAK); return BREAK; } 
-"continue"                      { log_lex_info(*input_comp_files,yylineno,yytext,CONTINUE); return CONTINUE; }      
-"return"                        { log_lex_info(*input_comp_files,yylineno,yytext,RETURN); return RETURN; }
-{NUMBER}+                       { log_lex_info(*input_comp_files,yylineno,yytext,INTCONST); return INTCONST; }
-{NUMBER}+"."?{NUMBER}           { log_lex_info(*input_comp_files,yylineno,yytext,REALCONST); return REALCONST; }
-\"(\\.|[^"\\])*\"               { log_lex_info(*input_comp_files,yylineno,yytext,STRCONST); return STRCONST; }
-\'([^\\]|\\[abnrt\'\\])\'       { log_lex_info(*input_comp_files,yylineno,yytext,CHARCONST); return CHARCONST; }
-"("                             { log_lex_info(*input_comp_files,yylineno,yytext,LPAR); return LPAR; }
-")"                             { log_lex_info(*input_comp_files,yylineno,yytext,RPAR); return RPAR; }
-"["                             { log_lex_info(*input_comp_files,yylineno,yytext,LBRACKET); return LBRACKET; }
-"]"                             { log_lex_info(*input_comp_files,yylineno,yytext,RBRACKET); return RBRACKET; }
-"{"                             { log_lex_info(*input_comp_files,yylineno,yytext,LBRACE); return LBRACE; }
-"}"                             { log_lex_info(*input_comp_files,yylineno,yytext,RBRACE); return RBRACE; }
-"."                             { log_lex_info(*input_comp_files,yylineno,yytext,DOT); return DOT; }
-","                             { log_lex_info(*input_comp_files,yylineno,yytext,COMMA); return COMMA; }
-";"                             { log_lex_info(*input_comp_files,yylineno,yytext,SEMI); return SEMI; }
-"?"                             { log_lex_info(*input_comp_files,yylineno,yytext,QUEST); return QUEST; }
-":"                             { log_lex_info(*input_comp_files,yylineno,yytext,COLON); return COLON; }
-"+"                             { log_lex_info(*input_comp_files,yylineno,yytext,PLUS); return PLUS; }
-"-"                             { log_lex_info(*input_comp_files,yylineno,yytext,MINUS); return MINUS; }
-"*"                             { log_lex_info(*input_comp_files,yylineno,yytext,STAR); return STAR; }
-"/"                             { log_lex_info(*input_comp_files,yylineno,yytext,SLASH); return SLASH; }
-"%"                             { log_lex_info(*input_comp_files,yylineno,yytext,MOD); return MOD; }
-"~"                             { log_lex_info(*input_comp_files,yylineno,yytext,TILDE); return TILDE; }
-"|"                             { log_lex_info(*input_comp_files,yylineno,yytext,PIPE); return PIPE; }
-"&"                             { log_lex_info(*input_comp_files,yylineno,yytext,AMP); return AMP; }
-"!"                             { log_lex_info(*input_comp_files,yylineno,yytext,BANG); return BANG; }
-"||"                            { log_lex_info(*input_comp_files,yylineno,yytext,DPIPE); return DPIPE; }
-"&&"                            { log_lex_info(*input_comp_files,yylineno,yytext,DAMP); return DAMP; }
-"="                             { log_lex_info(*input_comp_files,yylineno,yytext,ASSIGN); return ASSIGN; }
-"+="                            { log_lex_info(*input_comp_files,yylineno,yytext,PLUSASSIGN); return PLUSASSIGN; }
-"-="                            { log_lex_info(*input_comp_files,yylineno,yytext,MINUSASSIGN); return MINUSASSIGN; }
-"*="                            { log_lex_info(*input_comp_files,yylineno,yytext,STARASSIGN); return STARASSIGN; }
-"/="                            { log_lex_info(*input_comp_files,yylineno,yytext,SLASHASSIGN); return SLASHASSIGN; }
-"++"                            { log_lex_info(*input_comp_files,yylineno,yytext,INCR); return INCR; }
-"--"                            { log_lex_info(*input_comp_files,yylineno,yytext,DECR); return DECR; }
-"=="                            { log_lex_info(*input_comp_files,yylineno,yytext,EQUALS); return EQUALS; }
-"!="                            { log_lex_info(*input_comp_files,yylineno,yytext,NEQUAL); return NEQUAL; }
-">"                             { log_lex_info(*input_comp_files,yylineno,yytext,GT); return GT; }
-">="                            { log_lex_info(*input_comp_files,yylineno,yytext,GE); return GE; }
-"<"                             { log_lex_info(*input_comp_files,yylineno,yytext,LT); return LT; }
-"<="                            { log_lex_info(*input_comp_files,yylineno,yytext,LE); return LE; }
-{ID}                            { log_lex_info(*input_comp_files,yylineno,yytext,IDENT); return IDENT; }
-.                               { log_lex_err("Unexpected symbol",*input_comp_files,yylineno,yytext); }
-<COM><<EOF>>                    { log_lex_err("Unclosed comment",*input_comp_files,openingCommentLine,NULL); return 1;}
-<<EOF>>                         {if(*++input_comp_files) { yylineno = 1;yyin = fopen( *input_comp_files, "r" ); } else yyterminate();}
+"void"|"char"|"int"|"float"     { add_token(head,input_comp_file,yylineno,strdup(yytext),TYPE); return TYPE; }
+"const"                         { add_token(head,input_comp_file,yylineno,strdup(yytext),CONST); return CONST; } 
+"struct"                        { add_token(head,input_comp_file,yylineno,strdup(yytext),STRUCT); return STRUCT; }        
+"for"                           { add_token(head,input_comp_file,yylineno,strdup(yytext),FOR); return FOR; }   
+"while"                         { add_token(head,input_comp_file,yylineno,strdup(yytext),WHILE); return WHILE; } 
+"do"                            { add_token(head,input_comp_file,yylineno,strdup(yytext),DO); return DO; }    
+"if"                            { add_token(head,input_comp_file,yylineno,strdup(yytext),IF); return IF; }    
+"else"                          { add_token(head,input_comp_file,yylineno,strdup(yytext),ELSE); return ELSE; }  
+"break"                         { add_token(head,input_comp_file,yylineno,strdup(yytext),BREAK); return BREAK; } 
+"continue"                      { add_token(head,input_comp_file,yylineno,strdup(yytext),CONTINUE); return CONTINUE; }      
+"return"                        { add_token(head,input_comp_file,yylineno,strdup(yytext),RETURN); return RETURN; }
+{NUMBER}+                       { add_token(head,input_comp_file,yylineno,strdup(yytext),INTCONST); return INTCONST; }
+{NUMBER}+"."?{NUMBER}           { add_token(head,input_comp_file,yylineno,strdup(yytext),REALCONST); return REALCONST; }
+\"(\\.|[^"\\])*\"               { add_token(head,input_comp_file,yylineno,strdup(yytext),STRCONST); return STRCONST; }
+\'([^\\]|\\[abnrt\'\\])\'       { add_token(head,input_comp_file,yylineno,strdup(yytext),CHARCONST); return CHARCONST; }
+"("                             { add_token(head,input_comp_file,yylineno,strdup(yytext),LPAR); return LPAR; }
+")"                             { add_token(head,input_comp_file,yylineno,strdup(yytext),RPAR); return RPAR; }
+"["                             { add_token(head,input_comp_file,yylineno,strdup(yytext),LBRACKET); return LBRACKET; }
+"]"                             { add_token(head,input_comp_file,yylineno,strdup(yytext),RBRACKET); return RBRACKET; }
+"{"                             { add_token(head,input_comp_file,yylineno,strdup(yytext),LBRACE); return LBRACE; }
+"}"                             { add_token(head,input_comp_file,yylineno,strdup(yytext),RBRACE); return RBRACE; }
+"."                             { add_token(head,input_comp_file,yylineno,strdup(yytext),DOT); return DOT; }
+","                             { add_token(head,input_comp_file,yylineno,strdup(yytext),COMMA); return COMMA; }
+";"                             { add_token(head,input_comp_file,yylineno,strdup(yytext),SEMI); return SEMI; }
+"?"                             { add_token(head,input_comp_file,yylineno,strdup(yytext),QUEST); return QUEST; }
+":"                             { add_token(head,input_comp_file,yylineno,strdup(yytext),COLON); return COLON; }
+"+"                             { add_token(head,input_comp_file,yylineno,strdup(yytext),PLUS); return PLUS; }
+"-"                             { add_token(head,input_comp_file,yylineno,strdup(yytext),MINUS); return MINUS; }
+"*"                             { add_token(head,input_comp_file,yylineno,strdup(yytext),STAR); return STAR; }
+"/"                             { add_token(head,input_comp_file,yylineno,strdup(yytext),SLASH); return SLASH; }
+"%"                             { add_token(head,input_comp_file,yylineno,strdup(yytext),MOD); return MOD; }
+"~"                             { add_token(head,input_comp_file,yylineno,strdup(yytext),TILDE); return TILDE; }
+"|"                             { add_token(head,input_comp_file,yylineno,strdup(yytext),PIPE); return PIPE; }
+"&"                             { add_token(head,input_comp_file,yylineno,strdup(yytext),AMP); return AMP; }
+"!"                             { add_token(head,input_comp_file,yylineno,strdup(yytext),BANG); return BANG; }
+"||"                            { add_token(head,input_comp_file,yylineno,strdup(yytext),DPIPE); return DPIPE; }
+"&&"                            { add_token(head,input_comp_file,yylineno,strdup(yytext),DAMP); return DAMP; }
+"="                             { add_token(head,input_comp_file,yylineno,strdup(yytext),ASSIGN); return ASSIGN; }
+"+="                            { add_token(head,input_comp_file,yylineno,strdup(yytext),PLUSASSIGN); return PLUSASSIGN; }
+"-="                            { add_token(head,input_comp_file,yylineno,strdup(yytext),MINUSASSIGN); return MINUSASSIGN; }
+"*="                            { add_token(head,input_comp_file,yylineno,strdup(yytext),STARASSIGN); return STARASSIGN; }
+"/="                            { add_token(head,input_comp_file,yylineno,strdup(yytext),SLASHASSIGN); return SLASHASSIGN; }
+"++"                            { add_token(head,input_comp_file,yylineno,strdup(yytext),INCR); return INCR; }
+"--"                            { add_token(head,input_comp_file,yylineno,strdup(yytext),DECR); return DECR; }
+"=="                            { add_token(head,input_comp_file,yylineno,strdup(yytext),EQUALS); return EQUALS; }
+"!="                            { add_token(head,input_comp_file,yylineno,strdup(yytext),NEQUAL); return NEQUAL; }
+">"                             { add_token(head,input_comp_file,yylineno,strdup(yytext),GT); return GT; }
+">="                            { add_token(head,input_comp_file,yylineno,strdup(yytext),GE); return GE; }
+"<"                             { add_token(head,input_comp_file,yylineno,strdup(yytext),LT); return LT; }
+"<="                            { add_token(head,input_comp_file,yylineno,strdup(yytext),LE); return LE; }
+{ID}                            { add_token(head,input_comp_file,yylineno,strdup(yytext),IDENT); return IDENT; }
+.                               { add_token_err(head,"Unexpected symbol",input_comp_file,yylineno,strdup(yytext)); }
+<COM><<EOF>>                    { add_token_err(head,"Unclosed comment",input_comp_file,openingCommentLine,NULL); return 1;}
+<<EOF>>                         { yyterminate();}
 %%
-
-void initfile(char* filename) {
-    yyin = fopen( filename, "r" );
-}

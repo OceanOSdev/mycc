@@ -34,4 +34,4 @@ lexer.c
 
 
 #test file
-test.c
+test*.c
