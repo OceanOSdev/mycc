@@ -102,9 +102,9 @@ prog :
      ;
 
 com_unit : glob_var_decl                                              {append_global_variables(spl,vstack_index,variable_stack);reset_variable_stack();}
-         | glob_struct_def                                            {append_global_struct(spl,struct_name,svstack_index,svar_stack);reset_svar_stack();struct_name=NULL;}
+         | glob_struct_def                                            {append_global_struct(spl,struct_stack_index,struct_stack);reset_struct_stack();}
          | func_proto                                                 {append_func_proto(spl,function_name,pstack_index,param_stack);reset_variable_stack(); reset_param_stack();}
-         | func_def                                                   {append_func_decl(spl,function_name,pstack_index,param_stack,vstack_index,variable_stack);reset_param_stack();reset_variable_stack();}
+         | func_def                                                   {append_func_decl(spl,function_name,pstack_index,param_stack,vstack_index,variable_stack,struct_stack_index,struct_stack);reset_param_stack();reset_variable_stack();reset_svar_stack();reset_struct_stack();}
          ;
 
 glob_var_decl : var_decl;
@@ -148,7 +148,7 @@ formal_param : TYPE IDENT                                             {append_pa
 func_def : func_decl LBRACE var_struct_decl_list stmt_list RBRACE            
          ;
 
-struct_def : STRUCT IDENT LBRACE st_var_decl_list_na RBRACE SEMI      {struct_name = $2;/*printf("FINISHED PARSING STRUCT [%s]\n",$2);*/}
+struct_def : STRUCT IDENT LBRACE st_var_decl_list_na RBRACE SEMI      {append_struct_stack($2,svstack_index,svar_stack);reset_svar_stack();/*printf("FINISHED PARSING STRUCT [%s]\n",$2);*/}
            ;
 
 stmts : stmt
@@ -159,7 +159,7 @@ stmt_block : LBRACE stmt_list RBRACE;
 
 var_struct_decl_list :
                      | var_decl var_struct_decl_list
-                     | struct_def var_struct_decl_list                {/* bleh */}
+                     | struct_def var_struct_decl_list                
                      ;
 
 st_var_decl_list_na : 

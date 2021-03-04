@@ -2,6 +2,7 @@
 
 char* token_to_string(enum yytokentype token);
 void log_string_list(FILE* fout, char* argv[]);
+void log_struct_names(FILE* fout, struct_decl_symbol_t** structs);
 
 void log_lex_info(FILE* fout, char* filename, int lineNum, char* text, enum yytokentype token) {
     fprintf(fout, "%s line %d text \'%s\' token %s\n", filename, lineNum, text, token_to_string(token));
@@ -30,6 +31,10 @@ void log_parser_func_decl_symbol(FILE* fout, func_decl_symbol_t* fds) {
         fprintf(fout, "\n\tParameters: ");
         log_string_list(fout, fds->func_params);
     }
+    if (fds->num_structs > 0) {
+        fprintf(fout, "\n\tLocal structs: ");
+        log_struct_names(fout, fds->structs);
+    }
     if (fds->num_lvars > 0) {
         fprintf(fout, "\n\tLocal variables: ");
         log_string_list(fout, fds->func_local_vars);
@@ -57,6 +62,15 @@ void log_string_list(FILE* fout, char* argv[]) {
     while (argv[i]) {
         fprintf(fout, "%s", argv[i]);
         if (argv[++i]) fprintf(fout,",");
+        fprintf(fout, " ");
+    }
+}
+
+void log_struct_names(FILE* fout, struct_decl_symbol_t** structs) {
+    int i = 0;
+    while (structs[i]) {
+        fprintf(fout, "%s", structs[i]->struct_name);
+        if (structs[++i]) fprintf(fout,",");
         fprintf(fout, " ");
     }
 }

@@ -24,6 +24,8 @@ typedef struct func_decl_symbol {
     char* func_params[253]; // C standard
     int num_lvars; // how many local variables are actually stored
     char* func_local_vars[LOCAL_VAR_STACK_SIZE]; // Not from C standard 
+    int num_structs;
+    struct_decl_symbol_t* structs[253];
 } func_decl_symbol_t;
 
 
@@ -118,13 +120,16 @@ void append_global_variables(symbol_parse_list_t* spl, int num_vars, char** vars
  * Creates and appends a new global struct symbol
  * to the symbol parse list.
  */
-void append_global_struct(symbol_parse_list_t* spl, char* struct_name, int num_members, char** struct_members);
+void append_global_struct(symbol_parse_list_t* spl, int num_structs, struct_decl_symbol_t** structs);
 
 /*
  * Creates and appends a new function declaration symbol
  * to the symbol parse list.
  */
-void append_func_decl(symbol_parse_list_t* spl, char* func_name, int num_params, char* func_params[], int num_lvars, char* func_local_vars[]);
+void append_func_decl(symbol_parse_list_t* spl, char* func_name, 
+                      int num_params, char* func_params[], 
+                      int num_lvars, char* func_local_vars[],
+                      int num_structs, struct_decl_symbol_t* structs[]);
 
 /*
  * Creates and appends a new function prototype symbol

@@ -63,24 +63,24 @@ void append_global_variables(symbol_parse_list_t* spl, int num_vars, char** vars
  * Creates and appends a new global struct symbol
  * to the symbol parse list.
  */
-void append_global_struct(symbol_parse_list_t* spl, char* struct_name, int num_members, char** struct_members) {
-    spl->num_glob_structs += spl->num_glob_structs + 1 > 253 ? 0 : 1;
-    int index = spl->num_glob_structs - 1;
+void append_global_struct(symbol_parse_list_t* spl, int num_structs, struct_decl_symbol_t** structs) {
+    int new_count = spl->num_glob_structs + num_structs;
+    if (new_count > 253) new_count = 253;
     // note to self: carefull of potential overwrite
-    spl->glob_structs[index] = malloc(sizeof(struct_decl_symbol_t));
-
-    spl->glob_structs[index]->struct_name = struct_name;
-    spl->glob_structs[index]->num_members = num_members;
-    for (int i = 0; i < num_members; i ++)
-        spl->glob_structs[index]->struct_members[i] = struct_members[i];
-
+    for (int i = 0; spl->num_glob_structs + i < new_count; i ++)
+        spl->glob_structs[spl->num_glob_structs + i] = structs[i];
+    spl->num_glob_structs = new_count;
 }
 
 /*
  * Creates and appends a new function declaration symbol
  * to the symbol parse list.
  */
-void append_func_decl(symbol_parse_list_t* spl, char* func_name, int num_params, char* func_params[], int num_lvars, char* func_local_vars[]) {
+void append_func_decl(symbol_parse_list_t* spl, char* func_name, 
+                      int num_params, char* func_params[], 
+                      int num_lvars, char* func_local_vars[],
+                      int num_structs, struct_decl_symbol_t* structs[]) {
+
     symbol_parse_list_node_t* node = insert_blank_parse_list_node(spl);
     node->symbol_type = FUNC_DECL_SYMBOL;
     node->symbol_data.fds_val = malloc(sizeof(func_decl_symbol_t));
@@ -89,6 +89,7 @@ void append_func_decl(symbol_parse_list_t* spl, char* func_name, int num_params,
 
     node->symbol_data.fds_val->num_params = num_params;
     node->symbol_data.fds_val->num_lvars = num_lvars;
+    node->symbol_data.fds_val->num_structs = num_structs;
     
     for (int p_index = 0; p_index < 253; p_index++) {
         node->symbol_data.fds_val->func_params[p_index] = 
@@ -98,6 +99,11 @@ void append_func_decl(symbol_parse_list_t* spl, char* func_name, int num_params,
     for (int v_index = 0; v_index < LOCAL_VAR_STACK_SIZE; v_index++) {
         node->symbol_data.fds_val->func_local_vars[v_index] = 
             v_index < num_lvars ? func_local_vars[v_index] : NULL;
+    }
+
+    for (int s_index = 0; s_index < 253; s_index++) {
+        node->symbol_data.fds_val->structs[s_index] =
+            s_index < num_structs ? structs[s_index] : NULL;
     }
 }
 
