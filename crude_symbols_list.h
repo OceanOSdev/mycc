@@ -28,7 +28,6 @@ typedef struct func_decl_symbol {
     struct_decl_symbol_t* structs[253];
 } func_decl_symbol_t;
 
-
 /* 
  * Stores info from parser on function prototype such as:
  * function name
