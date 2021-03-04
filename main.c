@@ -8,7 +8,7 @@ const char* versionInfo =
 "My bare-bones C compiler (for COM 440)\n"
 "\tWritten by Thomas Maloney (tmaloney@iastate.edu)\n"
 "\tVersion 0.3\n"
-"\t3 March, 2021\n";
+"\t4 March, 2021\n";
 
 char** input_comp_files;
 char* input_comp_file;
