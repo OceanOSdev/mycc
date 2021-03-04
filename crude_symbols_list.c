@@ -26,11 +26,15 @@ symbol_parse_list_node_t* insert_blank_parse_list_node(symbol_parse_list_t* spl)
  * Creates a new symbol parse list.
  */
 symbol_parse_list_t* create_symbol_parse_list() {
-    symbol_parse_list_t* spl = malloc(sizeof(*spl));
+    symbol_parse_list_t* spl = malloc(sizeof(symbol_parse_list_t));
     spl->global_variables = malloc(DEFAULT_GLOB_VAR_STACK_SIZE * sizeof(char*));
+    spl->glob_structs = malloc(253 * sizeof(struct_decl_symbol_t*));
     for (int i = 0; i < DEFAULT_GLOB_VAR_STACK_SIZE; i ++)
         spl->global_variables[i] = NULL;
+    for (int i = 0; i < 253; i ++) 
+        spl->glob_structs[i] = malloc(sizeof(struct_decl_symbol_t));
     spl->num_glob_vars = 0;
+    spl->num_glob_structs = 0;
     return spl;
 }
 
@@ -48,10 +52,28 @@ void unalloc_symbol_parse_list(symbol_parse_list_t* spl) {
 void append_global_variables(symbol_parse_list_t* spl, int num_vars, char** vars) {
     // For now, only add up to the default stack size
     long new_count = num_vars + spl->num_glob_vars;
-    if (new_count > 100) new_count = 100;
+    if (new_count > DEFAULT_GLOB_VAR_STACK_SIZE) new_count = 100; // to avoid out of bounds (i.e segfaults)
+    // note to self: carefull of potential overwrite
     for (long i = 0; spl->num_glob_vars + i < new_count; i++)
         spl->global_variables[spl->num_glob_vars + i] = vars[i];
     spl->num_glob_vars = new_count;
+}
+
+/*
+ * Creates and appends a new global struct symbol
+ * to the symbol parse list.
+ */
+void append_global_struct(symbol_parse_list_t* spl, char* struct_name, int num_members, char** struct_members) {
+    spl->num_glob_structs += spl->num_glob_structs + 1 > 253 ? 0 : 1;
+    int index = spl->num_glob_structs - 1;
+    // note to self: carefull of potential overwrite
+    spl->glob_structs[index] = malloc(sizeof(struct_decl_symbol_t));
+
+    spl->glob_structs[index]->struct_name = struct_name;
+    spl->glob_structs[index]->num_members = num_members;
+    for (int i = 0; i < num_members; i ++)
+        spl->glob_structs[index]->struct_members[i] = struct_members[i];
+
 }
 
 /*

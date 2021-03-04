@@ -3,6 +3,15 @@
 
 #define LOCAL_VAR_STACK_SIZE 253 
 
+/*
+ * Stores info from parser on structs.
+ */
+typedef struct struct_decl_symbol {
+    char* struct_name;
+    int num_members;
+    char* struct_members[253]; // keeping with the theme
+} struct_decl_symbol_t;
+
 /* 
  * Stores info from parser on function such as:
  * function name
@@ -83,6 +92,8 @@ typedef struct symbol_parse_list_node {
  */
 typedef struct symbol_parse_list {
     symbol_parse_list_node_t* head;
+    struct_decl_symbol_t** glob_structs;
+    int num_glob_structs;
     char** global_variables;
     long num_glob_vars; 
 } symbol_parse_list_t;
@@ -102,6 +113,12 @@ void unalloc_symbol_parse_list(symbol_parse_list_t* spl);
  * to the symbol parse list.
  */
 void append_global_variables(symbol_parse_list_t* spl, int num_vars, char** vars);
+
+/*
+ * Creates and appends a new global struct symbol
+ * to the symbol parse list.
+ */
+void append_global_struct(symbol_parse_list_t* spl, char* struct_name, int num_members, char** struct_members);
 
 /*
  * Creates and appends a new function declaration symbol

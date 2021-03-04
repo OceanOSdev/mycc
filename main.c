@@ -19,11 +19,28 @@ int yylex();
 extern int yydebug;
 extern FILE *yyin;
 extern int yylineno;
-//char* current_filename;
 extern void reset_variable_stack();
 extern void init_variable_stack();
 extern void reset_param_stack();
 extern void init_param_stack();
+extern void reset_svar_stack();
+extern void init_svar_stack();
+extern void reset_struct_stack();
+extern void init_struct_stack();
+
+void init_stacks() {
+    init_variable_stack();
+    init_param_stack();
+    init_svar_stack();
+    init_struct_stack();
+}
+
+void reset_stacks() {
+    reset_variable_stack();
+    reset_param_stack();
+    reset_svar_stack();
+    reset_struct_stack();
+}
 
 void print_token_list(FILE* fout) {
     token_list_node_t* cur = head->next;
@@ -39,6 +56,10 @@ void print_token_list(FILE* fout) {
 
 void print_symbol_parse_list(FILE* fout, symbol_parse_list_t** spls, int numLists) {
     for (int i = 0; i < numLists; i ++) {
+        for (int j = 0; j < spls[i]->num_glob_structs; j ++) {
+            log_parser_glob_struct_symbol(fout, spls[i]->glob_structs[j]);
+            fprintf(fout, "\n");
+        }
         if (spls[i]->num_glob_vars > 0) {
             fprintf(fout,"Global variables\n\t");
             log_string_list(fout, spls[i]->global_variables);
@@ -81,13 +102,11 @@ void runLexer(parsed_args_t* pat, FILE* fout) {
 
 void runParser(parsed_args_t* pat, FILE* fout) {
     input_comp_files = pat->inputFiles;
-    init_variable_stack();
-    init_param_stack();
+    init_stacks();
     symbol_parse_list_t** spls = malloc(pat->numFiles * sizeof(symbol_parse_list_t*));
     int i;
     for (i = 0; i < pat->numFiles; i ++) {
-        reset_variable_stack();
-        reset_param_stack();
+        reset_stacks();
         spls[i] = create_symbol_parse_list();
         spl = spls[i];
         input_comp_file = pat->inputFiles[i];

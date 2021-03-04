@@ -15,6 +15,15 @@ void log_lex_err(FILE* fout, char* errDesc, char* filename, int lineNum, char* t
     fprintf(ostream, "\n");
 }
 
+void log_parser_glob_struct_symbol(FILE* fout, struct_decl_symbol_t* sds) {
+    fprintf(fout, "Global struct %s", sds->struct_name);
+    if (sds->num_members > 0) {
+        fprintf(fout, "\n\t");
+        log_string_list(fout, sds->struct_members);
+    }
+    fprintf(fout, "\n");
+}
+
 void log_parser_func_decl_symbol(FILE* fout, func_decl_symbol_t* fds) {
     fprintf(fout, "Function %s", fds->func_name);
     if (fds->num_params > 0) {

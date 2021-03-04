@@ -20,6 +20,12 @@ void log_lex_info(FILE* fout, char* filename, int lineNum, char* text, enum yyto
 void log_lex_err(FILE* fout, char* errDesc, char* filename, int lineNum, char* text);
 
 /*
+ * Logs the info related to a global struct definition symbol
+ * as generated from the parser.
+ */
+void log_parser_glob_struct_symbol(FILE* fout, struct_decl_symbol_t* sds);
+
+/*
  * Logs the info related to a function declaration symbol
  * as generated from the parser.
  */
