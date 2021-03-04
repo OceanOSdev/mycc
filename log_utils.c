@@ -1,19 +1,56 @@
-#include <stdio.h>
 #include "log_utils.h"
 
 char* token_to_string(enum yytokentype token);
+void log_string_list(FILE* fout, char* argv[]);
 
-void log_lex_info(char* filename, int lineNum, char* text, enum yytokentype token) {
-    printf("%s line %d text \'%s\' token %s\n", filename, lineNum, text, token_to_string(token));
+void log_lex_info(FILE* fout, char* filename, int lineNum, char* text, enum yytokentype token) {
+    fprintf(fout, "%s line %d text \'%s\' token %s\n", filename, lineNum, text, token_to_string(token));
 }
 
-void log_lex_err(char* errDesc, char* filename, int lineNum, char* text) {
-    fprintf(stderr, "Error %s file %s line %d", errDesc, filename, lineNum);
+void log_lex_err(FILE* fout, char* errDesc, char* filename, int lineNum, char* text) {
+    FILE* ostream = fout != stdout ? fout : stderr;
+    fprintf(ostream, "Error %s file %s line %d", errDesc, filename, lineNum);
     if (text)
-        fprintf(stderr, " text \'%s\'", text);
-    fprintf(stderr, "\n");
+        fprintf(ostream, " text \'%s\'", text);
+    fprintf(ostream, "\n");
 }
 
+void log_parser_func_decl_symbol(FILE* fout, func_decl_symbol_t* fds) {
+    fprintf(fout, "Function %s", fds->func_name);
+    if (fds->num_params > 0) {
+        fprintf(fout, "\n\tParameters: ");
+        log_string_list(fout, fds->func_params);
+    }
+    if (fds->num_lvars > 0) {
+        fprintf(fout, "\n\tLocal variables: ");
+        log_string_list(fout, fds->func_local_vars);
+    }
+    fprintf(fout, "\n");
+}
+
+void log_parser_func_proto_symbol(FILE* fout, func_proto_symbol_t* fps) {
+    fprintf(fout, "Prototype %s", fps->func_name);
+    if (fps->num_params > 0) {
+        fprintf(fout, "\n\tParameters: ");
+        log_string_list(fout, fps->func_params);
+    }
+    fprintf(fout, "\n");
+}
+
+void log_parser_error(FILE* fout, parse_error_symbol_t* pes) {
+    FILE* ostream = fout != stdout ? fout : stderr;
+    fprintf(ostream, "Error near %s line %d text '%s'\n\t%s\n", 
+        pes->filename, pes->line_number, pes->text, pes->msg);
+}
+
+void log_string_list(FILE* fout, char* argv[]) {
+    int i = 0;
+    while (argv[i]) {
+        fprintf(fout, "%s", argv[i]);
+        if (argv[++i]) fprintf(fout,",");
+        fprintf(fout, " ");
+    }
+}
 
 char* token_to_string(enum yytokentype token) {
     switch (token) {
