@@ -5,7 +5,7 @@
 \title{Compiler Documentation}
 \author{Thomas Maloney \\ 
 net-id \href{mailto:tmaloney@iastate.edu}{tmaloney@iastate.edu}}
-\date{February 2021}
+\date{March 2021}
 
 \begin{document}
 
@@ -40,7 +40,7 @@ There is one \code{struct} and one \code{enum} that have been defined so far:
 \section{Part 1 Documentation}
 \subsection{main.c} 
 \label{ssec:p1main}
-For the most part, everything here is pretty similar to what's described in subsection \ref{ssec:p0main}.
+For the most part, everything here is pretty similar to what's described in section \ref{ssec:p0main}.
 That is, not much has really changed.
 The one thing that has, however is that it now grabs the parsed file names that get stored in a \code{parsed\_args\_t} instance after which it sets a global variable equal to the array.
 This allows the generated lexer file to access the list of files it needs to lex.
@@ -57,16 +57,123 @@ Provides two function for logging data (info and errors) to the output stream, t
 
 \subsection{args\_parser} 
 \label{ssec:p1argparser}
-Pretty similar to its implementation described in subsection \ref{ssec:p0argparser}.
+Pretty similar to its implementation described in section \ref{ssec:p0argparser}.
 A new feature in it is the ability to parse the input files from the command line and store them in an array.
 
 \subsection{Data Structures} 
 \label{ssec:p1datastructs}
 There is one \code{struct} and one \code{enum} that have been defined so far:
 \begin{itemize}
-    \item (\code{struct}) \code{parsed\_args\_t}: This data type is still similar to how it is described in subsection \ref{ssec:p0datastructs}.
+    \item (\code{struct}) \code{parsed\_args\_t}: This data type is still similar to how it is described in section \ref{ssec:p0datastructs}.
         It has only changed in that it now keeps track of the input files.
-    \item (\code{enum}) \code{mode\_e}: Same as described in subsection \ref{ssec:p0datastructs}.
+    \item (\code{enum}) \code{mode\_e}: Same as described in section \ref{ssec:p0datastructs}.
     \item (\code{enum}) \code{token\_e}: Enumerated list of syntax token types.
 \end{itemize}
+
+\section{Part 2 Documentation}
+\subsection{main.c}
+\label{ssec:p2main}
+The biggest difference from how this was implemented in section \ref{ssec:p1main} is all of the logging is done in \code{main.c} instead of the lexer.
+All of the logging for the parser is also done in \code{main.c}.
+Notable diffrences that came about from this new approach is that we no longer log tokens or symbols as we come across them but rather build a list (be it of tokens or of symbols) first.
+These lists get passed back to \code{main.c} where we now call the logging methods on them.
+This change is actually what allows us to have backwards compatability with the \code{-1} flag.
+
+There are also a lot of extern variables that are stored in \code{main.c} to make interfacing with flex and bison less painful.
+Another responsibility that has been shifted onto \code{main.c} is switching files for flex instead of doing it in the EOF handler.
+
+\subsection{args\_parser}
+\label{ssec:p2argparser}
+Almost identical to its implementation described in section \ref{ssec:p1argparser}.
+The only change was that in the handler for the \code{-2} flag, we store the input files as described in section \ref{ssec:p1argparser}.
+
+\subsection{mycc.y}
+\label{ssec:p2parser}
+This file contains the grammar definition for the parser and keeps a stack of:
+\begin{itemize}
+     \item strings for variables 
+     \item strings for parameter variables
+     \item strings for struct fields
+     \item \code{struct\_decl\_symbol\_t}s for \code{struct}s
+\end{itemize}
+
+Depending on which production rule ends up getting matched, the stack of strings for variables either gets appended to a function symbol (if it is a local variable) or it gets appended to the list of global variables.
+Likewise for the stack of \code{struct\_decl\_symbol\_t}s for \code{struct}s.
+The data types that these stacks get appended to are described in both section \ref{ssec:p2crudesymbolslist} and section \ref{ssec:p2datastructs}.
+
+\subsection{lexer.l}
+\label{ssec:p2lexer}
+Updated the regex to properly match a few tokens that it missed before.
+The biggest architectural change from its implementation in section \ref{ssec:p1lexer} is that we no longer immediately write the token to stdout.
+We instead build a list of them using the new \code{token\_list\_node\_t} which is covered briefly in section \ref{ssec:p2tokenlist}.
+We also return a token each time we lex one so that our bison parser can utilize it.
+Another thing that has changed is that instead of handling switching files to lex from inside the EOF handler, that responsibility has been moved into \code{main.c}.
+
+\subsection{token\_list}
+\label{ssec:p2tokenlist}
+The files \code{token\_list.h} and \code{token\_list.c} contain the declaration and implementation details of the \code{token\_list\_node\_t} struct.
+The purpose of this data type is to act as a linked list containing information about each token that is lexed from the lexer.
+The struct contains fields for:
+\begin{itemize}
+    \item The filename where the token was lexed.
+    \item The line number in the file that the token can be found.
+    \item The text that the token represents.
+    \item The token type (an enum generated by bison).
+    \item Whether or not this token represents an error.
+    \item The error description (should this token represent an error).
+    \item A pointer to the next entry in the token list.
+\end{itemize}
+
+\subsection{log\_utils}
+\label{ssec:p2logutils}
+In terms of its purpose, it's similar to how it was as described in section \ref{ssec:p1logutils}.
+The biggest change was the addition of logging methods for logging the required symbols generated by the parser.
+Each logging method also now requires the output file for which it should write to.
+
+\subsection{crude\_symbols\_list}
+\label{ssec:p2crudesymbolslist}
+Since the parser gives us symbols from the bottom of the production rules going up, we can't just print the symbols as we see them.
+The purpose of both \code{crude\_symbols\_list.h} and \code{crude\_symbols\_list.c} is to define and implement the types:
+\begin{itemize}
+    \item \code{struct\_decl\_symbol\_t}
+    \item \code{func\_decl\_symbol\_t}
+    \item \code{func\_proto\_symbol\_t}
+    \item \code{parse\_error\_symbol\_t}
+    \item \code{symbol\_data\_t}
+    \item \code{symbol\_type\_t}
+    \item \code{symbol\_parse\_list\_node\_t}
+    \item \code{symbol\_parse\_list\_t}
+\end{itemize}
+All (except \code{symbol\_parse\_list\_node\_t}, and \code{symbol\_parse\_list\_t}) of which are described in section \ref{ssec:p2datastructs}.
+
+The purpose of the \code{symbol\_parse\_list\_node\_t} type is to represent a node in a linked list that contains information about either a function definition, a function prototype, or some parsing error.
+The \code{symbol\_parse\_list\_node\_t} contains a member of type \code{symbol\_type\_t} which tells us which symbol type information it contains, which, in turn tells us which field from the union type to grab.
+
+The purpose of the \code{symbol\_parse\_list\_t} is to keep a list of previously mentioned data type which corresponds to the function definitions/prototypes/errors the parser encounterd in the "current" file.
+It also contains an array of \code{char*} (strings) that contain the identifiers for the global variables in a given file.
+Likewise it also contains an array of \code{struct\_decl\_symbol\_t*} that contain the global \code{struct}s in a given file.
+
+\subsection{Data Structures}
+\label{ssec:p2datastructs}
+Any data structures not listed here have not been listed since they have not changed from how they were described in section \ref{ssec:p1datastructs}.
+The exception being \code{token\_e} since with the introduction of bison, it was no longer necessary and thus removed.
+
+The data structures so far:
+\begin{itemize}
+    \item (\code{struct}) \code{struct\_decl\_symbol\_t}: A \code{struct} to represent \code{struct}s.
+    Contains fields to store the name of a \code{struct}, how many members it has, and the members' identifiers.
+    \item (\code{struct}) \code{func\_decl\_symbol\_t}: A type that represents a function definition symbol.
+    Contains fields to store the name of the function, the list of parameters, the list of local variables, and the list of local \code{struct}s.
+    \item (\code{struct}) \code{func\_proto\_symbol\_t}: A type that represents a function prototype declaration.
+    Contains fields to store the name of the function and a list of its parameters.
+    \item (\code{struct}) \code{parse\_error\_symbol\_t}: A type that represents an error from the parser.
+    Conatins fields to store the file name where the error occured, the line number in that file, the text that caused the error, and the message returned by the parser.
+    \item (\code{union}) \code{symbol\_data\_t}: A union type that makes it possible to store \code{func\_decl\_symbol\_t}, \code{func\_proto\_symbol\_t}, and \code{parse\_error\_symbol\_t} types in the same symbol list.
+    Sort of like quasi-polymorphism. (But not entirely)
+    \item (\code{enum}) \code{symbol\_type\_t}: Enumerated list type of possible symbol types that a \code{symbol\_parse\_list\_node\_t} could be.
+    \item (\code{struct}) \code{symbol\_parse\_list\_node\_t}: See section \ref{ssec:p2crudesymbolslist}.
+    \item (\code{struct}) \code{symbol\_parse\_list\_t}: See section \ref{ssec:p2crudesymbolslist}.
+    \item (\code{struct}) \code{token\_list\_node\_t}: See section \ref{ssec:p2tokenlist}.
+\end{itemize}
+
 \end{document}
