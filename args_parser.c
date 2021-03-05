@@ -29,7 +29,7 @@ parsed_args_t* parseArgs(int argc, char* argv[], char** outputFileName) {
     char** filenames;
 
     int option;
-    while ((option = getopt(argc, argv, "01:2345o:")) != -1) {
+    while ((option = getopt(argc, argv, "01:2:345o:")) != -1) {
         switch (option) {
             case '0': pat->mode = MODE_ZERO; break;
             case '1':
@@ -49,7 +49,22 @@ parsed_args_t* parseArgs(int argc, char* argv[], char** outputFileName) {
              }
 
              break;
-            case '2': pat->mode = MODE_TWO; break;
+            case '2': 
+            pat->mode = MODE_TWO; 
+            // Yeah yeah I know, DRY. I'll get back to that.
+             fileStartInd = --optind;
+             for( ;optind < argc && *argv[optind] != '-'; optind++) {
+                 fileCount++;
+             }
+             filenames = malloc(fileCount * sizeof(char*));
+             pat->numFiles = fileCount;
+             fileCount = 0;
+             optind = fileStartInd;
+             for( ;optind < argc && *argv[optind] != '-'; optind++) {
+                 filenames[fileCount] = malloc(strlen(argv[optind]) * sizeof(char));
+                 filenames[fileCount++] = argv[optind];
+             }
+            break;
             case '3': pat->mode = MODE_THREE; break;
             case '4': pat->mode = MODE_FOUR; break;
             case '5': pat->mode = MODE_FIVE; break;

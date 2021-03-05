@@ -31,3 +31,7 @@ lexer.c
 
 *.fdb_latexmk
 *.synctex*
+
+
+#test file
+test*.c
