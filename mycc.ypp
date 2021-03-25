@@ -23,6 +23,10 @@
     #include "syntax/name_expression_node.h"
     #include "syntax/index_expression_node.h"
     #include "syntax/member_expression_node.h"
+    #include "syntax/assignment_expression_node.h"
+    #include "syntax/decrement_expression_node.h"
+    #include "syntax/increment_expression_node.h"
+    #include "syntax/partial_variable_declaration_node.h"
     
     
     //namespace Syntax { class BinaryExpressionNode; }
@@ -110,6 +114,9 @@
 %type <std::vector<Syntax::ExpressionNode*>> nonzero_expr_list
 %type <std::vector<Syntax::ExpressionNode*>> expr_list
 %type <Syntax::ExpressionNode*> l_val
+%type <Syntax::SyntaxTokenType> assign_op
+%type <Syntax::PartialVariableDeclarationNode*> ident_ca
+%type <std::vector<Syntax::PartialVariableDeclarationNode*>> ident_list
 
 %nonassoc WITHOUT_ELSE
 %nonassoc ELSE
@@ -249,11 +256,11 @@ expr : LPAR expr RPAR                                                   { $$ = $
      | expr QUEST expr COLON expr                                       { $$ = new Syntax::TernaryExpressionNode($1, $3, $5); }
      | bin_expr                                                         { $$ = $1; }
      | un_expr                                                          { $$ = $1; }
-     | INCR l_val                                                       { $$ = nullptr; }
-     | DECR l_val                                                       { $$ = nullptr; }
-     | l_val INCR                                                       { $$ = nullptr; }
-     | l_val DECR                                                       { $$ = nullptr; }
-     | l_val assign_op expr %prec ASSIGN                                { $$ = nullptr; }
+     | INCR l_val                                                       { $$ = new Syntax::IncrementExpressionNode($2, false); }
+     | DECR l_val                                                       { $$ = new Syntax::DecrementExpressionNode($2, false); }
+     | l_val INCR                                                       { $$ = new Syntax::IncrementExpressionNode($1, true); }
+     | l_val DECR                                                       { $$ = new Syntax::DecrementExpressionNode($1, true); }
+     | l_val assign_op expr %prec ASSIGN                                { $$ = new Syntax::AssignmentExpressionNode($1, $2, $3); }
      | l_val                                                            { $$ = $1; }
      | IDENT LPAR expr_list RPAR                                        { $$ = new Syntax::CallExpressionNode($1, $3); }
      | literal_val                                                      { $$ = nullptr; }
@@ -286,11 +293,11 @@ bin_expr : expr DPIPE expr                                              { $$ = n
          | expr MOD expr                                                { $$ = new Syntax::BinaryExpressionNode($1, $2, $3); }
          ;
 
-assign_op : ASSIGN
-          | PLUSASSIGN
-          | MINUSASSIGN
-          | STARASSIGN
-          | SLASHASSIGN
+assign_op : ASSIGN                                                      { $$ = $1; }
+          | PLUSASSIGN                                                  { $$ = $1; }
+          | MINUSASSIGN                                                 { $$ = $1; }
+          | STARASSIGN                                                  { $$ = $1; }
+          | SLASHASSIGN                                                 { $$ = $1; }
           ;
 
 literal_val : INTCONST   {int val = $1; std::cout << "INTCONST: " << val << std::endl;}
@@ -307,14 +314,14 @@ var_decl : TYPE ident_list SEMI
          | STRUCT IDENT CONST ident_list SEMI
          ; 
 
-ident_list : ident_ca
-           | ident_ca COMMA ident_list
+ident_list : ident_ca                                                 { Syntax::PartialVariableDeclarationNode* e = $1; $$ = std::vector<Syntax::PartialVariableDeclarationNode*>(); $$.push_back(e);}
+           | ident_list COMMA ident_ca                                { Syntax::PartialVariableDeclarationNode* e = $3; std::vector<Syntax::PartialVariableDeclarationNode*> &args = $1; args.push_back(e); $$ = args;}
            ;
 
-ident_ca : IDENT ASSIGN expr                                          {/*append_variable_stack("%s",$1);*/}
-         | IDENT LBRACKET INTCONST RBRACKET ASSIGN expr               {/*append_variable_stack("%s[]",$1);*/}
-         | IDENT                                                      {/*append_variable_stack("%s",$1);*/}
-         | IDENT LBRACKET INTCONST RBRACKET                           {/*append_variable_stack("%s[]",$1);*/}
+ident_ca : IDENT ASSIGN expr                                          { $$ = new Syntax::PartialVariableDeclarationNode($1, true, false, -1, $3); }
+         | IDENT LBRACKET INTCONST RBRACKET ASSIGN expr               { $$ = new Syntax::PartialVariableDeclarationNode($1, true, true, $3, $6); }
+         | IDENT                                                      { $$ = new Syntax::PartialVariableDeclarationNode($1); }
+         | IDENT LBRACKET INTCONST RBRACKET                           { $$ = new Syntax::PartialVariableDeclarationNode($1, false, true, $3); }
          ;
 
 %%

@@ -26,7 +26,7 @@ parsed_args_t* parseArgs(int argc, char* argv[], char** outputFileName) {
     int fileStartInd = 0;
     int fileCount = 0;
     pat->numFiles = fileCount;
-    char** filenames;
+    char** filenames = NULL;
 
     int option;
     while ((option = getopt(argc, argv, "01:2:345o:")) != -1) {
