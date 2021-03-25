@@ -11,22 +11,39 @@
     #include <string>
     #include <vector>
     #include <stdint.h>
-
-
+    #include "syntax/symbols/variable_symbol.h"
+    #include "syntax/symbols/parameter_symbol.h"
+    #include "syntax/operator_tokens.h"
+    #include "syntax/expression_node.h"
+    #include "syntax/cast_expression_node.h"
+    #include "syntax/ternary_expression_node.h"
+    #include "syntax/binary_expression_node.h"
+    #include "syntax/unary_expression_node.h"
+    #include "syntax/call_expression_node.h"
+    #include "syntax/name_expression_node.h"
+    #include "syntax/index_expression_node.h"
+    #include "syntax/member_expression_node.h"
+    
+    
+    //namespace Syntax { class BinaryExpressionNode; }
     
      class Lexer;
      class Driver;
+
+     void print_formal_param_list(std::vector<Syntax::ParameterSymbol> list);
 }
 
 %code top
 {
     #include <iostream>
     #include <stdio.h>
-#include <string.h>
+    #include <string.h>
     #include "lexer.h"
     #include "mycc.tab.hpp"
     #include "driver.h"
     #include "location.hh"
+
+    
     
     // yylex() arguments are defined in parser.y
     static yy::parser::symbol_type yylex(Lexer &lexer, Driver &driver) {
@@ -47,7 +64,8 @@
 
 %token END 0
 %token <std::string> IDENT
-%token TYPE CONST STRUCT 
+%token <std::string> TYPE
+%token CONST STRUCT 
 %token <int> INTCONST 
 %token <float> REALCONST 
 %token <std::string> STRCONST 
@@ -57,12 +75,41 @@
 %token LPAR RPAR LBRACKET RBRACKET LBRACE RBRACE
 %token DOT COMMA SEMI QUEST COLON
 
-%token PLUS MINUS STAR SLASH MOD TILDE
-%token PIPE AMP BANG DPIPE DAMP
+%token <Syntax::SyntaxTokenType> PLUS
+%token <Syntax::SyntaxTokenType> MINUS
+%token <Syntax::SyntaxTokenType> STAR
+%token <Syntax::SyntaxTokenType> SLASH
+%token <Syntax::SyntaxTokenType> MOD
+%token <Syntax::SyntaxTokenType> TILDE
+%token <Syntax::SyntaxTokenType> PIPE
+%token <Syntax::SyntaxTokenType> AMP
+%token <Syntax::SyntaxTokenType> BANG
+%token <Syntax::SyntaxTokenType> DPIPE
+%token <Syntax::SyntaxTokenType> DAMP
 
-%token ASSIGN PLUSASSIGN MINUSASSIGN STARASSIGN SLASHASSIGN INCR DECR
-%token EQUALS NEQUAL GT GE LT LE
+%token <Syntax::SyntaxTokenType> ASSIGN
+%token <Syntax::SyntaxTokenType> PLUSASSIGN
+%token <Syntax::SyntaxTokenType> MINUSASSIGN
+%token <Syntax::SyntaxTokenType> STARASSIGN
+%token <Syntax::SyntaxTokenType> SLASHASSIGN
+%token <Syntax::SyntaxTokenType> INCR
+%token <Syntax::SyntaxTokenType> DECR
 
+%token <Syntax::SyntaxTokenType> EQUALS
+%token <Syntax::SyntaxTokenType> NEQUAL
+%token <Syntax::SyntaxTokenType> GT
+%token <Syntax::SyntaxTokenType> GE
+%token <Syntax::SyntaxTokenType> LT
+%token <Syntax::SyntaxTokenType> LE
+
+%type <Syntax::ParameterSymbol> formal_param
+%type <std::vector<Syntax::ParameterSymbol>> formal_param_list
+%type <Syntax::ExpressionNode*> expr
+%type <Syntax::BinaryExpressionNode*> bin_expr
+%type <Syntax::UnaryExpressionNode*> un_expr
+%type <std::vector<Syntax::ExpressionNode*>> nonzero_expr_list
+%type <std::vector<Syntax::ExpressionNode*>> expr_list
+%type <Syntax::ExpressionNode*> l_val
 
 %nonassoc WITHOUT_ELSE
 %nonassoc ELSE
@@ -100,7 +147,7 @@ glob_struct_def : struct_def;
 
 func_proto : func_decl SEMI;
 
-func_decl : TYPE IDENT LPAR formal_param_list RPAR                    {/* function_name = $2;*/}
+func_decl : TYPE IDENT LPAR formal_param_list RPAR                    { print_formal_param_list($4); /* function_name = $2;*/}
           | TYPE IDENT LPAR RPAR                                      {/* function_name = $2;*/}
           | CONST TYPE IDENT LPAR formal_param_list RPAR              {/* function_name = $3;*/}
           | CONST TYPE IDENT LPAR RPAR                                {/* function_name = $3;*/}
@@ -114,22 +161,22 @@ func_decl : TYPE IDENT LPAR formal_param_list RPAR                    {/* functi
           | STRUCT IDENT CONST IDENT LPAR RPAR                        {/* function_name = $4;*/}
           ;
 
-formal_param_list : formal_param
-                  | formal_param COMMA formal_param_list
+formal_param_list : formal_param                                      { Syntax::ParameterSymbol& p = $1; $$ = std::vector<Syntax::ParameterSymbol>(); $$.push_back(p); }
+                  | formal_param_list COMMA formal_param              { Syntax::ParameterSymbol& p = $3; std::vector<Syntax::ParameterSymbol> &args = $1; args.push_back(p); $$ = args;}
                   ;
 
-formal_param : TYPE IDENT                                             {/*append_param_stack("%s",$2);*/}
-             | TYPE IDENT LBRACKET RBRACKET                           {/*append_param_stack("%s[]",$2);*/}
-             | CONST TYPE IDENT                                       {/*append_param_stack("%s",$3);*/}
-             | CONST TYPE IDENT LBRACKET RBRACKET                     {/*append_param_stack("%s[]",$3);*/}
-             | TYPE CONST IDENT                                       {/*append_param_stack("%s",$3);*/}
-             | TYPE CONST IDENT LBRACKET RBRACKET                     {/*append_param_stack("%s[]",$3);*/}
-             | STRUCT IDENT IDENT                                     {/*append_param_stack("%s", $3);*/}
-             | STRUCT IDENT IDENT LBRACKET RBRACKET                   {/*append_param_stack("%s[]", $3);*/}
-             | CONST STRUCT IDENT IDENT                               {/*append_param_stack("%s", $4);*/}
-             | CONST STRUCT IDENT IDENT LBRACKET RBRACKET             {/*append_param_stack("%s[]", $4);*/}
-             | STRUCT IDENT CONST IDENT                               {/*append_param_stack("%s", $4);*/}
-             | STRUCT IDENT CONST IDENT LBRACKET RBRACKET             {/*append_param_stack("%s", $4);*/}
+formal_param : TYPE IDENT                                             {$$ = Syntax::ParameterSymbol(false, $1, $2, false);}
+             | TYPE IDENT LBRACKET RBRACKET                           {$$ = Syntax::ParameterSymbol(false, $1, $2, true);}
+             | CONST TYPE IDENT                                       {$$ = Syntax::ParameterSymbol(true, $2, $3, false);}
+             | CONST TYPE IDENT LBRACKET RBRACKET                     {$$ = Syntax::ParameterSymbol(true, $2, $3, true);}
+             | TYPE CONST IDENT                                       {$$ = Syntax::ParameterSymbol(true, $1, $3, false);}
+             | TYPE CONST IDENT LBRACKET RBRACKET                     {$$ = Syntax::ParameterSymbol(true, $1, $3, true);}
+             | STRUCT IDENT IDENT                                     {$$ = Syntax::ParameterSymbol(false, "struct "+$2, $3, false);}
+             | STRUCT IDENT IDENT LBRACKET RBRACKET                   {$$ = Syntax::ParameterSymbol(false, "struct "+$2, $3, true);}
+             | CONST STRUCT IDENT IDENT                               {$$ = Syntax::ParameterSymbol(true, "struct "+$3, $4, false);}
+             | CONST STRUCT IDENT IDENT LBRACKET RBRACKET             {$$ = Syntax::ParameterSymbol(true, "struct "+$3, $4, true);}
+             | STRUCT IDENT CONST IDENT                               {$$ = Syntax::ParameterSymbol(true, "struct "+$2, $4, false);}
+             | STRUCT IDENT CONST IDENT LBRACKET RBRACKET             {$$ = Syntax::ParameterSymbol(true, "struct "+$2, $4, true);}
              ;
 
 func_def : func_decl LBRACE var_struct_decl_list stmt_list RBRACE            
@@ -189,54 +236,54 @@ opt_expr :
          | expr
          ;
 
-expr_list : 
-          | nonzero_expr_list
+expr_list :                                                             { std::vector<Syntax::ExpressionNode*> l; $$ = l; }
+          | nonzero_expr_list                                           { $$ = $1; }
           ;
 
-nonzero_expr_list : expr
-                  | nonzero_expr_list COMMA expr
+nonzero_expr_list : expr                                                { Syntax::ExpressionNode* e = $1; $$ = std::vector<Syntax::ExpressionNode*>(); $$.push_back(e); }
+                  | nonzero_expr_list COMMA expr                        { Syntax::ExpressionNode* e = $3; std::vector<Syntax::ExpressionNode*> &args = $1; args.push_back(e); $$ = args; }
                   ;
 
-expr : LPAR expr RPAR
-     | LPAR TYPE RPAR expr
-     | expr QUEST expr COLON expr
-     | bin_expr
-     | un_expr
-     | INCR l_val
-     | DECR l_val
-     | l_val INCR
-     | l_val DECR
-     | l_val assign_op expr %prec ASSIGN
-     | l_val
-     | IDENT LPAR expr_list RPAR
-     | literal_val
+expr : LPAR expr RPAR                                                   { $$ = $2; }
+     | LPAR TYPE RPAR expr                                              { $$ = new Syntax::CastExpressionNode($2, $4); }
+     | expr QUEST expr COLON expr                                       { $$ = new Syntax::TernaryExpressionNode($1, $3, $5); }
+     | bin_expr                                                         { $$ = $1; }
+     | un_expr                                                          { $$ = $1; }
+     | INCR l_val                                                       { $$ = nullptr; }
+     | DECR l_val                                                       { $$ = nullptr; }
+     | l_val INCR                                                       { $$ = nullptr; }
+     | l_val DECR                                                       { $$ = nullptr; }
+     | l_val assign_op expr %prec ASSIGN                                { $$ = nullptr; }
+     | l_val                                                            { $$ = $1; }
+     | IDENT LPAR expr_list RPAR                                        { $$ = new Syntax::CallExpressionNode($1, $3); }
+     | literal_val                                                      { $$ = nullptr; }
      ;
 
-l_val : IDENT
-      | IDENT LBRACKET expr RBRACKET
-      | l_val DOT l_val
+l_val : IDENT                                                           { $$ = new Syntax::NameExpressionNode($1); }
+      | IDENT LBRACKET expr RBRACKET                                    { $$ = new Syntax::IndexExpressionNode($1, $3); }
+      | l_val DOT l_val                                                 { $$ = new Syntax::MemberExpressionNode($1, $3); }
       ;
 
-un_expr : MINUS expr %prec UMINUS
-        | BANG expr
-        | TILDE expr
+un_expr : MINUS expr %prec UMINUS                                       { $$ = new Syntax::UnaryExpressionNode($1, $2); }
+        | BANG expr                                                     { $$ = new Syntax::UnaryExpressionNode($1, $2); }
+        | TILDE expr                                                    { $$ = new Syntax::UnaryExpressionNode($1, $2); }
         ;
 
-bin_expr : expr DPIPE expr
-         | expr DAMP expr
-         | expr PIPE expr
-         | expr AMP expr
-         | expr EQUALS expr
-         | expr NEQUAL expr
-         | expr GT expr
-         | expr GE expr
-         | expr LT expr
-         | expr LE expr
-         | expr PLUS expr
-         | expr MINUS expr
-         | expr STAR expr
-         | expr SLASH expr
-         | expr MOD expr
+bin_expr : expr DPIPE expr                                              { $$ = new Syntax::BinaryExpressionNode($1, $2, $3); }
+         | expr DAMP expr                                               { $$ = new Syntax::BinaryExpressionNode($1, $2, $3); }
+         | expr PIPE expr                                               { $$ = new Syntax::BinaryExpressionNode($1, $2, $3); }
+         | expr AMP expr                                                { $$ = new Syntax::BinaryExpressionNode($1, $2, $3); }
+         | expr EQUALS expr                                             { $$ = new Syntax::BinaryExpressionNode($1, $2, $3); }
+         | expr NEQUAL expr                                             { $$ = new Syntax::BinaryExpressionNode($1, $2, $3); }
+         | expr GT expr                                                 { $$ = new Syntax::BinaryExpressionNode($1, $2, $3); }
+         | expr GE expr                                                 { $$ = new Syntax::BinaryExpressionNode($1, $2, $3); }
+         | expr LT expr                                                 { $$ = new Syntax::BinaryExpressionNode($1, $2, $3); }
+         | expr LE expr                                                 { $$ = new Syntax::BinaryExpressionNode($1, $2, $3); }
+         | expr PLUS expr                                               { $$ = new Syntax::BinaryExpressionNode($1, $2, $3); }
+         | expr MINUS expr                                              { $$ = new Syntax::BinaryExpressionNode($1, $2, $3); }
+         | expr STAR expr                                               { $$ = new Syntax::BinaryExpressionNode($1, $2, $3); }
+         | expr SLASH expr                                              { $$ = new Syntax::BinaryExpressionNode($1, $2, $3); }
+         | expr MOD expr                                                { $$ = new Syntax::BinaryExpressionNode($1, $2, $3); }
          ;
 
 assign_op : ASSIGN
@@ -281,4 +328,12 @@ void yy::parser::error(const location &loc , const std::string &message) {
                   << " line " << driver.location().begin.line 
                   << " text 'yytext'\n\t" << message << std::endl;	
         //std::cout << "Error: " << message << std::endl << "Error location: " << driver.location() << std::endl;
+}
+
+void print_formal_param_list(std::vector<Syntax::ParameterSymbol> list) {
+        std::vector<Syntax::ParameterSymbol>::iterator iter;
+    for( iter = list.begin(); iter != list.end(); iter++) {
+        Syntax::ParameterSymbol p = *iter;
+        std::cout << (p.constant() ? "const " : "") << p.var_type() << " " << p.var_name() << " " << (p.array() ? "[]" : "") << std::endl;
+    }
 }

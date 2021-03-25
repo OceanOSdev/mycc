@@ -15,7 +15,7 @@ Logger* logger;
 
 void print_token_list(std::vector<LexemeDataNode> tlist) {
     std::vector<LexemeDataNode>::iterator iter;
-    for( iter = tlist.begin(); iter != tlist.end(); iter++) {
+    for(iter = tlist.begin(); iter != tlist.end(); iter++) {
         if (iter->is_error)
             logger->log_lex_err_v2(*iter);
         else
