@@ -27,6 +27,7 @@
     #include "syntax/decrement_expression_node.h"
     #include "syntax/increment_expression_node.h"
     #include "syntax/partial_variable_declaration_node.h"
+    #include "syntax/variable_group_declaration_node.h"
     
     
     //namespace Syntax { class BinaryExpressionNode; }
@@ -117,6 +118,7 @@
 %type <Syntax::SyntaxTokenType> assign_op
 %type <Syntax::PartialVariableDeclarationNode*> ident_ca
 %type <std::vector<Syntax::PartialVariableDeclarationNode*>> ident_list
+%type <Syntax::VariableGroupDeclarationNode*> var_decl
 
 %nonassoc WITHOUT_ELSE
 %nonassoc ELSE
@@ -306,12 +308,12 @@ literal_val : INTCONST   {int val = $1; std::cout << "INTCONST: " << val << std:
             | CHARCONST  {std::string &val = $1; std::cout << "CHARCONST: " << val << std::endl;}
             ;
 
-var_decl : TYPE ident_list SEMI                                       
-         | CONST TYPE ident_list SEMI
-         | TYPE CONST ident_list SEMI
-         | STRUCT IDENT ident_list SEMI
-         | CONST STRUCT IDENT ident_list SEMI
-         | STRUCT IDENT CONST ident_list SEMI
+var_decl : TYPE ident_list SEMI                                       { $$ = new Syntax::VariableGroupDeclarationNode($1, $2, false, false); }                                 
+         | CONST TYPE ident_list SEMI                                 { $$ = new Syntax::VariableGroupDeclarationNode($2, $3, true, false); }
+         | TYPE CONST ident_list SEMI                                 { $$ = new Syntax::VariableGroupDeclarationNode($1, $3, true, false); }
+         | STRUCT IDENT ident_list SEMI                               { $$ = new Syntax::VariableGroupDeclarationNode($2, $3, false, true); }
+         | CONST STRUCT IDENT ident_list SEMI                         { $$ = new Syntax::VariableGroupDeclarationNode($3, $4, true, true); }
+         | STRUCT IDENT CONST ident_list SEMI                         { $$ = new Syntax::VariableGroupDeclarationNode($2, $4, true, true); }
          ; 
 
 ident_list : ident_ca                                                 { Syntax::PartialVariableDeclarationNode* e = $1; $$ = std::vector<Syntax::PartialVariableDeclarationNode*>(); $$.push_back(e);}
