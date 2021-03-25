@@ -1,6 +1,9 @@
 *.o
 mycc
-lexer.c
+lexer.cpp
+mycc.tab.hpp 
+mycc.tab.cpp
+location.hh
 
 ## Core latex/pdflatex auxiliary files:
 *.aux
@@ -34,4 +37,8 @@ lexer.c
 
 
 #test file
+test_files
+test_files/*
 test*.c
+
+.vscode/

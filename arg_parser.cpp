@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include "args_parser.h"
+#include "arg_parser.h"
 
 /* Strings to make formatting usage output easier */
 const char* usage_str = 
@@ -20,7 +20,7 @@ const char* usage_str =
 
 
 parsed_args_t* parseArgs(int argc, char* argv[], char** outputFileName) {
-    parsed_args_t* pat = malloc(sizeof(parsed_args_t));
+    parsed_args_t* pat = (parsed_args_t*)malloc(sizeof(parsed_args_t));
     pat->mode = MODE_ERR;
     pat->useOutputFile = 0;
     int fileStartInd = 0;
@@ -39,12 +39,12 @@ parsed_args_t* parseArgs(int argc, char* argv[], char** outputFileName) {
              for( ;optind < argc && *argv[optind] != '-'; optind++) {
                  fileCount++;
              }
-             filenames = malloc(fileCount * sizeof(char*));
+             filenames = (char**)malloc(fileCount * sizeof(char*));
              pat->numFiles = fileCount;
              fileCount = 0;
              optind = fileStartInd;
              for( ;optind < argc && *argv[optind] != '-'; optind++) {
-                 filenames[fileCount] = malloc(strlen(argv[optind]) * sizeof(char));
+                 filenames[fileCount] = (char*)malloc(strlen(argv[optind]) * sizeof(char));
                  filenames[fileCount++] = argv[optind];
              }
 
@@ -56,12 +56,12 @@ parsed_args_t* parseArgs(int argc, char* argv[], char** outputFileName) {
              for( ;optind < argc && *argv[optind] != '-'; optind++) {
                  fileCount++;
              }
-             filenames = malloc(fileCount * sizeof(char*));
+             filenames = (char**)malloc(fileCount * sizeof(char*));
              pat->numFiles = fileCount;
              fileCount = 0;
              optind = fileStartInd;
              for( ;optind < argc && *argv[optind] != '-'; optind++) {
-                 filenames[fileCount] = malloc(strlen(argv[optind]) * sizeof(char));
+                 filenames[fileCount] = (char*)malloc(strlen(argv[optind]) * sizeof(char));
                  filenames[fileCount++] = argv[optind];
              }
             break;

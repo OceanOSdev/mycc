@@ -1,5 +1,5 @@
-#ifndef ARGS_PARSER
-#define ARGS_PARSER
+#ifndef ARG_PARSER
+#define ARG_PARSER
 
 typedef enum cmode {
     MODE_ERR,

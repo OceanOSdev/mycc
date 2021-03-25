@@ -1,0 +1,284 @@
+%skeleton "lalr1.cc" /* -*- C++ -*- */
+%defines
+
+%define api.token.constructor
+%define api.value.type variant
+%define parse.assert
+%require "3.2"
+%code requires
+{
+    #include <iostream>
+    #include <string>
+    #include <vector>
+    #include <stdint.h>
+
+
+    
+     class Lexer;
+     class Driver;
+}
+
+%code top
+{
+    #include <iostream>
+    #include <stdio.h>
+#include <string.h>
+    #include "lexer.h"
+    #include "mycc.tab.hpp"
+    #include "driver.h"
+    #include "location.hh"
+    
+    // yylex() arguments are defined in parser.y
+    static yy::parser::symbol_type yylex(Lexer &lexer, Driver &driver) {
+        return lexer.get_next_token();
+    }
+    
+    // you can accomplish the same thing by inlining the code using preprocessor
+    // x and y are same as in above static function
+    // #define yylex(x, y) lexer.get_next_token()
+    
+}
+
+%lex-param { Lexer &lexer }
+%lex-param { Driver &driver }
+%parse-param { Lexer &lexer }
+%parse-param { Driver &driver }
+%locations
+
+%token END 0
+%token <std::string> IDENT
+%token TYPE CONST STRUCT 
+%token <int> INTCONST 
+%token <float> REALCONST 
+%token <std::string> STRCONST 
+%token <std::string> CHARCONST
+%token FOR WHILE DO IF ELSE BREAK CONTINUE RETURN
+
+%token LPAR RPAR LBRACKET RBRACKET LBRACE RBRACE
+%token DOT COMMA SEMI QUEST COLON
+
+%token PLUS MINUS STAR SLASH MOD TILDE
+%token PIPE AMP BANG DPIPE DAMP
+
+%token ASSIGN PLUSASSIGN MINUSASSIGN STARASSIGN SLASHASSIGN INCR DECR
+%token EQUALS NEQUAL GT GE LT LE
+
+
+%nonassoc WITHOUT_ELSE
+%nonassoc ELSE
+
+%left COMMA
+%left DOT
+%right ASSIGN PLUSASSIGN MINUSASSIGN STARASSIGN SLASHASSIGN
+%right QUEST COLON
+%left DPIPE
+%left DAMP
+%left PIPE
+%left AMP
+%left EQUALS NEQUAL
+%left LT LE GT GE
+%left PLUS MINUS
+%left STAR SLASH MOD
+%right BANG TILDE UMINUS DECR INCR TYPE
+%left LPAR RPAR LBRACKET RBRACKET
+
+%%
+
+prog : 
+     | com_unit prog
+     ;
+
+com_unit : glob_var_decl                                              { }
+         | glob_struct_def                                            { }
+         | func_proto                                                 { }
+         | func_def                                                   { }
+         ;
+
+glob_var_decl : var_decl;
+
+glob_struct_def : struct_def;
+
+func_proto : func_decl SEMI;
+
+func_decl : TYPE IDENT LPAR formal_param_list RPAR                    {/* function_name = $2;*/}
+          | TYPE IDENT LPAR RPAR                                      {/* function_name = $2;*/}
+          | CONST TYPE IDENT LPAR formal_param_list RPAR              {/* function_name = $3;*/}
+          | CONST TYPE IDENT LPAR RPAR                                {/* function_name = $3;*/}
+          | TYPE CONST IDENT LPAR formal_param_list RPAR              {/* function_name = $3;*/}
+          | TYPE CONST IDENT LPAR RPAR                                {/* function_name = $3;*/}
+          | STRUCT IDENT IDENT LPAR formal_param_list RPAR            {/* function_name = $3;*/}
+          | STRUCT IDENT IDENT LPAR RPAR                              {/* function_name = $3;*/}
+          | CONST STRUCT IDENT IDENT LPAR formal_param_list RPAR      {/* function_name = $4;*/}
+          | CONST STRUCT IDENT IDENT LPAR RPAR                        {/* function_name = $4;*/}
+          | STRUCT IDENT CONST IDENT LPAR formal_param_list RPAR      {/* function_name = $4;*/}
+          | STRUCT IDENT CONST IDENT LPAR RPAR                        {/* function_name = $4;*/}
+          ;
+
+formal_param_list : formal_param
+                  | formal_param COMMA formal_param_list
+                  ;
+
+formal_param : TYPE IDENT                                             {/*append_param_stack("%s",$2);*/}
+             | TYPE IDENT LBRACKET RBRACKET                           {/*append_param_stack("%s[]",$2);*/}
+             | CONST TYPE IDENT                                       {/*append_param_stack("%s",$3);*/}
+             | CONST TYPE IDENT LBRACKET RBRACKET                     {/*append_param_stack("%s[]",$3);*/}
+             | TYPE CONST IDENT                                       {/*append_param_stack("%s",$3);*/}
+             | TYPE CONST IDENT LBRACKET RBRACKET                     {/*append_param_stack("%s[]",$3);*/}
+             | STRUCT IDENT IDENT                                     {/*append_param_stack("%s", $3);*/}
+             | STRUCT IDENT IDENT LBRACKET RBRACKET                   {/*append_param_stack("%s[]", $3);*/}
+             | CONST STRUCT IDENT IDENT                               {/*append_param_stack("%s", $4);*/}
+             | CONST STRUCT IDENT IDENT LBRACKET RBRACKET             {/*append_param_stack("%s[]", $4);*/}
+             | STRUCT IDENT CONST IDENT                               {/*append_param_stack("%s", $4);*/}
+             | STRUCT IDENT CONST IDENT LBRACKET RBRACKET             {/*append_param_stack("%s", $4);*/}
+             ;
+
+func_def : func_decl LBRACE var_struct_decl_list stmt_list RBRACE            
+         ;
+
+struct_def : STRUCT IDENT LBRACE st_var_decl_list_na RBRACE SEMI      {}
+           ;
+
+stmts : stmt
+      | stmt_block
+      ;
+
+stmt_block : LBRACE stmt_list RBRACE;
+
+var_struct_decl_list :
+                     | var_decl var_struct_decl_list
+                     | struct_def var_struct_decl_list                
+                     ;
+
+st_var_decl_list_na : 
+                    | st_var_decl_na st_var_decl_list_na
+                    ;
+
+st_var_decl_na : TYPE ident_list_na SEMI                              
+               | CONST TYPE ident_list_na SEMI
+               | TYPE CONST ident_list_na SEMI
+               | STRUCT IDENT ident_list_na SEMI
+               | CONST STRUCT IDENT ident_list_na SEMI
+               | STRUCT IDENT CONST ident_list_na SEMI
+               ; 
+
+ident_list_na : ident_c
+              | ident_c COMMA ident_list_na
+              ;
+
+ident_c : IDENT                                                       {/*append_svar_stack("%s",$1);*/}
+        | IDENT LBRACKET INTCONST RBRACKET                            {/*append_svar_stack("%s[]",$1);*/}
+        ;
+
+stmt_list : 
+          | stmt stmt_list
+          ;
+
+stmt : DO stmts WHILE LPAR expr RPAR SEMI
+     | WHILE LPAR expr RPAR stmts
+     | FOR LPAR opt_expr SEMI opt_expr SEMI opt_expr RPAR stmts
+     | IF LPAR expr RPAR stmts %prec WITHOUT_ELSE
+     | IF LPAR expr RPAR stmts ELSE stmts
+     | RETURN opt_expr SEMI
+     | BREAK SEMI
+     | CONTINUE SEMI
+     | expr SEMI
+     | SEMI
+     ;
+
+opt_expr : 
+         | expr
+         ;
+
+expr_list : 
+          | nonzero_expr_list
+          ;
+
+nonzero_expr_list : expr
+                  | nonzero_expr_list COMMA expr
+                  ;
+
+expr : LPAR expr RPAR
+     | LPAR TYPE RPAR expr
+     | expr QUEST expr COLON expr
+     | bin_expr
+     | un_expr
+     | INCR l_val
+     | DECR l_val
+     | l_val INCR
+     | l_val DECR
+     | l_val assign_op expr %prec ASSIGN
+     | l_val
+     | IDENT LPAR expr_list RPAR
+     | literal_val
+     ;
+
+l_val : IDENT
+      | IDENT LBRACKET expr RBRACKET
+      | l_val DOT l_val
+      ;
+
+un_expr : MINUS expr %prec UMINUS
+        | BANG expr
+        | TILDE expr
+        ;
+
+bin_expr : expr DPIPE expr
+         | expr DAMP expr
+         | expr PIPE expr
+         | expr AMP expr
+         | expr EQUALS expr
+         | expr NEQUAL expr
+         | expr GT expr
+         | expr GE expr
+         | expr LT expr
+         | expr LE expr
+         | expr PLUS expr
+         | expr MINUS expr
+         | expr STAR expr
+         | expr SLASH expr
+         | expr MOD expr
+         ;
+
+assign_op : ASSIGN
+          | PLUSASSIGN
+          | MINUSASSIGN
+          | STARASSIGN
+          | SLASHASSIGN
+          ;
+
+literal_val : INTCONST   {int val = $1; std::cout << "INTCONST: " << val << std::endl;}
+            | REALCONST  {float val = $1; std::cout << "REALCONST: " << val << std::endl;}
+            | STRCONST   {std::string &val = $1; std::cout << "STRCONST: " << val << std::endl;}
+            | CHARCONST  {std::string &val = $1; std::cout << "CHARCONST: " << val << std::endl;}
+            ;
+
+var_decl : TYPE ident_list SEMI                                       
+         | CONST TYPE ident_list SEMI
+         | TYPE CONST ident_list SEMI
+         | STRUCT IDENT ident_list SEMI
+         | CONST STRUCT IDENT ident_list SEMI
+         | STRUCT IDENT CONST ident_list SEMI
+         ; 
+
+ident_list : ident_ca
+           | ident_ca COMMA ident_list
+           ;
+
+ident_ca : IDENT ASSIGN expr                                          {/*append_variable_stack("%s",$1);*/}
+         | IDENT LBRACKET INTCONST RBRACKET ASSIGN expr               {/*append_variable_stack("%s[]",$1);*/}
+         | IDENT                                                      {/*append_variable_stack("%s",$1);*/}
+         | IDENT LBRACKET INTCONST RBRACKET                           {/*append_variable_stack("%s[]",$1);*/}
+         ;
+
+%%
+
+void yy::parser::error(const location &loc , const std::string &message) {
+        
+        // Location should be initialized inside scanner action, but is not in this example.
+        // Let's grab location directly from driver class.
+	// cout << "Error: " << message << endl << "Location: " << loc << endl;
+        std::cerr << "Error near " << driver.location().begin.filename 
+                  << " line " << driver.location().begin.line 
+                  << " text 'yytext'\n\t" << message << std::endl;	
+        //std::cout << "Error: " << message << std::endl << "Error location: " << driver.location() << std::endl;
+}

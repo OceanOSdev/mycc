@@ -1,13 +1,13 @@
-SRCS = crude_symbols_list.c args_parser.c log_utils.c token_list.c main.c
+SRCS = driver.cpp arg_parser.cpp logger.cpp main.cpp
 
 TARG = mycc
 
-CC = gcc
+CXX = g++
 FLAGS = -Wall -O
 
 BFLAGS = -d
 
-OBJS = $(SRCS:.c=.o)
+OBJS = $(SRCS:.cpp=.o)
 
 all: $(TARG) docs
 
@@ -18,21 +18,22 @@ debug: BFLAGS += --debug
 debug: $(TARG)
 
 $(TARG): mycc.tab.o lexer.o $(OBJS)
-	$(CC) -o $(TARG) mycc.tab.o lexer.o $(OBJS)
+	$(CXX) -o $(TARG) mycc.tab.o lexer.o $(OBJS)
 
-%.o: %.c tokens.h
-	$(CC) $(FLAGS) -c $< -o $@
+%.o: %.cpp 
+	$(CXX) $(FLAGS) -c $< -o $@
 
-lexer.c: lexer.l
-	flex -o lexer.c lexer.l
+lexer.cpp: lexer.l
+	flex -o lexer.cpp lexer.l
 
-mycc.tab.h mycc.tab.c: mycc.y
-	bison $(BFLAGS) mycc.y
+mycc.tab.h mycc.tab.cpp: mycc.ypp
+	bison mycc.ypp
 
 clean:
 	rm -f $(OBJS) $(TARG)
 	rm -f *.out *.aux *.log *.fls *.fdb_latexmk *.synctex*
-	rm -f lexer.c lexer.o mycc.tab.h mycc.tab.c mycc.tab.o
+	rm -f lexer.cpp lexer.o mycc.tab.hpp mycc.tab.cpp mycc.tab.o
+	rm -f location.hh
 	rm -f vgcore.*
 
 destroy: clean
@@ -44,5 +45,5 @@ docs:
 	pdflatex developers.tex 
 
 #dependencies
-lexer.o: mycc.tab.h lexer.c
+lexer.o: mycc.tab.h lexer.cpp
 mycc.tab.o: mycc.tab.h
