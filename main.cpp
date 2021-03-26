@@ -4,6 +4,8 @@
 #include "lexeme_data.h"
 #include "logger.h"
 #include "driver.h"
+#include "syntax/translation_unit_node.h"
+#include "syntax_tree_printer.h"
 
 const char* versionInfo =
 "My bare-bones C compiler (for COM 440)\n"
@@ -74,6 +76,7 @@ void runLexer(parsed_args_t* pat) {
 
 void runParser(parsed_args_t* pat) {
     Driver d;
+    Syntax::TranslationUnitNode* tun;
     for (int i = 0; i < pat->numFiles; i++) {
         std::string filename = std::string( pat->inputFiles[i]);
         std::ifstream ifstrm(filename);
@@ -81,19 +84,11 @@ void runParser(parsed_args_t* pat) {
         d.switch_input_stream(filename, ist);
         d.init_new_input();
         d.parse();
+        tun = d.get_translation_unit();
     }
-    //init_stacks();
-    // symbol_parse_list_t** spls = malloc(pat->numFiles * sizeof(symbol_parse_list_t*));
-    // int i;
-    // for (i = 0; i < pat->numFiles; i ++) {
-    //     reset_stacks();
-    //     spls[i] = create_symbol_parse_list();
-    //     spl = spls[i];
-    //     input_comp_file = pat->inputFiles[i];
-    //     yyin = fopen(pat->inputFiles[i], "r");
-    //     yyparse();
-    //     fclose(yyin);
-    // }
+
+    SyntaxTreePrinter::print_nodes(tun);
+
 
     // print_symbol_parse_list(fout, spls, pat->numFiles);
 }

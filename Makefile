@@ -1,4 +1,4 @@
-SRCS = driver.cpp arg_parser.cpp logger.cpp main.cpp
+SRCS = driver.cpp arg_parser.cpp logger.cpp syntax_tree_printer.cpp main.cpp
 
 TARG = mycc
 
@@ -17,6 +17,12 @@ debug: FLAGS += -g
 debug: BFLAGS += --debug
 debug: $(TARG)
 
+benchmark: FLAGS += -ftime-report
+benchmark: $(TARG)
+
+verbose: FLAGS += -v
+verbose: $(TARG)
+
 $(TARG): mycc.tab.o lexer.o $(OBJS)
 	$(CXX) -o $(TARG) mycc.tab.o lexer.o $(OBJS)
 
@@ -26,7 +32,7 @@ $(TARG): mycc.tab.o lexer.o $(OBJS)
 lexer.cpp: lexer.l
 	flex -o lexer.cpp lexer.l
 
-mycc.tab.h mycc.tab.cpp: mycc.ypp
+mycc.tab.hpp mycc.tab.cpp: mycc.ypp
 	bison mycc.ypp
 
 clean:
@@ -45,5 +51,5 @@ docs:
 	pdflatex developers.tex 
 
 #dependencies
-lexer.o: mycc.tab.h lexer.cpp
-mycc.tab.o: mycc.tab.h
+lexer.o: mycc.tab.hpp lexer.cpp
+mycc.tab.o: mycc.tab.hpp

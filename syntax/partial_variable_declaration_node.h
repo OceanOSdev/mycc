@@ -18,7 +18,9 @@ public:
     PartialVariableDeclarationNode(std::string id, bool assign = false, bool arr = false, int arr_c = -1, ExpressionNode* e = nullptr) :
         ident(id), is_assign(assign), is_arr(arr), array_size(arr_c), expr(e) {}
     
-    ~PartialVariableDeclarationNode() { delete expr; }
+    ~PartialVariableDeclarationNode() { 
+        if (expr != nullptr) delete expr; 
+    }
 
     /*
      * The identifier for the partial variable declaration.

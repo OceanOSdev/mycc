@@ -4,19 +4,24 @@
 Driver::Driver() :
     m_lexer(*this),
     m_parser(m_lexer, *this),
-    m_location(0) {
+    m_location(0),
+    m_translation_unit(nullptr) {
 }
 
 int Driver::parse() {
     return m_parser.parse();
 }
 
+Syntax::TranslationUnitNode* Driver::get_translation_unit() {
+    return m_translation_unit;
+}
 
 void Driver::init_new_input() {
     m_location.initialize(&curr_file);
 }
 
 void Driver::switch_input_stream(std::string filename, std::istream *is) {
+    if (m_translation_unit != nullptr) delete m_translation_unit;
     curr_file = filename;
     m_lexer.switch_streams(is, NULL);
 }

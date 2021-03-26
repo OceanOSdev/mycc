@@ -3,13 +3,13 @@
 
 #include <vector>
 #include <string>
-#include "syntax_node.h"
+#include "local_declaration_node.h"
 #include "expression_node.h"
 #include "partial_variable_declaration_node.h"
 
 namespace Syntax {
 
-class VariableGroupDeclarationNode : public SyntaxNode {
+class VariableGroupDeclarationNode : public LocalDeclarationNode {
 private:
     std::string group_type;
     std::vector<PartialVariableDeclarationNode*> dec_group;

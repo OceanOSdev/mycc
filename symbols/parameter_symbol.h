@@ -2,29 +2,25 @@
 #define PARAMETER_SYMBOL_H
 
 #include <string>
+#include "type_symbol.h"
 
-namespace Syntax {
+namespace Symbols {
 
 class ParameterSymbol {
 private:
-    bool is_constant;
-    std::string type; // todo: maybe fix
+    TypeSymbol type; // todo: maybe fix
     std::string name;
     bool is_array;
 public:
-    ParameterSymbol() {}
-    ParameterSymbol(bool is_const, std::string t, std::string n, bool is_arr) :
-        is_constant(is_const), type(t), name(n), is_array(is_arr) {}
+    ParameterSymbol(TypeSymbol t, std::string n, bool is_arr) :
+        type(t), name(n), is_array(is_arr) {}
     
-    /*
-     * Returns whether this parameter is marked as constant.
-     */
-    bool constant() const { return is_constant; }
-
+    ~ParameterSymbol() {}
+    
     /*
      * Returns a string representation of this parameter's type.
      */
-    std::string var_type() const { return type; }
+    TypeSymbol var_type() const { return type; }
 
     /*
      * Returns a string representation of this parameter's identifier.
