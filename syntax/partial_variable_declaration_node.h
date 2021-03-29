@@ -15,28 +15,25 @@ private:
     int array_size;
     ExpressionNode* expr;
 public:
-    PartialVariableDeclarationNode(std::string id, bool assign = false, bool arr = false, int arr_c = -1, ExpressionNode* e = nullptr) :
-        ident(id), is_assign(assign), is_arr(arr), array_size(arr_c), expr(e) {}
+    PartialVariableDeclarationNode(std::string id, bool assign = false, bool arr = false, int arr_c = -1, ExpressionNode* e = nullptr);
     
-    ~PartialVariableDeclarationNode() { 
-        if (expr != nullptr) delete expr; 
-    }
+    ~PartialVariableDeclarationNode();
 
     /*
      * The identifier for the partial variable declaration.
      */
-    std::string identifier() const { return ident; }
+    std::string identifier() const;
 
     /*
      * Whether or not this variable is being assigned
      * to at declaration.
      */
-    bool is_assigned() const { return is_assign; }
+    bool is_assigned() const;
 
     /*
      * Whether or not this variable is an array.
      */
-    bool is_array() const { return is_arr; }
+    bool is_array() const;
 
     /*
      * The size allocated to the array variable
@@ -44,7 +41,7 @@ public:
      * 
      * Returns -1 if is_array() returns false.
      */
-    int array_length() const { return array_size; }
+    int array_length() const;
 
     /*
      * The expression that this variable gets assigned
@@ -52,7 +49,7 @@ public:
      * 
      * Returns nullptr if is_assigned returns false.
      */
-    ExpressionNode* expression() const { return expr; }
+    ExpressionNode* expression() const;
 
 };
 

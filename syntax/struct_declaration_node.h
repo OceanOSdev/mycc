@@ -13,24 +13,19 @@ private:
     std::string name;
     std::vector<VariableGroupDeclarationNode*> members;
 public:
-    StructDeclarationNode(std::string id, std::vector<VariableGroupDeclarationNode*> vars) :
-        name(id), members(vars) { }
+    StructDeclarationNode(std::string id, std::vector<VariableGroupDeclarationNode*> vars);
 
-    ~StructDeclarationNode() {
-        std::vector<VariableGroupDeclarationNode*>::iterator member_iter;
-        for (member_iter = members.begin(); member_iter != members.end(); member_iter++)
-            delete *member_iter;
-    }
+    ~StructDeclarationNode();
 
     /*
      * The name of the struct.
      */
-    std::string struct_name() const { return name; }
+    std::string struct_name() const;
 
     /*
      * The members (variables) that this struct contains.
      */
-    std::vector<VariableGroupDeclarationNode*> struct_members() const { return members; }
+    std::vector<VariableGroupDeclarationNode*> struct_members() const;
 
 };
 

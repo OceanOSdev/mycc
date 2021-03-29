@@ -11,23 +11,19 @@ private:
     ExpressionNode* lhs;
     ExpressionNode* rhs;
 public:
-    MemberExpressionNode(ExpressionNode* e, ExpressionNode* m) : 
-        lhs(e), rhs(m) {}
+    MemberExpressionNode(ExpressionNode* e, ExpressionNode* m);
 
-    ~MemberExpressionNode() { 
-        delete lhs;
-        delete rhs; 
-    }
+    ~MemberExpressionNode();
 
     /*
      * The expression of the encapsulating type.
      */
-    ExpressionNode* encapsulator() const { return lhs; }
+    ExpressionNode* encapsulator() const;
 
     /*
      * The expression of the member of the encapsulating type.
      */
-    ExpressionNode* member() const { return rhs; }
+    ExpressionNode* member() const;
 };
 
 }

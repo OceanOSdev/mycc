@@ -7,7 +7,7 @@
 #include "logger.h"
 #include "lexeme_data.h"
 #include "mycc.tab.hpp" // bison generated tokens
-#include "syntax/operator_tokens.h"
+
 
 int openingCommentLine = 0;
 

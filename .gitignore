@@ -4,6 +4,7 @@ lexer.cpp
 mycc.tab.hpp 
 mycc.tab.cpp
 location.hh
+pch.h.gch
 
 ## Core latex/pdflatex auxiliary files:
 *.aux

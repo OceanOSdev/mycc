@@ -12,35 +12,29 @@ private:
     StatementNode* then_stmt;
     StatementNode* else_stmt; 
 public:
-    IfStatementNode(ExpressionNode* condition, StatementNode* t, StatementNode* e) : 
-        if_expr(condition), then_stmt(t), else_stmt(e) {}
+    IfStatementNode(ExpressionNode* condition, StatementNode* t, StatementNode* e);
     
-    ~IfStatementNode() { 
-        delete if_expr;
-        delete then_stmt;
-        if (has_else_statement())
-            delete else_stmt; 
-    }
+    ~IfStatementNode();
 
     /*
      * The conditional expression in this if statement.
      */
-    ExpressionNode* condition() const { return if_expr; }
+    ExpressionNode* condition() const;
 
     /*
      * The 'then' statement in this if statement.
      */
-    StatementNode* then_statement() const { return then_stmt; }
+    StatementNode* then_statement() const;
 
     /*
      * The 'else' statement in this if statement.
      */
-    StatementNode* else_statement() const { return else_stmt; }
+    StatementNode* else_statement() const;
 
     /*
      * Whether or not this if statement contains an 'else' block
      */
-    bool has_else_statement() const { return else_stmt != nullptr; }
+    bool has_else_statement() const;
 };
 
 }

@@ -18,39 +18,34 @@ public:
                         std::string name,
                         bool is_struct = false,
                         bool is_const = false,
-                        bool is_array = false) :
-        m_type_identifier(id),
-        m_param_name(name),
-        m_is_struct(is_struct),
-        m_is_const(is_const),
-        m_is_array(is_array) {}
+                        bool is_array = false);
     
-    ~FormalParameterNode() {}
+    ~FormalParameterNode();
 
     /*
      * The name of the type that the parameter is.
      */
-    std::string type_identifier() const { return m_type_identifier; }
+    std::string type_identifier() const;
     
     /*
      * The name of the parameter.
      */
-    std::string param_name() const { return m_param_name; }
+    std::string param_name() const;
     
     /*
      * Whether the parameter is a struct type or not.
      */
-    bool is_struct() const { return m_is_struct; }
+    bool is_struct() const;
 
     /*
      * Whether the parameter is a constant type or not.
      */
-    bool is_const() const { return m_is_const; }
+    bool is_const() const;
 
     /*
      * Whether the parameter is an array or not.
      */
-    bool is_array() const { return m_is_array; }
+    bool is_array() const;
 
 };
 

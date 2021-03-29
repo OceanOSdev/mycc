@@ -11,19 +11,14 @@ class TranslationUnitNode : public SyntaxNode {
 private:
     std::vector<GlobalDeclarationNode*> m_global_declarations;
 public:
-    TranslationUnitNode(std::vector<GlobalDeclarationNode*> glob_decs) :
-        m_global_declarations(glob_decs) {}
+    TranslationUnitNode(std::vector<GlobalDeclarationNode*> glob_decs);
 
-    ~TranslationUnitNode() {
-        std::vector<GlobalDeclarationNode*>::iterator gd_iter;
-        for (gd_iter = m_global_declarations.begin(); gd_iter != m_global_declarations.end(); gd_iter++)
-            delete *gd_iter;
-    }
+    ~TranslationUnitNode();
 
     /*
      * List of global declarations in this translation unit.
      */
-    std::vector<GlobalDeclarationNode*> global_declarations() const { return m_global_declarations; }
+    std::vector<GlobalDeclarationNode*> global_declarations() const;
 };
 
 }

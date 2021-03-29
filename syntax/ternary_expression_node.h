@@ -11,31 +11,26 @@ private:
     ExpressionNode* true_expr;
     ExpressionNode* false_expr;
 public:
-    TernaryExpressionNode(ExpressionNode* expr, ExpressionNode* t_expr, ExpressionNode* f_expr) :
-        mux_expr(expr), true_expr(t_expr), false_expr(f_expr) {}
+    TernaryExpressionNode(ExpressionNode* expr, ExpressionNode* t_expr, ExpressionNode* f_expr);
 
-    ~TernaryExpressionNode() {
-        delete mux_expr;
-        delete true_expr;
-        delete false_expr;
-    }
+    ~TernaryExpressionNode();
 
     /*
      * The conditional expression.
      */
-    ExpressionNode* conditional_expression() const { return mux_expr; }
+    ExpressionNode* conditional_expression() const;
 
     /*
      * The expression that the ternary expression evals to
      * if the conditional expression is true.
      */
-    ExpressionNode* true_expression() const { return true_expr; }
+    ExpressionNode* true_expression() const;
 
     /*
      * The expression that the ternary expression evals to
      * if the conditional expression is false.
      */
-    ExpressionNode* false_expression() const { return false_expr; }
+    ExpressionNode* false_expression() const;
 };
 
 }

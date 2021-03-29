@@ -11,42 +11,44 @@
     #include <string>
     #include <vector>
     #include <stdint.h>
-    #include "syntax/formal_parameter_node.h"
-    #include "syntax/operator_tokens.h"
-    #include "syntax/expression_node.h"
-    #include "syntax/cast_expression_node.h"
-    #include "syntax/ternary_expression_node.h"
-    #include "syntax/binary_expression_node.h"
-    #include "syntax/unary_expression_node.h"
-    #include "syntax/call_expression_node.h"
-    #include "syntax/name_expression_node.h"
-    #include "syntax/index_expression_node.h"
-    #include "syntax/member_expression_node.h"
-    #include "syntax/assignment_expression_node.h"
-    #include "syntax/decrement_expression_node.h"
-    #include "syntax/increment_expression_node.h"
-    #include "syntax/partial_variable_declaration_node.h"
-    #include "syntax/variable_group_declaration_node.h"
-    #include "syntax/literal_val_expression_node.h"
-    #include "syntax/statement_node.h"
-    #include "syntax/expression_statement_node.h"
-    #include "syntax/continue_statement_node.h"
-    #include "syntax/break_statement_node.h"
-    #include "syntax/return_statement_node.h"
-    #include "syntax/if_statement_node.h"
-    #include "syntax/block_statement_node.h"
-    #include "syntax/for_statement_node.h"
-    #include "syntax/while_statement_node.h"
-    #include "syntax/do_while_statement_node.h"
-    #include "syntax/struct_declaration_node.h"
-    #include "syntax/function_declaration_node.h"
-    #include "syntax/function_prototype_node.h"
-    #include "syntax/function_definition_node.h"
-    #include "syntax/global_declaration_node.h"
-    #include "syntax/local_declaration_node.h"
-    #include "syntax/global_struct_declaration_node.h"
-    #include "syntax/global_variable_group_declaration_node.h"
-    #include "syntax/translation_unit_node.h"
+//     #include "syntax/formal_parameter_node.h"
+//     #include "syntax/operator_tokens.h"
+//     #include "syntax/expression_node.h"
+//     #include "syntax/cast_expression_node.h"
+//     #include "syntax/ternary_expression_node.h"
+//     #include "syntax/binary_expression_node.h"
+//     #include "syntax/unary_expression_node.h"
+//     #include "syntax/call_expression_node.h"
+//     #include "syntax/name_expression_node.h"
+//     #include "syntax/index_expression_node.h"
+//     #include "syntax/member_expression_node.h"
+//     #include "syntax/assignment_expression_node.h"
+//     #include "syntax/decrement_expression_node.h"
+//     #include "syntax/increment_expression_node.h"
+//     #include "syntax/partial_variable_declaration_node.h"
+//     #include "syntax/variable_group_declaration_node.h"
+//     #include "syntax/literal_val_expression_node.h"
+//     #include "syntax/statement_node.h"
+//     #include "syntax/expression_statement_node.h"
+//     #include "syntax/continue_statement_node.h"
+//     #include "syntax/break_statement_node.h"
+//     #include "syntax/return_statement_node.h"
+//     #include "syntax/if_statement_node.h"
+//     #include "syntax/block_statement_node.h"
+//     #include "syntax/for_statement_node.h"
+//     #include "syntax/while_statement_node.h"
+//     #include "syntax/do_while_statement_node.h"
+//     #include "syntax/struct_declaration_node.h"
+//     #include "syntax/function_declaration_node.h"
+//     #include "syntax/function_prototype_node.h"
+//     #include "syntax/function_definition_node.h"
+//     #include "syntax/global_declaration_node.h"
+//     #include "syntax/local_declaration_node.h"
+//     #include "syntax/global_struct_declaration_node.h"
+//     #include "syntax/global_variable_group_declaration_node.h"
+//     #include "syntax/translation_unit_node.h"
+
+
 
     //namespace Syntax { class BinaryExpressionNode; }
     
@@ -56,6 +58,7 @@
      void set_driver_translation_unit(Syntax::TranslationUnitNode* node);
      //void print_formal_param_list(std::vector<Syntax::ParameterSymbol> list);
 }
+
 
 %code top
 {
@@ -79,6 +82,12 @@
     // #define yylex(x, y) lexer.get_next_token()
     
 }
+
+%initial-action
+{
+    // initialize the initial location object
+    @$.begin.filename = @$.end.filename = &driver.curr_file;
+};
 
 %lex-param { Lexer &lexer }
 %lex-param { Driver &driver }
@@ -407,9 +416,9 @@ void yy::parser::error(const location &loc , const std::string &message) {
         // Location should be initialized inside scanner action, but is not in this example.
         // Let's grab location directly from driver class.
 	// cout << "Error: " << message << endl << "Location: " << loc << endl;
-        std::cerr << "Error near " << driver.location().begin.filename 
-                  << " line " << driver.location().begin.line 
-                  << " text 'yytext'\n\t" << message << std::endl;	
+        std::cerr << "Error near " << *(loc.begin.filename) //driver.location().begin.filename 
+                  << " line " << loc.begin.line //driver.location().begin.line 
+                  << " text '" << "yytext" << "'\n\t" << message << std::endl;	
         //std::cout << "Error: " << message << std::endl << "Error location: " << driver.location() << std::endl;
 }
 

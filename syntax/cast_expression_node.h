@@ -11,22 +11,19 @@ private:
     std::string casting_type;
     ExpressionNode* expression_node;
 public:
-    CastExpressionNode(std::string type, ExpressionNode* expr) :
-        casting_type(type), expression_node(expr) {}
+    CastExpressionNode(std::string type, ExpressionNode* expr);
 
-    ~CastExpressionNode() {
-        delete expression_node;
-    }
+    ~CastExpressionNode();
 
     /*
      * The type that the expression r-value gets cast to.
      */
-    std::string type() const { return casting_type; }
+    std::string type() const;
     
     /*
      * The expression being casted.
      */
-    ExpressionNode* expression() const { return expression_node; }
+    ExpressionNode* expression() const;
 };
 
 }

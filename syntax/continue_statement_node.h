@@ -7,8 +7,8 @@ namespace Syntax {
 
 class ContinueStatementNode : public StatementNode {
 public:
-    ContinueStatementNode() { }
-    ~ContinueStatementNode() { }
+    ContinueStatementNode();
+    ~ContinueStatementNode();
 };
 
 }

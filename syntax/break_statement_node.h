@@ -7,8 +7,8 @@ namespace Syntax {
 
 class BreakStatementNode : public StatementNode {
 public:
-    BreakStatementNode() { }
-    ~BreakStatementNode() { }
+    BreakStatementNode();
+    ~BreakStatementNode();
 };
 
 }

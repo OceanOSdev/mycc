@@ -9,21 +9,18 @@ namespace Syntax {
 class ReturnStatementNode : public StatementNode {
     ExpressionNode* expr;
 public:
-    ReturnStatementNode(ExpressionNode* e) : expr(e) { }
-    ~ReturnStatementNode() { 
-        if (!is_empty_return())
-            delete expr;
-    }
+    ReturnStatementNode(ExpressionNode* e);
+    ~ReturnStatementNode();
 
     /*
      * The expression to return.
      */
-    ExpressionNode* expression() const { return expr;}
+    ExpressionNode* expression() const;
 
     /*
      * Whether or not this is a statement of the form "return;"
      */
-    bool is_empty_return() const { return expr == nullptr;}
+    bool is_empty_return() const;
 };
 
 }

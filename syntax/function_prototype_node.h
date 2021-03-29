@@ -10,16 +10,14 @@ class FunctionPrototypeNode : public GlobalDeclarationNode {
 private:
     FunctionDeclarationNode* m_func_decl;
 public:
-    FunctionPrototypeNode(FunctionDeclarationNode* func) : m_func_decl(func) {}
+    FunctionPrototypeNode(FunctionDeclarationNode* func);
     
-    ~FunctionPrototypeNode() {
-        delete m_func_decl;
-    }
+    ~FunctionPrototypeNode();
 
     /*
      * The function that this prototype is declaring.
      */
-    FunctionDeclarationNode* function_declaration() const { return m_func_decl; }
+    FunctionDeclarationNode* function_declaration() const;
 };
 
 }

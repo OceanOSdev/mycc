@@ -12,28 +12,24 @@ private:
     SyntaxTokenType token_type;
     ExpressionNode* right_expr;
 public:
-    BinaryExpressionNode(ExpressionNode* l_expr, SyntaxTokenType tt, ExpressionNode* r_expr) :
-        left_expr(l_expr), token_type(tt), right_expr(r_expr) {}
+    BinaryExpressionNode(ExpressionNode* l_expr, SyntaxTokenType tt, ExpressionNode* r_expr);
 
-    ~BinaryExpressionNode() {
-        delete left_expr;
-        delete right_expr;
-    }
+    ~BinaryExpressionNode();
 
     /*
      * The expression on the left-hand side of the operator.
      */
-    ExpressionNode* left_expression() const { return left_expr; }
+    ExpressionNode* left_expression() const;
 
     /*
      * The binary operation stored as a token.
      */
-    SyntaxTokenType syntax_token_type() const { return token_type; }
+    SyntaxTokenType syntax_token_type() const;
 
     /*
      * The expression on the right-hand side of the operator.
      */
-    ExpressionNode* right_expression() const { return right_expr; }
+    ExpressionNode* right_expression() const;
 };
 
 }

@@ -10,17 +10,13 @@ class BlockStatementNode : public StatementNode {
 private:
     std::vector<StatementNode*> stmt_nodes;
 public:
-    BlockStatementNode(std::vector<StatementNode*> stmts) : stmt_nodes(stmts) { }
-    ~BlockStatementNode() { 
-        std::vector<StatementNode*>::iterator stmt_iter;
-        for (stmt_iter = stmt_nodes.begin(); stmt_iter != stmt_nodes.end(); stmt_iter++)
-            delete *stmt_iter;
-    }
+    BlockStatementNode(std::vector<StatementNode*> stmts);
+    ~BlockStatementNode();
 
     /*
      * The list of statements in this code block.
      */
-    std::vector<StatementNode*> statements() const { return stmt_nodes; }
+    std::vector<StatementNode*> statements() const;
 };
 
 }

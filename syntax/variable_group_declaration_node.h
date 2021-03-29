@@ -16,34 +16,29 @@ private:
     bool read_only;
     bool custom_type;
 public:
-    VariableGroupDeclarationNode(std::string type, std::vector<PartialVariableDeclarationNode*> vars, bool r_o, bool cust) :
-        group_type(type), dec_group(vars), read_only(r_o), custom_type(cust) {}
+    VariableGroupDeclarationNode(std::string type, std::vector<PartialVariableDeclarationNode*> vars, bool r_o, bool cust);
     
-    ~VariableGroupDeclarationNode() {
-        std::vector<PartialVariableDeclarationNode*>::iterator dec_iter;
-        for (dec_iter = dec_group.begin(); dec_iter != dec_group.end(); dec_iter++)
-            delete *dec_iter;
-    }
+    ~VariableGroupDeclarationNode();
 
     /*
      * The type of all variables in this collection.
      */
-    std::string type() const { return group_type; }
+    std::string type() const;
 
     /*
      * The list of all partial variable declarations in this group.
      */
-    std::vector<PartialVariableDeclarationNode*> partial_variable_group () const { return dec_group; }
+    std::vector<PartialVariableDeclarationNode*> partial_variable_group () const;
 
     /*
      * Whether or not all the variables are constant.
      */
-    bool is_const() const { return read_only; }
+    bool is_const() const;
 
     /*
      * Whether or not the variables are struct types.
      */
-    bool is_struct() const { return custom_type; }
+    bool is_struct() const;
 };
 
 }

@@ -10,15 +10,14 @@ private:
     ExpressionNode* id_expr;
     bool is_post_increment;
 public:
-    IncrementExpressionNode(ExpressionNode* id, bool post) :
-        id_expr(id), is_post_increment(post) { }
+    IncrementExpressionNode(ExpressionNode* id, bool post);
 
-    ~IncrementExpressionNode() { delete id_expr; }
+    ~IncrementExpressionNode();
 
     /*
      * The expression containing the identifier.
      */
-    ExpressionNode* identifier_expression() const { return id_expr; }
+    ExpressionNode* identifier_expression() const;
 
     /*
      * Indicates whether we are post or pre incrementing.
@@ -27,7 +26,7 @@ public:
      * 
      * Pre-increment: false.
      */
-    bool is_post() const { return is_post_increment; }
+    bool is_post() const;
 };
 
 }

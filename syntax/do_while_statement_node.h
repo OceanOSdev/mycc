@@ -11,23 +11,19 @@ private:
     StatementNode* body_stmt;
     ExpressionNode* cond_expr;
 public:
-    DoWhileStatementNode(StatementNode* body, ExpressionNode* condition) : 
-        body_stmt(body), cond_expr(condition) {}
+    DoWhileStatementNode(StatementNode* body, ExpressionNode* condition);
     
-    ~DoWhileStatementNode() { 
-        delete cond_expr;
-        delete body_stmt;
-    }
+    ~DoWhileStatementNode();
     
     /*
      * The body statement that runs every loop.
      */
-    StatementNode* body_statement() const { return body_stmt; }
+    StatementNode* body_statement() const;
 
     /*
      * The conditional expression that runs before every loop.
      */
-    ExpressionNode* conditional_expression() const { return cond_expr; }
+    ExpressionNode* conditional_expression() const;
 
 };
 

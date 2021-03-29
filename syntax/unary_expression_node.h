@@ -11,22 +11,19 @@ private:
     SyntaxTokenType token_type;
     ExpressionNode* expr;
 public:
-    UnaryExpressionNode(SyntaxTokenType tt, ExpressionNode* r_expr) :
-        token_type(tt), expr(r_expr) {}
+    UnaryExpressionNode(SyntaxTokenType tt, ExpressionNode* r_expr);
 
-    ~UnaryExpressionNode() {
-        delete expr;
-    }
+    ~UnaryExpressionNode();
 
     /*
      * The binary operation stored as a token.
      */
-    SyntaxTokenType syntax_token_type() const { return token_type; }
+    SyntaxTokenType syntax_token_type() const;
 
     /*
      * The expression.
      */
-    ExpressionNode* expression() const { return expr; }
+    ExpressionNode* expression() const;
 };
 
 }

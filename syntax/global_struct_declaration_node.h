@@ -10,15 +10,14 @@ class GlobalStructDeclarationNode : public GlobalDeclarationNode {
 private:
     StructDeclarationNode* m_struct_declaration;
 public:
-    GlobalStructDeclarationNode(StructDeclarationNode* struct_dec) :
-        m_struct_declaration(struct_dec) {}
+    GlobalStructDeclarationNode(StructDeclarationNode* struct_dec);
     
-    ~GlobalStructDeclarationNode() { delete m_struct_declaration; }
+    ~GlobalStructDeclarationNode();
 
     /*
      * The struct declaration.
      */
-    StructDeclarationNode* struct_declaration() const { return m_struct_declaration; }
+    StructDeclarationNode* struct_declaration() const;
 
 };
 

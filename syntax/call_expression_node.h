@@ -12,25 +12,20 @@ private:
     std::string identifier;
     std::vector<ExpressionNode*> expression_list;
 public:
-    CallExpressionNode(std::string id, std::vector<ExpressionNode*> expr_list) :
-        identifier(id), expression_list(expr_list) {}
+    CallExpressionNode(std::string id, std::vector<ExpressionNode*> expr_list);
     
-    ~CallExpressionNode() {
-        std::vector<ExpressionNode*>::iterator expr_iter;
-        for (expr_iter = expression_list.begin(); expr_iter != expression_list.end(); expr_iter++)
-            delete *expr_iter;
-    }
+    ~CallExpressionNode();
 
     /*
      * The name of the method (lets be real thats whats getting called) 
      * being called.
      */
-    std::string name() const { return identifier; }
+    std::string name() const;
 
     /*
      * The list of expressions being passed as arguments.
      */
-    std::vector<ExpressionNode*> expressions() const { return expression_list; }
+    std::vector<ExpressionNode*> expressions() const;
 };
 
 }

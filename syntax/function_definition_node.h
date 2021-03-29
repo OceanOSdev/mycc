@@ -18,38 +18,24 @@ private:
 public:
     FunctionDefinitionNode(FunctionDeclarationNode* func,
                            std::vector<Syntax::LocalDeclarationNode*> local_decs,
-                           std::vector<Syntax::StatementNode*> statements) : 
-        m_func_decl(func),
-        m_local_declarations(local_decs),
-        m_statements(statements) {}
+                           std::vector<Syntax::StatementNode*> statements);
     
-    ~FunctionDefinitionNode() {
-        delete m_func_decl;
-
-        std::vector<Syntax::LocalDeclarationNode*>::iterator dec_iter;
-        for (dec_iter = m_local_declarations.begin(); dec_iter != m_local_declarations.end(); dec_iter++)
-            delete *dec_iter;
-
-        std::vector<Syntax::StatementNode*>::iterator stmt_iter;
-        for (stmt_iter = m_statements.begin(); stmt_iter != m_statements.end(); stmt_iter++)
-            delete *stmt_iter;
-
-    }
+    ~FunctionDefinitionNode(); 
 
     /*
      * The function that this definition is declaring.
      */
-    FunctionDeclarationNode* function_declaration() const { return m_func_decl; }
+    FunctionDeclarationNode* function_declaration() const;
     
     /*
      * The declarations in the function.
      */
-    std::vector<Syntax::LocalDeclarationNode*> local_declarations() const { return m_local_declarations; }
+    std::vector<Syntax::LocalDeclarationNode*> local_declarations() const;
     
     /*
      * The statements in this function after the declarations.
      */
-    std::vector<Syntax::StatementNode*> statements() const { return m_statements; }
+    std::vector<Syntax::StatementNode*> statements() const;
 };
 
 }

@@ -10,13 +10,13 @@ class ExpressionStatementNode : public StatementNode {
 private:
     ExpressionNode* expr;
 public:
-    ExpressionStatementNode(ExpressionNode* e) : expr(e) {}
-    ~ExpressionStatementNode() { delete expr; }
+    ExpressionStatementNode(ExpressionNode* e);
+    ~ExpressionStatementNode();
 
     /*
      * The expression contained in this statement.
      */
-    ExpressionNode* expression() const { return expr; }
+    ExpressionNode* expression() const;
 };
 
 }

@@ -27,35 +27,34 @@ private:
     LiteralValType v_type;
     LiteralValWrapper v_wrapper;
 public:
-    LiteralValExpressionNode(LiteralValType type, LiteralValWrapper value) :
-        v_type(type), v_wrapper(value) {}
+    LiteralValExpressionNode(LiteralValType type, LiteralValWrapper value);
     
-    ~LiteralValExpressionNode() { }
+    ~LiteralValExpressionNode();
 
     /*
      * An enum value representing the type stored in this node.
      */
-    LiteralValType value_type() const { return v_type; }
+    LiteralValType value_type() const;
 
     /*
      * The int value (if the type stored is an int).
      */
-    int int_value() const { return v_wrapper.i_val; }
+    int int_value() const;
 
     /*
      * The float value (if the type stored is a float).
      */
-    float float_value() const { return v_wrapper.f_val; }
+    float float_value() const;
 
     /*
      * The string value (if the type stored is a string).
      */
-    std::string string_value() const { return v_wrapper.s_val; }
+    std::string string_value() const;
 
     /*
      * The char value (if the type stored is a char).
      */
-    char char_value() const { return v_wrapper.c_val; }
+    char char_value() const;
 };
 
 }

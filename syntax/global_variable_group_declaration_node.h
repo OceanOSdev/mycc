@@ -10,15 +10,14 @@ class GlobalVariableGroupDeclarationNode : public GlobalDeclarationNode {
 private:
     VariableGroupDeclarationNode* m_variable_group;
 public:
-    GlobalVariableGroupDeclarationNode(VariableGroupDeclarationNode* var_group) :
-        m_variable_group(var_group) {}
+    GlobalVariableGroupDeclarationNode(VariableGroupDeclarationNode* var_group);
     
-    ~GlobalVariableGroupDeclarationNode() { delete m_variable_group; }
+    ~GlobalVariableGroupDeclarationNode();
 
     /*
      * The variable group declarations.
      */
-    VariableGroupDeclarationNode* variable_group() const { return m_variable_group; }
+    VariableGroupDeclarationNode* variable_group() const;
 };
 
 }

@@ -10,14 +10,14 @@ class NameExpressionNode : public ExpressionNode {
 private:
     std::string identifier;
 public:
-    NameExpressionNode(std::string id) : identifier(id) {}
+    NameExpressionNode(std::string id);
 
-    ~NameExpressionNode() {}
+    ~NameExpressionNode();
 
     /*
      * The name of the identifier (as an l_val).
      */
-    std::string name() const { return identifier; }
+    std::string name() const;
 };
 
 }

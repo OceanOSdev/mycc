@@ -13,50 +13,44 @@ private:
     ExpressionNode* inc_expr;
     StatementNode* body_stmt;
 public:
-    ForStatementNode(ExpressionNode* ini, ExpressionNode* condition, ExpressionNode* inc, StatementNode* body) : 
-        init_expr(ini), cond_expr(condition), inc_expr(inc), body_stmt(body) {}
+    ForStatementNode(ExpressionNode* ini, ExpressionNode* condition, ExpressionNode* inc, StatementNode* body);
     
-    ~ForStatementNode() { 
-        if (init_expr != nullptr) delete init_expr;
-        if (cond_expr != nullptr) delete cond_expr;
-        if (inc_expr != nullptr) delete inc_expr;
-        delete body_stmt;
-    }
+    ~ForStatementNode();
 
     /*
      * The initial expression that runs at the start of the for loop.
      */
-    ExpressionNode* initial_expression() const { return init_expr; }
+    ExpressionNode* initial_expression() const;
 
     /*
      * The conditional expression that runs before every loop.
      */
-    ExpressionNode* conditional_expression() const { return cond_expr; }
+    ExpressionNode* conditional_expression() const;
 
     /*
      * The third expression that runs after every loop.
      */
-    ExpressionNode* third_expression() const { return inc_expr; }
+    ExpressionNode* third_expression() const;
 
     /*
      * The body statement that runs every loop.
      */
-    StatementNode* body_statement() const { return body_stmt; }
+    StatementNode* body_statement() const;
 
     /*
      * Whether or not this for loop contains an initial expression.
      */
-    bool has_initial_expression() const { return init_expr != nullptr; }
+    bool has_initial_expression() const;
 
     /*
      * Whether or not this for loop contains a conditional expression.
      */
-    bool has_conditional_expression() const { return cond_expr != nullptr; }
+    bool has_conditional_expression() const;
 
     /*
      * Whether or not this for loop contains a third expression.
      */
-    bool has_third_expression() const { return inc_expr != nullptr; }
+    bool has_third_expression() const;
 };
 
 }

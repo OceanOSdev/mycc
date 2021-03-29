@@ -20,43 +20,34 @@ public:
                             std::string function_name,
                             std::vector<FormalParameterNode*> params,
                             bool is_struct = false,
-                            bool is_const = false) :
-        m_type_identifier(type_identifier),
-        m_function_name(function_name),
-        m_parameters(params),
-        m_is_struct(is_struct),
-        m_is_const(is_const) {}
+                            bool is_const = false);
     
-    ~FunctionDeclarationNode() {
-        std::vector<FormalParameterNode*>::iterator param_iter;
-        for (param_iter = m_parameters.begin(); param_iter != m_parameters.end(); param_iter++)
-            delete *param_iter;
-    }
+    ~FunctionDeclarationNode();
 
     /*
      * The return type for this function.
      */
-    std::string type_identifier() const { return m_type_identifier; }
+    std::string type_identifier() const;
     
     /*
      * The name of this function.
      */
-    std::string function_name() const { return m_function_name; }
+    std::string function_name() const;
     
     /*
      * The list of parameters for this function.
      */
-    std::vector<FormalParameterNode*> parameters() const { return m_parameters; }
+    std::vector<FormalParameterNode*> parameters() const;
     
     /*
      * Whether the function's return type is a struct type or not.
      */
-    bool is_struct() const { return m_is_struct; }
+    bool is_struct() const;
     
     /*
      * Whether the function's return type is a constant type or not.
      */
-    bool is_const() const { return m_is_const; }
+    bool is_const() const;
 
 };
 

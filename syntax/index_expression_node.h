@@ -11,20 +11,19 @@ private:
     std::string identifier;
     ExpressionNode* expr;
 public:
-    IndexExpressionNode(std::string id, ExpressionNode* e) : 
-        identifier(id), expr(e) {}
+    IndexExpressionNode(std::string id, ExpressionNode* e);
 
-    ~IndexExpressionNode() { delete expr; }
+    ~IndexExpressionNode();
 
     /*
      * The name of the identifier (as an l_val).
      */
-    std::string name() const { return identifier; }
+    std::string name() const;
 
     /*
      * The expression that evaluates to the index.
      */
-    ExpressionNode* expression() const { return expr; }
+    ExpressionNode* expression() const;
 };
 
 }

@@ -10,15 +10,14 @@ private:
     ExpressionNode* id_expr;
     bool is_post_decrement;
 public:
-    DecrementExpressionNode(ExpressionNode* id, bool post) :
-        id_expr(id), is_post_decrement(post) { }
+    DecrementExpressionNode(ExpressionNode* id, bool post);
 
-    ~DecrementExpressionNode() { delete id_expr; }
+    ~DecrementExpressionNode();
 
     /*
      * The expression containing the identifier.
      */
-    ExpressionNode* identifier_expression() const { return id_expr; }
+    ExpressionNode* identifier_expression() const;
 
     /*
      * Indicates whether we are post or pre decrementing.
@@ -27,7 +26,7 @@ public:
      * 
      * Pre-decrement: false.
      */
-    bool is_post() const { return is_post_decrement; }
+    bool is_post() const;
 };
 
 }

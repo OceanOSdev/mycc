@@ -12,29 +12,25 @@ private:
     SyntaxTokenType assignment_token;
     ExpressionNode* rhs;
 public:
-    AssignmentExpressionNode(ExpressionNode* id_exp, SyntaxTokenType assign, ExpressionNode* expr) :
-        lhs(id_exp), assignment_token(assign), rhs(expr) {}
+    AssignmentExpressionNode(ExpressionNode* id_exp, SyntaxTokenType assign, ExpressionNode* expr);
     
-    ~AssignmentExpressionNode() {
-        delete lhs;
-        delete rhs;
-    }
+    ~AssignmentExpressionNode();
 
     /*
      * The expression containing the identifier.
      */
-    ExpressionNode* identifier_expression() const { return lhs; }
+    ExpressionNode* identifier_expression() const;
 
     /*
      * The type of assignment expression being performed on
      * the identifier.
      */
-    SyntaxTokenType assignment_type() const { return assignment_token; }
+    SyntaxTokenType assignment_type() const;
 
     /*
      * The expression that the identifier will be assigned.
      */
-    ExpressionNode* expression() const { return rhs; }
+    ExpressionNode* expression() const;
 };
 
 }
