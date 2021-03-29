@@ -26,6 +26,8 @@ void Driver::switch_input_stream(std::string filename, std::istream *is) {
     m_lexer.switch_streams(is, NULL);
 }
 
+bool Driver::error_flag() const { return m_error_flag; }
+
 yy::parser::symbol_type Driver::lex() {
     return m_lexer.get_next_token();
 }

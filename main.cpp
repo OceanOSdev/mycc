@@ -87,6 +87,7 @@ void runParser(parsed_args_t* pat) {
         tun = d.get_translation_unit();
     }
 
+    if (!d.error_flag())
     SyntaxTreePrinter::print_nodes(tun);
 
 

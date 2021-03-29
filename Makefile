@@ -6,7 +6,7 @@ syntax-SRCS += decrement_expression_node.cpp continue_statement_node.cpp cast_ex
 SYNSRC = $(syntax-SRCS:%.cpp=$(syntax-dir)/%.cpp)
 
 
-SRCS = syntax_token.cpp driver.cpp arg_parser.cpp logger.cpp syntax_tree_printer.cpp main.cpp
+SRCS = driver.cpp arg_parser.cpp logger.cpp syntax_token.cpp syntax_tree_printer.cpp main.cpp
 
 
 TARG = mycc
@@ -43,7 +43,10 @@ $(CORE_PCH): $(CORE_PCH_FILE)
 	$(CXX) -o $@ $<
 
 %.o: %.cpp $(CORE_PCH)
-	$(CXX) $(FLAGS) -include $(CORE_PCH_FILE) -c $< -o $@
+	$(CXX) $(FLAGS) -c $< -o $@
+
+# %.o: %.cpp $(CORE_PCH)
+# 	$(CXX) $(FLAGS) -include $(CORE_PCH_FILE) -c $< -o $@
 
 lexer.cpp: lexer.l
 	flex -o lexer.cpp lexer.l

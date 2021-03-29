@@ -1,11 +1,69 @@
 #ifndef SYNTAX_TOKEN_H
 #define SYNTAX_TOKEN_H
-
-#include "location.hh"
-#include "mycc.tab.hpp"
 #include <string>
 #include <variant>
-using token_type = enum yy::parser::token::yytokentype;
+
+// Hack to get around bison making it super
+// inconvinient to get token info outside of .l and .ypp files
+enum btokentype {
+    END = 0,
+    IDENT = 258,
+    TYPE = 259,
+    CONST = 260,
+    STRUCT = 261,
+    INTCONST = 262,
+    REALCONST = 263,
+    STRCONST = 264,
+    CHARCONST = 265,
+    FOR = 266,
+    WHILE = 267,
+    DO = 268,
+    IF = 269,
+    ELSE = 270,
+    BREAK = 271,
+    CONTINUE = 272,
+    RETURN = 273,
+    LPAR = 274,
+    RPAR = 275,
+    LBRACKET = 276,
+    RBRACKET = 277,
+    LBRACE = 278,
+    RBRACE = 279,
+    DOT = 280,
+    COMMA = 281,
+    SEMI = 282,
+    QUEST = 283,
+    COLON = 284,
+    PLUS = 285,
+    MINUS = 286,
+    STAR = 287,
+    SLASH = 288,
+    MOD = 289,
+    TILDE = 290,
+    PIPE = 291,
+    AMP = 292,
+    BANG = 293,
+    DPIPE = 294,
+    DAMP = 295,
+    ASSIGN = 296,
+    PLUSASSIGN = 297,
+    MINUSASSIGN = 298,
+    STARASSIGN = 299,
+    SLASHASSIGN = 300,
+    INCR = 301,
+    DECR = 302,
+    EQUALS = 303,
+    NEQUAL = 304,
+    GT = 305,
+    GE = 306,
+    LT = 307,
+    LE = 308,
+    WITHOUT_ELSE = 309,
+    UMINUS = 310
+};
+
+using token_type_t = btokentype;
+
 using token_variant = std::variant<int, float, char, std::string>;
 using token_data_type = enum TOKEN_DATA_TYPE {
     INT,
@@ -18,7 +76,7 @@ using token_data_type = enum TOKEN_DATA_TYPE {
 class SyntaxToken {
 private:
     std::string m_text;
-    token_type m_token;
+    token_type_t m_token;
     std::string m_filename;
     int m_begin_line;
     int m_begin_column;
@@ -26,15 +84,51 @@ private:
     int m_end_column;
     token_variant m_semantic_value;
 public:
-
+    SyntaxToken();
     SyntaxToken(std::string text, 
-                token_type token,
+                token_type_t token,
                 std::string filename,
                 int begin_line,
                 int begin_column,
                 int end_line,
                 int end_column,
                 token_variant semantic_value);
+    
+    SyntaxToken(std::string text, 
+            token_type_t token,
+            std::string filename,
+            int begin_line,
+            int begin_column,
+            int end_line,
+            int end_column,
+            int i_val);
+
+    SyntaxToken(std::string text, 
+            token_type_t token,
+            std::string filename,
+            int begin_line,
+            int begin_column,
+            int end_line,
+            int end_column,
+            float f_val);
+
+    SyntaxToken(std::string text, 
+            token_type_t token,
+            std::string filename,
+            int begin_line,
+            int begin_column,
+            int end_line,
+            int end_column,
+            char char_val);
+
+    SyntaxToken(std::string text, 
+            token_type_t token,
+            std::string filename,
+            int begin_line,
+            int begin_column,
+            int end_line,
+            int end_column,
+            std::string str_val);
     
     ~SyntaxToken();
 
@@ -47,7 +141,7 @@ public:
     /*
      * The type of token this is, represented by the bison generated enum.
      */
-    token_type token() const;
+    token_type_t token() const;
 
     /*
      * The filename of where this token is located.

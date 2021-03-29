@@ -1,7 +1,7 @@
 #include "syntax_token.h"
 
 SyntaxToken::SyntaxToken(std::string text, 
-            token_type token,
+            token_type_t token,
             std::string filename,
             int begin_line,
             int begin_column,
@@ -17,6 +17,87 @@ SyntaxToken::SyntaxToken(std::string text,
     m_end_column(end_column),
     m_semantic_value(semantic_value) { }
 
+
+SyntaxToken::SyntaxToken(std::string text, 
+            token_type_t token,
+            std::string filename,
+            int begin_line,
+            int begin_column,
+            int end_line,
+            int end_column,
+            int i_val) :
+    m_text(text),
+    m_token(token),
+    m_filename(filename),
+    m_begin_line(begin_line),
+    m_begin_column(begin_column),
+    m_end_line(end_line),
+    m_end_column(end_column) {
+        m_semantic_value = i_val;
+}
+
+
+SyntaxToken::SyntaxToken(std::string text, 
+            token_type_t token,
+            std::string filename,
+            int begin_line,
+            int begin_column,
+            int end_line,
+            int end_column,
+            float f_val) :
+    m_text(text),
+    m_token(token),
+    m_filename(filename),
+    m_begin_line(begin_line),
+    m_begin_column(begin_column),
+    m_end_line(end_line),
+    m_end_column(end_column) {
+        m_semantic_value = f_val;
+}
+
+
+SyntaxToken::SyntaxToken(std::string text, 
+            token_type_t token,
+            std::string filename,
+            int begin_line,
+            int begin_column,
+            int end_line,
+            int end_column,
+            char char_val) :
+    m_text(text),
+    m_token(token),
+    m_filename(filename),
+    m_begin_line(begin_line),
+    m_begin_column(begin_column),
+    m_end_line(end_line),
+    m_end_column(end_column) {
+        m_semantic_value = char_val;
+}
+
+
+SyntaxToken::SyntaxToken(std::string text, 
+            token_type_t token,
+            std::string filename,
+            int begin_line,
+            int begin_column,
+            int end_line,
+            int end_column,
+            std::string str_val) :
+    m_text(text),
+    m_token(token),
+    m_filename(filename),
+    m_begin_line(begin_line),
+    m_begin_column(begin_column),
+    m_end_line(end_line),
+    m_end_column(end_column) {
+        m_semantic_value = str_val;
+}
+
+
+
+SyntaxToken::SyntaxToken() {
+}
+
 SyntaxToken::~SyntaxToken() {
 }
 
@@ -31,7 +112,7 @@ std::string SyntaxToken::text() const {
 /*
  * The type of token this is, represented by the bison generated enum.
  */
-token_type SyntaxToken::token() const {
+token_type_t SyntaxToken::token() const {
     return m_token;
 }
 

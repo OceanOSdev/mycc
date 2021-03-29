@@ -22,6 +22,7 @@ public:
     yy::parser::symbol_type lex();
     std::vector<LexemeDataNode> get_part_one_lexeme_list() const;
     Syntax::TranslationUnitNode* get_translation_unit();
+    bool error_flag() const;
     friend class yy::parser;
     friend class Lexer;
 
@@ -33,7 +34,9 @@ private:
     yy::location location() const;
     //unsigned int location() const;
     std::string curr_file;
+    std::string curr_text; // <-- really disgusting I know
     Lexer m_lexer;
+    bool m_error_flag = false;
     yy::parser m_parser;
     yy::location m_location;
     std::vector<LexemeDataNode> part_one_lexeme_list;
