@@ -6,6 +6,7 @@
 #include "driver.h"
 #include "logger.h"
 #include "lexeme_data.h"
+#include "syntax_token.h"
 #include "mycc.tab.hpp" // bison generated tokens
 
 

@@ -6,13 +6,13 @@ syntax-SRCS += decrement_expression_node.cpp continue_statement_node.cpp cast_ex
 SYNSRC = $(syntax-SRCS:%.cpp=$(syntax-dir)/%.cpp)
 
 
-SRCS = driver.cpp arg_parser.cpp logger.cpp syntax_tree_printer.cpp main.cpp
+SRCS = syntax_token.cpp driver.cpp arg_parser.cpp logger.cpp syntax_tree_printer.cpp main.cpp
 
 
 TARG = mycc
 
 CXX = g++
-FLAGS = -Wall -O
+FLAGS = -std=c++17 -Wall -O
 
 BFLAGS = -d
 
