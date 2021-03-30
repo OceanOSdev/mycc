@@ -1,11 +1,12 @@
+#include "pch.h"
 #include <stdio.h>
 #include <vector>
 #include "arg_parser.h"
 #include "lexeme_data.h"
 #include "logger.h"
 #include "driver.h"
-#include "syntax/translation_unit_node.h"
 #include "syntax_tree_printer.h"
+#include "part_two_syntax_check.h"
 
 const char* versionInfo =
 "My bare-bones C compiler (for COM 440)\n"
@@ -25,39 +26,6 @@ void print_token_list(std::vector<LexemeDataNode> tlist) {
     }
 }
 
-// void print_symbol_parse_list(FILE* fout, symbol_parse_list_t** spls, int numLists) {
-//     for (int i = 0; i < numLists; i ++) {
-//         for (int j = 0; j < spls[i]->num_glob_structs; j ++) {
-//             log_parser_glob_struct_symbol(fout, spls[i]->glob_structs[j]);
-//             fprintf(fout, "\n");
-//         }
-//         if (spls[i]->num_glob_vars > 0) {
-//             fprintf(fout,"Global variables\n\t");
-//             log_string_list(fout, spls[i]->global_variables);
-//             fprintf(fout,"\n\n");
-//         }
-        
-//         symbol_parse_list_node_t* iter = spls[i]->head;
-//         while (iter) {
-//             switch (iter->symbol_type) {
-//                 case FUNC_DECL_SYMBOL:
-//                     log_parser_func_decl_symbol(fout, iter->symbol_data.fds_val);
-//                     fprintf(fout, "\n");
-//                     break;
-//                 case FUNC_PROTO_SYMBOL:
-//                     log_parser_func_proto_symbol(fout, iter->symbol_data.fps_val);
-//                     fprintf(fout, "\n");
-//                     break;
-//                 case PARSE_ERROR_SYMBOL:
-//                     log_parser_error(fout, iter->symbol_data.pes_val);
-//                     fprintf(fout != stdout ? fout : stderr, "\n");
-//                     break;
-//             }
-//             iter = iter->next;
-//         }
-//     }
-// }
-
 void runLexer(parsed_args_t* pat) {
     Driver d;
     for (int i = 0; i < pat->numFiles; i++) {
@@ -76,19 +44,22 @@ void runLexer(parsed_args_t* pat) {
 
 void runParser(parsed_args_t* pat) {
     Driver d;
-    Syntax::TranslationUnitNode* tun;
-    for (int i = 0; i < pat->numFiles; i++) {
+    std::vector<Syntax::TranslationUnitNode*> tun;
+    for (int i = 0; i < pat->numFiles && !d.error_flag(); i++) {
         std::string filename = std::string( pat->inputFiles[i]);
         std::ifstream ifstrm(filename);
         std::istream* ist = &ifstrm;
         d.switch_input_stream(filename, ist);
         d.init_new_input();
         d.parse();
-        tun = d.get_translation_unit();
     }
 
-    if (!d.error_flag())
-    SyntaxTreePrinter::print_nodes(tun);
+    if (!d.error_flag()) {
+        auto root = new Syntax::ProgramNode(d.get_translation_units());
+        auto synt = new PartTwoSyntaxPrinter(root, logger);
+        synt->print_info();
+    }
+    //SyntaxTreePrinter::print_nodes(tun[0]);
 
 
     // print_symbol_parse_list(fout, spls, pat->numFiles);

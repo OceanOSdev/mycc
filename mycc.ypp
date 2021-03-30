@@ -202,8 +202,8 @@
 
 %%
 
-translation_unit :                              { std::vector<Syntax::GlobalDeclarationNode*> g; driver.m_translation_unit = new Syntax::TranslationUnitNode(g); }
-                 | glob_decl_list               { driver.m_translation_unit = new Syntax::TranslationUnitNode($1); }
+translation_unit :                              { std::vector<Syntax::GlobalDeclarationNode*> g; driver.m_translation_units.push_back(new Syntax::TranslationUnitNode(g)); }
+                 | glob_decl_list               { driver.m_translation_units.push_back(new Syntax::TranslationUnitNode($1)); }
                  ;
 
 glob_decl_list : glob_decl                      { Syntax::GlobalDeclarationNode* p = $1; $$ = std::vector<Syntax::GlobalDeclarationNode*>(); $$.push_back(p); }

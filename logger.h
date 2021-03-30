@@ -28,6 +28,7 @@ public:
     ~Logger();
 
     void log_info(std::string str);
+    void log_info_nl(std::string str);
 
     /*
     * Logs the current file name, the line number, the text, and the token

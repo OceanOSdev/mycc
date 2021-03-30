@@ -6,8 +6,12 @@ Logger::~Logger() {
     }
 }
 
-void Logger::log_info(std::string str) {
+void Logger::log_info_nl(std::string str) {
     (*m_outstream) << str << std::endl;
+}
+
+void Logger::log_info(std::string str) {
+    (*m_outstream) << str;
 }
 
 std::string token_to_string(token_type token);

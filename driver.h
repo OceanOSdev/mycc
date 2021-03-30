@@ -21,7 +21,8 @@ public:
     void init_new_input();
     yy::parser::symbol_type lex();
     std::vector<LexemeDataNode> get_part_one_lexeme_list() const;
-    Syntax::TranslationUnitNode* get_translation_unit();
+    std::vector<Syntax::TranslationUnitNode*> get_translation_units();
+    void add_translation_unit(Syntax::TranslationUnitNode* tu);
     bool error_flag() const;
     friend class yy::parser;
     friend class Lexer;
@@ -40,6 +41,6 @@ private:
     yy::parser m_parser;
     yy::location m_location;
     std::vector<LexemeDataNode> part_one_lexeme_list;
-    Syntax::TranslationUnitNode* m_translation_unit;
+    std::vector<Syntax::TranslationUnitNode*> m_translation_units;
 };
 #endif

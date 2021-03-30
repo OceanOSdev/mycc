@@ -36,3 +36,4 @@
 #include "syntax/global_struct_declaration_node.h"
 #include "syntax/global_variable_group_declaration_node.h"
 #include "syntax/translation_unit_node.h"
+#include "syntax/program_node.h"

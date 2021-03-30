@@ -8,6 +8,7 @@
 
 namespace SyntaxTreePrinter {
     void print_syntax_token_type(Syntax::SyntaxTokenType token, std::string indent);
+    std::string syntax_token_type_as_string(Syntax::SyntaxTokenType token);
 
     void print_node(Syntax::SyntaxNode* n, std::string indent);
 
@@ -91,12 +92,25 @@ namespace SyntaxTreePrinter {
             print_node(id_node, indent + "│  ");
             std::cout << indent + "├──";
             auto a_t = ae->assignment_type();
-            print_syntax_token_type(a_t, indent + "│  ");
+            std::cout << syntax_token_type_as_string(a_t) << std::endl;
             std::cout << indent + "└──";
             auto node = ae->expression();
             print_node(node, indent + "   ");
 
         } else if (auto cle = dynamic_cast<Syntax::CallExpressionNode*>(e)) {
+            std::cout << "[Call Expr]:" << std::endl;
+            std::cout << indent + "├──" << "[name]: " << cle->name() << std::endl;
+            auto exprs = cle->expressions();
+            std::vector<Syntax::ExpressionNode*>::iterator expr_iter;
+            auto last = std::prev(exprs.end(), 1);
+            for (expr_iter = exprs.begin(); expr_iter != exprs.end(); expr_iter++) {
+                bool final = (expr_iter == last);
+                std::string ind = final ? "└──" : "├──"; 
+                std::string mark2 = final ?  "   " : "│  ";
+                auto node = *expr_iter;
+                std::cout << indent << ind;
+                print_node(node, indent + mark2);
+            }
 
         } else if (auto ne = dynamic_cast<Syntax::NameExpressionNode*>(e)) {
             std::cout << "[Name Expr]: ";
@@ -104,12 +118,41 @@ namespace SyntaxTreePrinter {
             std::cout << std::endl;
 
         } else if (auto ine = dynamic_cast<Syntax::IndexExpressionNode*>(e)) {
+            std::cout << "[Index Expr]:";
+            std::cout << std::endl << indent + "├──" << "[ident]: " << ine->name() << std::endl;
+            std::cout << indent + "└──";
+            auto node = ine->expression();
+            print_node(node, indent + "   ");
 
         } else if (auto me = dynamic_cast<Syntax::MemberExpressionNode*>(e)) {
+            std::cout << "[Member Expr]:";
+            std::cout << std::endl << indent + "├──" << "[LHS]: ";
+            auto lhs = me->encapsulator();
+            std::cout << std::endl;
+            std::cout << indent + "│  " + "└──";
+            print_node(lhs, indent + "│  ");
+            std::cout << indent + "└──";
+            auto node = me->member();
+            print_node(node, indent + "   ");
 
         } else if (auto ue = dynamic_cast<Syntax::UnaryExpressionNode*>(e)) {
+            std::cout << "[Unary Expr]:";
+            std::cout << std::endl << indent + "├──" << "[OP]: " << syntax_token_type_as_string(ue->syntax_token_type());
+            std::cout << std::endl;
+            std::cout << indent + "└──";
+            auto node = ue->expression();
+            print_node(node, indent + "   ");
 
         } else if (auto be = dynamic_cast<Syntax::BinaryExpressionNode*>(e)) {
+            std::cout << "[Binary Expr]:" << std::endl;
+            std::cout << indent + "├──";
+            auto lnode = be->left_expression();
+            print_node(lnode, indent + "│  ");
+            std::cout << indent + "├──" << "[OP]: " << syntax_token_type_as_string(be->syntax_token_type());
+            std::cout << std::endl;
+            std::cout << indent + "└──";
+            auto node = be->right_expression();
+            print_node(node, indent + "   ");
 
         } else if (auto lve = dynamic_cast<Syntax::LiteralValExpressionNode*>(e)) {
             std::cout << "[Literal Val Expr]: ";
@@ -131,8 +174,112 @@ namespace SyntaxTreePrinter {
         }
     }
 
-    void print_statement_node(Syntax::StatementNode* s, std::string indent) {
+    void print_block_statement_node(Syntax::BlockStatementNode* node, std::string indent) {
+        std::cout << "[Block]:" << std::endl;
+        auto stmts = node->statements();
+        std::vector<Syntax::StatementNode*>::iterator iter;
+        auto last = std::prev(stmts.end(),1);
+        for (iter = stmts.begin(); iter != stmts.end(); iter++) {
+            bool final = (iter == last);
+            std::string ind = final ? "└──" : "├──"; 
+            std::string mark2 = final ?  "   " : "│  ";
+            auto fnode = *iter;
+            std::cout << indent << ind;
+            print_node(fnode, indent + mark2);
+        }
+    }
 
+    void print_break_statement_node(Syntax::BreakStatementNode* node, std::string indent) {
+        std::cout << "[BREAK]" << std::endl;
+    }
+
+    void print_continue_statement_node(Syntax::ContinueStatementNode* node, std::string indent) {
+        std::cout << "[CONTINUE]" << std::endl;
+    }
+
+    void print_do_while_statement_node(Syntax::DoWhileStatementNode* node, std::string indent) {
+        std::cout << "[DOWHILE]:" << std::endl;
+        std::cout << indent + "├──" << "[BODY]:" << std::endl;
+        print_node(node->body_statement(), indent + "│  ");
+        std::cout << indent + "└──" << "[COND]:" << std::endl;
+        print_node(node->conditional_expression(), indent + "   ");
+    }
+
+    void print_expression_statement_node(Syntax::ExpressionStatementNode* node, std::string indent) {
+        print_node(node->expression(), indent);
+    }
+
+    void print_for_statement_node(Syntax::ForStatementNode* node, std::string indent) {
+
+    }
+
+    void print_if_statement_node(Syntax::IfStatementNode* node, std::string indent) {
+        std::cout << "[IF]:" << std::endl;
+        std::cout << indent + "├──" << "[COND]:" << std::endl;
+        print_node(node->condition(), indent + "│  ");
+        std::string marker = "├──";
+        std::string mind = "│  ";
+        if (!node->has_else_statement()) {
+            marker = "└──";
+            mind = "   ";
+        }
+        std::cout << indent + marker << "[THEN]:" << std::endl;
+        print_node(node->then_statement(), indent + mind);
+
+        if (node->has_else_statement()) {
+            std::cout << indent + "└──" << "[ELSE]:" << std::endl;
+            print_node(node->then_statement(), indent + "   ");
+        }
+    }
+
+    void print_return_statement_node(Syntax::ReturnStatementNode* node, std::string indent) {
+        std::cout << "[RETURN]:" << std::endl;
+        if (!node->is_empty_return()) {
+            std::cout << indent + "└──";
+            print_node(node->expression(), indent + "   ");
+        }
+    }
+
+    void print_while_statement_node(Syntax::WhileStatementNode* node, std::string indent) {
+        std::cout << "[WHILE]:" << std::endl;
+        std::cout << indent + "├──" << "[COND]:" << std::endl;
+        std::string tind = indent + "│  ";
+        std::cout << tind + "└──";
+        print_node(node->conditional_expression(), tind  + "   ");
+        std::cout << indent + "└──" << "[BODY]:" << std::endl;
+        print_node(node->body_statement(), indent + "   ");
+    }
+
+
+    void print_statement_node(Syntax::StatementNode* s, std::string indent) {
+        if (auto blk = dynamic_cast<Syntax::BlockStatementNode*>(s)) {
+            print_block_statement_node(blk, indent);
+
+        } else if (auto brk = dynamic_cast<Syntax::BreakStatementNode*>(s)) {
+            print_break_statement_node(brk, indent);
+
+        } else if (auto cont = dynamic_cast<Syntax::ContinueStatementNode*>(s)) {
+            print_continue_statement_node(cont, indent);
+
+        } else if (auto dow = dynamic_cast<Syntax::DoWhileStatementNode*>(s)) {
+            print_do_while_statement_node(dow, indent);
+
+        } else if (auto exprst = dynamic_cast<Syntax::ExpressionStatementNode*>(s)) {
+            print_expression_statement_node(exprst, indent);
+
+        } else if (auto forst = dynamic_cast<Syntax::ForStatementNode*>(s)) {
+            print_for_statement_node(forst, indent);
+
+        } else if (auto ifst = dynamic_cast<Syntax::IfStatementNode*>(s)) {
+            print_if_statement_node(ifst, indent);
+
+        } else if (auto retst = dynamic_cast<Syntax::ReturnStatementNode*>(s)) {
+            print_return_statement_node(retst, indent);
+
+        } else if (auto whilest = dynamic_cast<Syntax::WhileStatementNode*>(s)) {
+            print_while_statement_node(whilest, indent);
+
+        }
     }
 
     void print_global_declaration_node(Syntax::GlobalDeclarationNode* g, std::string indent) {
@@ -146,7 +293,40 @@ namespace SyntaxTreePrinter {
             print_node(fp->function_declaration(), indent);
 
         } else if (auto fd = dynamic_cast<Syntax::FunctionDefinitionNode*>(g)) {
+            std::cout << "[FUNC DEF]:" << std::endl;
+            
+            std::cout << indent + "├──" << "[LOCALDECS]:" << std::endl;
+            auto local_decs = fd->local_declarations();
+            std::string tind = indent +"│  ";
+            std::vector<Syntax::LocalDeclarationNode*>::iterator iter;
+            auto last = std::prev(local_decs.end(),1);
+            for (iter = local_decs.begin(); iter != local_decs.end(); iter++) {
+                bool final = (iter == last);
+                std::string ind = final ? "└──" : "├──"; 
+                std::string mark2 = final ?  "   " : "│  ";
+                auto fnode = *iter;
+                std::cout << tind << ind;
+                print_node(fnode, tind + mark2);
+            }
 
+            
+            std::cout << indent + "└──" << "[STMTS]:" << std::endl;
+            std::string sind = indent + "   ";
+            auto stmts = fd->statements();
+            std::vector<Syntax::StatementNode*>::iterator stmtiter;
+            auto laststmt = std::prev(stmts.end(),1);
+            for (stmtiter = stmts.begin(); stmtiter != stmts.end(); stmtiter++) {
+                bool final = (stmtiter == laststmt);
+                std::string ind = final ? "└──" : "├──"; 
+                std::string mark2 = final ?  "   " : "│  ";
+                auto fnode = *stmtiter;
+                std::cout << sind << ind;
+                print_node(fnode, sind + mark2);
+            }
+            //std::cout << indent + "├──";
+            //print_node(fd->function_declaration(), indent + "│  ");
+            //std::cout << indent + "├──";
+            //print_node(fd->local_declarations(), indent + "│  ");
         }
     }
 
@@ -319,6 +499,83 @@ namespace SyntaxTreePrinter {
                 break;
             case Syntax::SyntaxTokenType::LE:
                 std::cout << indent << "LE" << std::endl;
+                break;
+        }
+    }
+
+    std::string syntax_token_type_as_string(Syntax::SyntaxTokenType token) {
+        switch(token) {
+            case Syntax::SyntaxTokenType::PLUS:
+                return "PLUS";
+                break;
+            case Syntax::SyntaxTokenType::MINUS:
+                return "MINUS";
+                break;
+            case Syntax::SyntaxTokenType::STAR:
+                return "STAR";
+                break;
+            case Syntax::SyntaxTokenType::SLASH:
+                return "SLASH";
+                break;
+            case Syntax::SyntaxTokenType::MOD:
+                return "MOD";
+                break;
+            case Syntax::SyntaxTokenType::TILDE:
+                return "TILDE";
+                break;
+            case Syntax::SyntaxTokenType::PIPE:
+                return "PIPE";
+                break;
+            case Syntax::SyntaxTokenType::AMP:
+                return "AMP";
+                break;
+            case Syntax::SyntaxTokenType::BANG:
+                return "BANG";
+                break;
+            case Syntax::SyntaxTokenType::DPIPE:
+                return "DPIPE";
+                break;
+            case Syntax::SyntaxTokenType::DAMP:
+                return "DAMP";
+                break;
+            case Syntax::SyntaxTokenType::ASSIGN:
+                return "ASSIGN";
+                break;
+            case Syntax::SyntaxTokenType::PLUSASSIGN:
+                return "PLUSASSIGN";
+                break;
+            case Syntax::SyntaxTokenType::MINUSASSIGN:
+                return "MINUSASSIGN";
+                break;
+            case Syntax::SyntaxTokenType::STARASSIGN:
+                return "STARASSIGN";
+                break;
+            case Syntax::SyntaxTokenType::SLASHASSIGN:
+                return "SLASHASSIGN";
+                break;
+            case Syntax::SyntaxTokenType::INCR:
+                return "INCR";
+                break;
+            case Syntax::SyntaxTokenType::DECR:
+                return "DECR";
+                break;
+            case Syntax::SyntaxTokenType::EQUALS:
+                return "EQUALS";
+                break;
+            case Syntax::SyntaxTokenType::NEQUAL:
+                return "NEQUAL";
+                break;
+            case Syntax::SyntaxTokenType::GT:
+                return "GT";
+                break;
+            case Syntax::SyntaxTokenType::GE:
+                return "GE";
+                break;
+            case Syntax::SyntaxTokenType::LT:
+                return "LT";
+                break;
+            case Syntax::SyntaxTokenType::LE:
+                return "LE";
                 break;
         }
     }
