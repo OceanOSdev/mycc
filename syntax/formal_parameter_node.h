@@ -1,3 +1,4 @@
+#pragma once
 #ifndef SYNTAX_FORMAL_PARAMETER_NODE_H
 #define SYNTAX_FORMAL_PARAMETER_NODE_H
 

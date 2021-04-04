@@ -1,3 +1,4 @@
+#pragma once
 #ifndef SYNTAX_UNARY_EXPRESSION_NODE_H
 #define SYNTAX_UNARY_EXPRESSION_NODE_H
 

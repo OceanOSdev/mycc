@@ -1,3 +1,4 @@
+#pragma once
 #ifndef SYNTAX_TRANSLATION_UNIT_NODE_H
 #define SYNTAX_TRANSLATION_UNIT_NODE_H
 

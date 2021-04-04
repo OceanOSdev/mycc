@@ -1,3 +1,4 @@
+#pragma once
 #ifndef SYNTAX_PROGRAM_NODE_H
 #define SYNTAX_PROGRAM_NODE_H
 

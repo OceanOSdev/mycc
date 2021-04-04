@@ -1,3 +1,4 @@
+#pragma once
 #ifndef SYNTAX_DO_WHILE_STATEMENT_NODE_H
 #define SYNTAX_DO_WHILE_STATEMENT_NODE_H
 
