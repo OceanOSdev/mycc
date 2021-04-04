@@ -6,20 +6,27 @@ SRCS += decrement_expression_node.cpp continue_statement_node.cpp cast_expressio
 CXX = g++
 FLAGS = -std=c++17 -Wall -O
 
+OBJDIR = ../bin
+
 OUTPUTDIR = ../lib
 BIN = libSyntax.a
 
-OBJS = $(SRCS:.cpp=.o)
+OBJS = $(patsubst %.cpp,$(OBJDIR)/%.o,$(SRCS))
+LDOBJS = $(OBJS:.o=.ro)
 
 all: $(OUTPUTDIR)/$(BIN)
 
-$(OUTPUTDIR)/$(BIN) : $(OBJS)
+$(OUTPUTDIR)/$(BIN) : $(LDOBJS)
 	ar rcs $@ $^
 
-%.o: %.cpp $(CORE_PCH)
+
+$(OBJDIR)/%.o: %.cpp
 	$(CXX) $(FLAGS) -c $< -o $@
 
+$(OBJDIR)/%.ro: $(OBJDIR)/%.o
+	$(CXX) -Wl,-i -nostdlib -nostartfiles -o $@ $<
 
 clean:
 	rm -f $(BIN)
 	rm -f $(OBJS)
+	rm -f $(LDOBJS)

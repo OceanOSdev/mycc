@@ -8,6 +8,7 @@
 
 SRCS = driver.cpp arg_parser.cpp logger.cpp syntax_token.cpp part_two_syntax_check.cpp syntax_tree_printer.cpp main.cpp
 
+OBJDIR = bin
 
 TARG = mycc
 
@@ -16,11 +17,13 @@ FLAGS = -std=c++17 -Wall -O
 LDFLAGS = -L ./lib -lSyntax
 BFLAGS = -d
 
-OBJS = $(SRCS:.cpp=.o)
-# SynOBJS = $(SYNSRC:.cpp=.o)
+OBJS = $(OBJDIR)/mycc.tab.o $(OBJDIR)/lexer.o
+OBJS += $(patsubst %.cpp,$(OBJDIR)/%.o,$(SRCS))
 
 CORE_PCH_FILE = pch.h
 CORE_PCH = $(CORE_PCH_FILE).gch
+
+.PHONY: all nodoc synmake debug benchmark verbose clean cclean destroy docs
 
 all: nodoc docs
 
@@ -36,10 +39,10 @@ benchmark: $(TARG)
 verbose: FLAGS += -v
 verbose: $(TARG)
 
-ALLOBJS = mycc.tab.o lexer.o $(OBJS)
+LDOBJS = $(OBJS:%.o=%.ro)
 
 
-$(TARG): $(ALLOBJS)
+$(TARG): $(LDOBJS)
 	$(CXX) $^ -o $@ $(LDFLAGS)
 
 # $(TARG): $(SynOBJS) mycc.tab.o lexer.o $(OBJS)
@@ -51,8 +54,11 @@ synmake:
 $(CORE_PCH): $(CORE_PCH_FILE)
 	$(CXX) -o $@ $<
 
-%.o: %.cpp $(CORE_PCH)
+$(OBJDIR)/%.o: %.cpp $(CORE_PCH)
 	$(CXX) $(FLAGS) -c $< -o $@
+
+$(OBJDIR)/%.ro: $(OBJDIR)/%.o
+	$(CXX) -Wl,-i -nostdlib -nostartfiles -o $@ $<
 
 # %.o: %.cpp $(CORE_PCH)
 # 	$(CXX) $(FLAGS) -include $(CORE_PCH_FILE) -c $< -o $@
@@ -64,15 +70,17 @@ mycc.tab.hpp mycc.tab.cpp: mycc.ypp
 	bison mycc.ypp
 
 clean:
-	rm -f $(OBJS) $(TARG)
+	rm -f $(OBJS) $(LDALLOBJS) $(TARG)
 	rm -f *.out *.aux *.log *.fls *.fdb_latexmk *.synctex*
 	rm -f lexer.cpp lexer.o mycc.tab.hpp mycc.tab.cpp mycc.tab.o
 	rm -f location.hh
 	rm -f vgcore.*
 
-destroy: clean
-	rm -f *.pdf
+cclean: clean
 	$(MAKE) -C syntax clean
+
+destroy: cclean
+	rm -f *.pdf
 	rm -f $(CORE_PCH)
 
 # have to run pdflatex twice to get refs to work

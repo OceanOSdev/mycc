@@ -1,4 +1,5 @@
 *.o
+*.ro
 mycc
 lexer.cpp
 mycc.tab.hpp 
