@@ -2,8 +2,8 @@
 
 namespace Syntax {
 
-DecrementExpressionNode::DecrementExpressionNode(ExpressionNode* id, bool post) :
-    id_expr(id), is_post_decrement(post) { }
+DecrementExpressionNode::DecrementExpressionNode(SyntaxToken* token, ExpressionNode* id, bool post) :
+    ExpressionNode(token), id_expr(id), is_post_decrement(post) { }
 
 DecrementExpressionNode::~DecrementExpressionNode() {
     delete id_expr;

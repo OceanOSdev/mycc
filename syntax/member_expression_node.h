@@ -12,7 +12,7 @@ private:
     ExpressionNode* lhs;
     ExpressionNode* rhs;
 public:
-    MemberExpressionNode(ExpressionNode* e, ExpressionNode* m);
+    MemberExpressionNode(SyntaxToken* token, ExpressionNode* e, ExpressionNode* m);
 
     ~MemberExpressionNode();
 

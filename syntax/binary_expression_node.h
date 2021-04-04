@@ -3,17 +3,16 @@
 #define SYNTAX_BINARY_EXPRESSION_NODE_H
 
 #include "expression_node.h"
-#include "operator_tokens.h"
+#include "syntax_token.h"
 
 namespace Syntax {
-
 class BinaryExpressionNode : public ExpressionNode {
 private:
     ExpressionNode* left_expr;
-    SyntaxTokenType token_type;
+    token_type_t token_type;
     ExpressionNode* right_expr;
 public:
-    BinaryExpressionNode(ExpressionNode* l_expr, SyntaxTokenType tt, ExpressionNode* r_expr);
+    BinaryExpressionNode(SyntaxToken* token, ExpressionNode* l_expr, token_type_t tt, ExpressionNode* r_expr);
 
     ~BinaryExpressionNode();
 
@@ -25,7 +24,7 @@ public:
     /*
      * The binary operation stored as a token.
      */
-    SyntaxTokenType syntax_token_type() const;
+    token_type_t syntax_token_type() const;
 
     /*
      * The expression on the right-hand side of the operator.

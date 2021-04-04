@@ -2,8 +2,8 @@
 
 namespace Syntax {
 
-NameExpressionNode::NameExpressionNode(std::string id) : 
-    identifier(id) {}
+NameExpressionNode::NameExpressionNode(SyntaxToken* token, std::string id) : 
+    ExpressionNode(token), identifier(id) {}
 
 NameExpressionNode::~NameExpressionNode() {}
 

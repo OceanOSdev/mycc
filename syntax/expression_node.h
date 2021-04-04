@@ -5,10 +5,12 @@
 #include "syntax_node.h"
 
 namespace Syntax {
-
+class SyntaxToken;
 class ExpressionNode : public SyntaxNode {
+protected:
+    SyntaxToken* m_token;
 public:
-    ExpressionNode() {}
+    ExpressionNode(SyntaxToken* token);
 };
 
 }

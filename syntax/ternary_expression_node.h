@@ -12,7 +12,7 @@ private:
     ExpressionNode* true_expr;
     ExpressionNode* false_expr;
 public:
-    TernaryExpressionNode(ExpressionNode* expr, ExpressionNode* t_expr, ExpressionNode* f_expr);
+    TernaryExpressionNode(SyntaxToken* token, ExpressionNode* expr, ExpressionNode* t_expr, ExpressionNode* f_expr);
 
     ~TernaryExpressionNode();
 

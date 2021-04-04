@@ -1,7 +1,6 @@
 #pragma once
 
 #include "syntax/formal_parameter_node.h"
-#include "syntax/operator_tokens.h"
 #include "syntax/expression_node.h"
 #include "syntax/cast_expression_node.h"
 #include "syntax/ternary_expression_node.h"

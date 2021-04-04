@@ -13,7 +13,7 @@ private:
     std::string identifier;
     std::vector<ExpressionNode*> expression_list;
 public:
-    CallExpressionNode(std::string id, std::vector<ExpressionNode*> expr_list);
+    CallExpressionNode(SyntaxToken* token, std::string id, std::vector<ExpressionNode*> expr_list);
     
     ~CallExpressionNode();
 

@@ -2,8 +2,8 @@
 
 namespace Syntax {
 
-AssignmentExpressionNode::AssignmentExpressionNode(ExpressionNode* id_exp, SyntaxTokenType assign, ExpressionNode* expr) :
-    lhs(id_exp), assignment_token(assign), rhs(expr) {}
+AssignmentExpressionNode::AssignmentExpressionNode(SyntaxToken* token, ExpressionNode* id_exp, token_type_t assign, ExpressionNode* expr) :
+    ExpressionNode(token), lhs(id_exp), assignment_token(assign), rhs(expr) {}
 
 AssignmentExpressionNode::~AssignmentExpressionNode() {
     delete lhs;
@@ -21,7 +21,7 @@ ExpressionNode* AssignmentExpressionNode::identifier_expression() const {
  * The type of assignment expression being performed on
  * the identifier.
  */
-SyntaxTokenType AssignmentExpressionNode::assignment_type() const { 
+token_type_t AssignmentExpressionNode::assignment_type() const { 
     return assignment_token; 
 }
 

@@ -2,8 +2,8 @@
 
 namespace Syntax {
 
-BinaryExpressionNode::BinaryExpressionNode(ExpressionNode* l_expr, SyntaxTokenType tt, ExpressionNode* r_expr) :
-    left_expr(l_expr), token_type(tt), right_expr(r_expr) {}
+BinaryExpressionNode::BinaryExpressionNode(SyntaxToken* token, ExpressionNode* l_expr, token_type_t tt, ExpressionNode* r_expr) :
+    ExpressionNode(token), left_expr(l_expr), token_type(tt), right_expr(r_expr) {}
 
 BinaryExpressionNode::~BinaryExpressionNode() {
     delete left_expr;
@@ -20,7 +20,7 @@ ExpressionNode* BinaryExpressionNode::left_expression() const {
 /*
  * The binary operation stored as a token.
  */
-SyntaxTokenType BinaryExpressionNode::syntax_token_type() const { 
+token_type_t BinaryExpressionNode::syntax_token_type() const { 
     return token_type; 
 }
 

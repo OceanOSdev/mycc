@@ -2,8 +2,8 @@
 
 namespace Syntax {
 
-IncrementExpressionNode::IncrementExpressionNode(ExpressionNode* id, bool post) :
-    id_expr(id), is_post_increment(post) { }
+IncrementExpressionNode::IncrementExpressionNode(SyntaxToken* token, ExpressionNode* id, bool post) :
+    ExpressionNode(token), id_expr(id), is_post_increment(post) { }
 
 IncrementExpressionNode::~IncrementExpressionNode() {
     delete id_expr;

@@ -2,8 +2,8 @@
 
 namespace Syntax {
 
-MemberExpressionNode::MemberExpressionNode(ExpressionNode* e, ExpressionNode* m) : 
-    lhs(e), rhs(m) {}
+MemberExpressionNode::MemberExpressionNode(SyntaxToken* token, ExpressionNode* e, ExpressionNode* m) : 
+    ExpressionNode(token), lhs(e), rhs(m) {}
 
 MemberExpressionNode::~MemberExpressionNode() { 
     delete lhs;

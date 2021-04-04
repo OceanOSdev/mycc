@@ -11,7 +11,7 @@ class NameExpressionNode : public ExpressionNode {
 private:
     std::string identifier;
 public:
-    NameExpressionNode(std::string id);
+    NameExpressionNode(SyntaxToken* token, std::string id);
 
     ~NameExpressionNode();
 

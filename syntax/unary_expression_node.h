@@ -3,23 +3,23 @@
 #define SYNTAX_UNARY_EXPRESSION_NODE_H
 
 #include "expression_node.h"
-#include "operator_tokens.h"
+#include "syntax_token.h"
 
 namespace Syntax {
 
 class UnaryExpressionNode : public ExpressionNode {
 private:
-    SyntaxTokenType token_type;
+    token_type_t token_type;
     ExpressionNode* expr;
 public:
-    UnaryExpressionNode(SyntaxTokenType tt, ExpressionNode* r_expr);
+    UnaryExpressionNode(SyntaxToken* token, token_type_t tt, ExpressionNode* r_expr);
 
     ~UnaryExpressionNode();
 
     /*
      * The binary operation stored as a token.
      */
-    SyntaxTokenType syntax_token_type() const;
+    token_type_t syntax_token_type() const;
 
     /*
      * The expression.

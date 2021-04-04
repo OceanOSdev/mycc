@@ -11,7 +11,7 @@ private:
     ExpressionNode* id_expr;
     bool is_post_decrement;
 public:
-    DecrementExpressionNode(ExpressionNode* id, bool post);
+    DecrementExpressionNode(SyntaxToken* token, ExpressionNode* id, bool post);
 
     ~DecrementExpressionNode();
 

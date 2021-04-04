@@ -12,7 +12,7 @@ private:
     std::string casting_type;
     ExpressionNode* expression_node;
 public:
-    CastExpressionNode(std::string type, ExpressionNode* expr);
+    CastExpressionNode(SyntaxToken* token, std::string type, ExpressionNode* expr);
 
     ~CastExpressionNode();
 

@@ -2,8 +2,8 @@
 
 namespace Syntax {
 
-CallExpressionNode::CallExpressionNode(std::string id, std::vector<ExpressionNode*> expr_list) :
-    identifier(id), expression_list(expr_list) {}
+CallExpressionNode::CallExpressionNode(SyntaxToken* token, std::string id, std::vector<ExpressionNode*> expr_list) :
+    ExpressionNode(token), identifier(id), expression_list(expr_list) {}
 
 CallExpressionNode::~CallExpressionNode() {
     std::vector<ExpressionNode*>::iterator expr_iter;

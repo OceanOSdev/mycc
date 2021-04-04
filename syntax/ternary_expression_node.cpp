@@ -2,8 +2,8 @@
 
 namespace Syntax {
 
-TernaryExpressionNode::TernaryExpressionNode(ExpressionNode* expr, ExpressionNode* t_expr, ExpressionNode* f_expr) : 
-    mux_expr(expr), true_expr(t_expr), false_expr(f_expr) {}
+TernaryExpressionNode::TernaryExpressionNode(SyntaxToken* token, ExpressionNode* expr, ExpressionNode* t_expr, ExpressionNode* f_expr) : 
+    ExpressionNode(token), mux_expr(expr), true_expr(t_expr), false_expr(f_expr) {}
 
 TernaryExpressionNode::~TernaryExpressionNode() {
     delete mux_expr;

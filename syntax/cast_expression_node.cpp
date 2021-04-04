@@ -2,8 +2,8 @@
 
 namespace Syntax {
 
-CastExpressionNode::CastExpressionNode(std::string type, ExpressionNode* expr) :
-    casting_type(type), expression_node(expr) {}
+CastExpressionNode::CastExpressionNode(SyntaxToken* token, std::string type, ExpressionNode* expr) :
+    ExpressionNode(token), casting_type(type), expression_node(expr) {}
 
 CastExpressionNode::~CastExpressionNode() {
     delete expression_node;

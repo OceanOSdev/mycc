@@ -8,7 +8,7 @@ BlockStatementNode::BlockStatementNode(std::vector<StatementNode*> stmts) :
 BlockStatementNode::~BlockStatementNode() {
     std::vector<StatementNode*>::iterator stmt_iter;
     for (stmt_iter = stmt_nodes.begin(); stmt_iter != stmt_nodes.end(); stmt_iter++)
-        delete *stmt_iter;
+        delete *stmt_iter; 
 }
 
 /*

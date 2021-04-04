@@ -2,8 +2,8 @@
 
 namespace Syntax {
 
-UnaryExpressionNode::UnaryExpressionNode(SyntaxTokenType tt, ExpressionNode* r_expr) :
-        token_type(tt), expr(r_expr) {}
+UnaryExpressionNode::UnaryExpressionNode(SyntaxToken* token, token_type_t tt, ExpressionNode* r_expr) :
+        ExpressionNode(token), token_type(tt), expr(r_expr) {}
 
 UnaryExpressionNode::~UnaryExpressionNode() {
     delete expr;
@@ -12,7 +12,7 @@ UnaryExpressionNode::~UnaryExpressionNode() {
 /*
  * The binary operation stored as a token.
  */
-SyntaxTokenType UnaryExpressionNode::syntax_token_type() const { 
+token_type_t UnaryExpressionNode::syntax_token_type() const { 
     return token_type; 
 }
 

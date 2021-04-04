@@ -2,8 +2,8 @@
 
 namespace Syntax {
 
-IndexExpressionNode::IndexExpressionNode(std::string id, ExpressionNode* e) : 
-    identifier(id), expr(e) {}
+IndexExpressionNode::IndexExpressionNode(SyntaxToken* token, std::string id, ExpressionNode* e) : 
+    ExpressionNode(token), identifier(id), expr(e) {}
 
 IndexExpressionNode::~IndexExpressionNode() { 
     delete expr; 

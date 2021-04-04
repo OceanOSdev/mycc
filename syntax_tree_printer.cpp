@@ -1,14 +1,14 @@
 #include "pch.h"
+#include "syntax/syntax_token.h"
 #include <vector>
 #include <string>
 #include <iostream>
 #include "syntax_tree_printer.h"
-#include "type_checking_util.h"
 
 
 namespace SyntaxTreePrinter {
-    void print_syntax_token_type(Syntax::SyntaxTokenType token, std::string indent);
-    std::string syntax_token_type_as_string(Syntax::SyntaxTokenType token);
+    void print_syntax_token_type(Syntax::token_type_t token, std::string indent);
+    std::string syntax_token_type_as_string(Syntax::token_type_t token);
 
     void print_node(Syntax::SyntaxNode* n, std::string indent);
 
@@ -157,16 +157,16 @@ namespace SyntaxTreePrinter {
         } else if (auto lve = dynamic_cast<Syntax::LiteralValExpressionNode*>(e)) {
             std::cout << "[Literal Val Expr]: ";
             switch (lve->value_type()) {
-                case Syntax::LiteralValType::CHARCONST:
+                case Syntax::token_data_type::CHAR:
                     std::cout << lve->char_value();
                     break;
-                case Syntax::LiteralValType::STRCONST:
+                case Syntax::token_data_type::STRING:
                     std::cout << lve->string_value();
                     break;
-                case Syntax::LiteralValType::INTCONST:
+                case Syntax::token_data_type::INT:
                     std::cout << lve->int_value();
                     break;
-                case Syntax::LiteralValType::REALCONST:
+                case Syntax::token_data_type::FLOAT:
                     std::cout << lve->float_value();
                     break;
             }
@@ -426,157 +426,161 @@ namespace SyntaxTreePrinter {
         print_node(n, "");
     }
 
-    void print_syntax_token_type(Syntax::SyntaxTokenType token, std::string indent) {
+    void print_syntax_token_type(Syntax::token_type_t token, std::string indent) {
         switch(token) {
-            case Syntax::SyntaxTokenType::PLUS:
+            case Syntax::token_type_t::PLUS:
                 std::cout << indent << "PLUS" << std::endl;
                 break;
-            case Syntax::SyntaxTokenType::MINUS:
+            case Syntax::token_type_t::MINUS:
                 std::cout << indent << "MINUS" << std::endl;
                 break;
-            case Syntax::SyntaxTokenType::STAR:
+            case Syntax::token_type_t::STAR:
                 std::cout << indent << "STAR" << std::endl;
                 break;
-            case Syntax::SyntaxTokenType::SLASH:
+            case Syntax::token_type_t::SLASH:
                 std::cout << indent << "SLASH" << std::endl;
                 break;
-            case Syntax::SyntaxTokenType::MOD:
+            case Syntax::token_type_t::MOD:
                 std::cout << indent << "MOD" << std::endl;
                 break;
-            case Syntax::SyntaxTokenType::TILDE:
+            case Syntax::token_type_t::TILDE:
                 std::cout << indent << "TILDE" << std::endl;
                 break;
-            case Syntax::SyntaxTokenType::PIPE:
+            case Syntax::token_type_t::PIPE:
                 std::cout << indent << "PIPE" << std::endl;
                 break;
-            case Syntax::SyntaxTokenType::AMP:
+            case Syntax::token_type_t::AMP:
                 std::cout << indent << "AMP" << std::endl;
                 break;
-            case Syntax::SyntaxTokenType::BANG:
+            case Syntax::token_type_t::BANG:
                 std::cout << indent << "BANG" << std::endl;
                 break;
-            case Syntax::SyntaxTokenType::DPIPE:
+            case Syntax::token_type_t::DPIPE:
                 std::cout << indent << "DPIPE" << std::endl;
                 break;
-            case Syntax::SyntaxTokenType::DAMP:
+            case Syntax::token_type_t::DAMP:
                 std::cout << indent << "DAMP" << std::endl;
                 break;
-            case Syntax::SyntaxTokenType::ASSIGN:
+            case Syntax::token_type_t::ASSIGN:
                 std::cout << indent << "ASSIGN" << std::endl;
                 break;
-            case Syntax::SyntaxTokenType::PLUSASSIGN:
+            case Syntax::token_type_t::PLUSASSIGN:
                 std::cout << indent << "PLUSASSIGN" << std::endl;
                 break;
-            case Syntax::SyntaxTokenType::MINUSASSIGN:
+            case Syntax::token_type_t::MINUSASSIGN:
                 std::cout << indent << "MINUSASSIGN" << std::endl;
                 break;
-            case Syntax::SyntaxTokenType::STARASSIGN:
+            case Syntax::token_type_t::STARASSIGN:
                 std::cout << indent << "STARASSIGN" << std::endl;
                 break;
-            case Syntax::SyntaxTokenType::SLASHASSIGN:
+            case Syntax::token_type_t::SLASHASSIGN:
                 std::cout << indent << "SLASHASSIGN" << std::endl;
                 break;
-            case Syntax::SyntaxTokenType::INCR:
+            case Syntax::token_type_t::INCR:
                 std::cout << indent << "INCR" << std::endl;
                 break;
-            case Syntax::SyntaxTokenType::DECR:
+            case Syntax::token_type_t::DECR:
                 std::cout << indent << "DECR" << std::endl;
                 break;
-            case Syntax::SyntaxTokenType::EQUALS:
+            case Syntax::token_type_t::EQUALS:
                 std::cout << indent << "EQUALS" << std::endl;
                 break;
-            case Syntax::SyntaxTokenType::NEQUAL:
+            case Syntax::token_type_t::NEQUAL:
                 std::cout << indent << "NEQUAL" << std::endl;
                 break;
-            case Syntax::SyntaxTokenType::GT:
+            case Syntax::token_type_t::GT:
                 std::cout << indent << "GT" << std::endl;
                 break;
-            case Syntax::SyntaxTokenType::GE:
+            case Syntax::token_type_t::GE:
                 std::cout << indent << "GE" << std::endl;
                 break;
-            case Syntax::SyntaxTokenType::LT:
+            case Syntax::token_type_t::LT:
                 std::cout << indent << "LT" << std::endl;
                 break;
-            case Syntax::SyntaxTokenType::LE:
+            case Syntax::token_type_t::LE:
                 std::cout << indent << "LE" << std::endl;
+                break;
+            default:
                 break;
         }
     }
 
-    std::string syntax_token_type_as_string(Syntax::SyntaxTokenType token) {
+    std::string syntax_token_type_as_string(Syntax::token_type_t token) {
         switch(token) {
-            case Syntax::SyntaxTokenType::PLUS:
+            case Syntax::token_type_t::PLUS:
                 return "PLUS";
                 break;
-            case Syntax::SyntaxTokenType::MINUS:
+            case Syntax::token_type_t::MINUS:
                 return "MINUS";
                 break;
-            case Syntax::SyntaxTokenType::STAR:
+            case Syntax::token_type_t::STAR:
                 return "STAR";
                 break;
-            case Syntax::SyntaxTokenType::SLASH:
+            case Syntax::token_type_t::SLASH:
                 return "SLASH";
                 break;
-            case Syntax::SyntaxTokenType::MOD:
+            case Syntax::token_type_t::MOD:
                 return "MOD";
                 break;
-            case Syntax::SyntaxTokenType::TILDE:
+            case Syntax::token_type_t::TILDE:
                 return "TILDE";
                 break;
-            case Syntax::SyntaxTokenType::PIPE:
+            case Syntax::token_type_t::PIPE:
                 return "PIPE";
                 break;
-            case Syntax::SyntaxTokenType::AMP:
+            case Syntax::token_type_t::AMP:
                 return "AMP";
                 break;
-            case Syntax::SyntaxTokenType::BANG:
+            case Syntax::token_type_t::BANG:
                 return "BANG";
                 break;
-            case Syntax::SyntaxTokenType::DPIPE:
+            case Syntax::token_type_t::DPIPE:
                 return "DPIPE";
                 break;
-            case Syntax::SyntaxTokenType::DAMP:
+            case Syntax::token_type_t::DAMP:
                 return "DAMP";
                 break;
-            case Syntax::SyntaxTokenType::ASSIGN:
+            case Syntax::token_type_t::ASSIGN:
                 return "ASSIGN";
                 break;
-            case Syntax::SyntaxTokenType::PLUSASSIGN:
+            case Syntax::token_type_t::PLUSASSIGN:
                 return "PLUSASSIGN";
                 break;
-            case Syntax::SyntaxTokenType::MINUSASSIGN:
+            case Syntax::token_type_t::MINUSASSIGN:
                 return "MINUSASSIGN";
                 break;
-            case Syntax::SyntaxTokenType::STARASSIGN:
+            case Syntax::token_type_t::STARASSIGN:
                 return "STARASSIGN";
                 break;
-            case Syntax::SyntaxTokenType::SLASHASSIGN:
+            case Syntax::token_type_t::SLASHASSIGN:
                 return "SLASHASSIGN";
                 break;
-            case Syntax::SyntaxTokenType::INCR:
+            case Syntax::token_type_t::INCR:
                 return "INCR";
                 break;
-            case Syntax::SyntaxTokenType::DECR:
+            case Syntax::token_type_t::DECR:
                 return "DECR";
                 break;
-            case Syntax::SyntaxTokenType::EQUALS:
+            case Syntax::token_type_t::EQUALS:
                 return "EQUALS";
                 break;
-            case Syntax::SyntaxTokenType::NEQUAL:
+            case Syntax::token_type_t::NEQUAL:
                 return "NEQUAL";
                 break;
-            case Syntax::SyntaxTokenType::GT:
+            case Syntax::token_type_t::GT:
                 return "GT";
                 break;
-            case Syntax::SyntaxTokenType::GE:
+            case Syntax::token_type_t::GE:
                 return "GE";
                 break;
-            case Syntax::SyntaxTokenType::LT:
+            case Syntax::token_type_t::LT:
                 return "LT";
                 break;
-            case Syntax::SyntaxTokenType::LE:
+            case Syntax::token_type_t::LE:
                 return "LE";
                 break;
+            default:
+                return "ERROR";
         }
     }
 }

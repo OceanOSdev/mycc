@@ -1,5 +1,5 @@
 #include "syntax_token.h"
-
+namespace Syntax {
 SyntaxToken::SyntaxToken(std::string text, 
             token_type_t token,
             std::string filename,
@@ -218,4 +218,6 @@ token_data_type SyntaxToken::get_type() const {
             return token_data_type::STRING;
         }
     }, m_semantic_value);
+}
+
 }

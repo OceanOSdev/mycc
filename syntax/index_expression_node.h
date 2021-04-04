@@ -12,7 +12,7 @@ private:
     std::string identifier;
     ExpressionNode* expr;
 public:
-    IndexExpressionNode(std::string id, ExpressionNode* e);
+    IndexExpressionNode(SyntaxToken* token, std::string id, ExpressionNode* e);
 
     ~IndexExpressionNode();
 

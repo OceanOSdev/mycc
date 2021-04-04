@@ -11,7 +11,7 @@ private:
     ExpressionNode* id_expr;
     bool is_post_increment;
 public:
-    IncrementExpressionNode(ExpressionNode* id, bool post);
+    IncrementExpressionNode(SyntaxToken* token, ExpressionNode* id, bool post);
 
     ~IncrementExpressionNode();
 

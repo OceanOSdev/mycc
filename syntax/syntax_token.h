@@ -1,8 +1,10 @@
+#pragma once
 #ifndef SYNTAX_TOKEN_H
 #define SYNTAX_TOKEN_H
 #include <string>
 #include <variant>
 
+namespace Syntax {
 // Hack to get around bison making it super
 // inconvinient to get token info outside of .l and .ypp files
 enum btokentype {
@@ -62,15 +64,16 @@ enum btokentype {
     UMINUS = 310
 };
 
-using token_type_t = btokentype;
-
-using token_variant = std::variant<int, float, char, std::string>;
-using token_data_type = enum TOKEN_DATA_TYPE {
+enum TOKEN_DATA_TYPE : int {
     INT,
     FLOAT,
     CHAR,
     STRING
 };
+
+using token_type_t = btokentype;
+using token_variant = std::variant<int, float, char, std::string>;
+using token_data_type = TOKEN_DATA_TYPE;
 
 
 class SyntaxToken {
@@ -217,4 +220,5 @@ public:
 
 };
 
+}
 #endif

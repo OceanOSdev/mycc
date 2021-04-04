@@ -6,36 +6,18 @@
 #include "expression_node.h"
 
 namespace Syntax {
-
-typedef enum literal_val_type {
-    INTCONST,
-    REALCONST,
-    STRCONST,
-    CHARCONST
-} LiteralValType;
-
-
-typedef struct literal_val_wrapper {
-    int i_val;
-    float f_val;
-    std::string s_val;
-    char c_val;
-} LiteralValWrapper;
-
+enum TOKEN_DATA_TYPE : int;
 
 class LiteralValExpressionNode : public ExpressionNode {
-private:
-    LiteralValType v_type;
-    LiteralValWrapper v_wrapper;
 public:
-    LiteralValExpressionNode(LiteralValType type, LiteralValWrapper value);
+    LiteralValExpressionNode(SyntaxToken* token);
     
     ~LiteralValExpressionNode();
 
     /*
      * An enum value representing the type stored in this node.
      */
-    LiteralValType value_type() const;
+    enum TOKEN_DATA_TYPE value_type() const;
 
     /*
      * The int value (if the type stored is an int).
