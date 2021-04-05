@@ -7,6 +7,7 @@ Driver::Driver() :
     m_location(0) {
 }
 
+
 int Driver::parse() {
     return m_parser.parse();
 }
@@ -14,12 +15,6 @@ int Driver::parse() {
 std::vector<Syntax::TranslationUnitNode*> Driver::get_translation_units() {
     return m_translation_units;
 }
-
-
-void add_translation_unit(Syntax::TranslationUnitNode* tu) {
-
-}
-
 
 void Driver::init_new_input() {
     m_location.initialize(&curr_file);

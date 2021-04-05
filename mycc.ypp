@@ -56,8 +56,6 @@
     
      class Lexer;
      class Driver;
-
-     void set_driver_translation_unit(Syntax::TranslationUnitNode* node);
      //void print_formal_param_list(std::vector<Syntax::ParameterSymbol> list);
 }
 
@@ -75,7 +73,7 @@
     
     
     // yylex() arguments are defined in parser.y
-    static yy::parser::symbol_type yylex(Lexer &lexer, Driver &driver) {
+    static yy::parser::symbol_type yylex(Lexer &lexer, __attribute__((unused)) Driver &driver) {
         return lexer.get_next_token();
     }
     
@@ -429,8 +427,6 @@ void yy::parser::error(const location &loc , const std::string &message) {
         driver.m_error_flag = true;
         //std::cout << "Error: " << message << std::endl << "Error location: " << driver.location() << std::endl;
 }
-
-void set_driver_translation_unit(Syntax::TranslationUnitNode* node) {}
 
 // void print_formal_param_list(std::vector<Symbol::ParameterSymbol> list) {
 //         std::vector<Symbol::ParameterSymbol>::iterator iter;

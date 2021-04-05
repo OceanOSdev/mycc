@@ -3,16 +3,12 @@
 #include <vector>
 #include <string>
 #include <iostream>
-#include "syntax_tree_printer.h"
+#include "qsem.h"
 
-
-namespace SyntaxTreePrinter {
-    void print_syntax_token_type(Syntax::token_type_t token, std::string indent);
-    std::string syntax_token_type_as_string(Syntax::token_type_t token);
-
+namespace QuickSemanticAnalyzer {
     void print_node(Syntax::SyntaxNode* n, std::string indent);
 
-    void print_formal_parameter_node(Syntax::FormalParameterNode *f) {
+    void print_formal_parameter_node(Syntax::FormalParameterNode *f, std::string indent ) {
         std::cout << "[Param]: ";
         if (f->is_const()) std::cout << "const ";
         if (f->is_struct()) std::cout << "struct ";
@@ -193,11 +189,11 @@ namespace SyntaxTreePrinter {
         }
     }
 
-    void print_break_statement_node() {
+    void print_break_statement_node(Syntax::BreakStatementNode* node, std::string indent) {
         std::cout << "[BREAK]" << std::endl;
     }
 
-    void print_continue_statement_node() {
+    void print_continue_statement_node(Syntax::ContinueStatementNode* node, std::string indent) {
         std::cout << "[CONTINUE]" << std::endl;
     }
 
@@ -213,8 +209,7 @@ namespace SyntaxTreePrinter {
         print_node(node->expression(), indent);
     }
 
-    void print_for_statement_node(__attribute__((unused)) Syntax::ForStatementNode* node, 
-                                  __attribute__((unused)) std::string indent) {
+    void print_for_statement_node(Syntax::ForStatementNode* node, std::string indent) {
 
     }
 
@@ -260,11 +255,11 @@ namespace SyntaxTreePrinter {
         if (auto blk = dynamic_cast<Syntax::BlockStatementNode*>(s)) {
             print_block_statement_node(blk, indent);
 
-        } else if (dynamic_cast<Syntax::BreakStatementNode*>(s)) {
-            print_break_statement_node();
+        } else if (auto brk = dynamic_cast<Syntax::BreakStatementNode*>(s)) {
+            print_break_statement_node(brk, indent);
 
-        } else if (dynamic_cast<Syntax::ContinueStatementNode*>(s)) {
-            print_continue_statement_node();
+        } else if (auto cont = dynamic_cast<Syntax::ContinueStatementNode*>(s)) {
+            print_continue_statement_node(cont, indent);
 
         } else if (auto dow = dynamic_cast<Syntax::DoWhileStatementNode*>(s)) {
             print_do_while_statement_node(dow, indent);
@@ -405,7 +400,7 @@ namespace SyntaxTreePrinter {
             print_partial_variable_declaration_node(pvd, indent);
 
         } else if (auto fp = dynamic_cast<Syntax::FormalParameterNode*>(n)) {
-            print_formal_parameter_node(fp);
+            print_formal_parameter_node(fp, indent);
 
         } else if (auto ld = dynamic_cast<Syntax::LocalDeclarationNode*>(n)) {
             print_local_declaration_node(ld, indent);
@@ -429,163 +424,5 @@ namespace SyntaxTreePrinter {
 
     void print_nodes(Syntax::SyntaxNode* n) {
         print_node(n, "");
-    }
-
-    void print_syntax_token_type(Syntax::token_type_t token, std::string indent) {
-        switch(token) {
-            case Syntax::token_type_t::PLUS:
-                std::cout << indent << "PLUS" << std::endl;
-                break;
-            case Syntax::token_type_t::MINUS:
-                std::cout << indent << "MINUS" << std::endl;
-                break;
-            case Syntax::token_type_t::STAR:
-                std::cout << indent << "STAR" << std::endl;
-                break;
-            case Syntax::token_type_t::SLASH:
-                std::cout << indent << "SLASH" << std::endl;
-                break;
-            case Syntax::token_type_t::MOD:
-                std::cout << indent << "MOD" << std::endl;
-                break;
-            case Syntax::token_type_t::TILDE:
-                std::cout << indent << "TILDE" << std::endl;
-                break;
-            case Syntax::token_type_t::PIPE:
-                std::cout << indent << "PIPE" << std::endl;
-                break;
-            case Syntax::token_type_t::AMP:
-                std::cout << indent << "AMP" << std::endl;
-                break;
-            case Syntax::token_type_t::BANG:
-                std::cout << indent << "BANG" << std::endl;
-                break;
-            case Syntax::token_type_t::DPIPE:
-                std::cout << indent << "DPIPE" << std::endl;
-                break;
-            case Syntax::token_type_t::DAMP:
-                std::cout << indent << "DAMP" << std::endl;
-                break;
-            case Syntax::token_type_t::ASSIGN:
-                std::cout << indent << "ASSIGN" << std::endl;
-                break;
-            case Syntax::token_type_t::PLUSASSIGN:
-                std::cout << indent << "PLUSASSIGN" << std::endl;
-                break;
-            case Syntax::token_type_t::MINUSASSIGN:
-                std::cout << indent << "MINUSASSIGN" << std::endl;
-                break;
-            case Syntax::token_type_t::STARASSIGN:
-                std::cout << indent << "STARASSIGN" << std::endl;
-                break;
-            case Syntax::token_type_t::SLASHASSIGN:
-                std::cout << indent << "SLASHASSIGN" << std::endl;
-                break;
-            case Syntax::token_type_t::INCR:
-                std::cout << indent << "INCR" << std::endl;
-                break;
-            case Syntax::token_type_t::DECR:
-                std::cout << indent << "DECR" << std::endl;
-                break;
-            case Syntax::token_type_t::EQUALS:
-                std::cout << indent << "EQUALS" << std::endl;
-                break;
-            case Syntax::token_type_t::NEQUAL:
-                std::cout << indent << "NEQUAL" << std::endl;
-                break;
-            case Syntax::token_type_t::GT:
-                std::cout << indent << "GT" << std::endl;
-                break;
-            case Syntax::token_type_t::GE:
-                std::cout << indent << "GE" << std::endl;
-                break;
-            case Syntax::token_type_t::LT:
-                std::cout << indent << "LT" << std::endl;
-                break;
-            case Syntax::token_type_t::LE:
-                std::cout << indent << "LE" << std::endl;
-                break;
-            default:
-                break;
-        }
-    }
-
-    std::string syntax_token_type_as_string(Syntax::token_type_t token) {
-        switch(token) {
-            case Syntax::token_type_t::PLUS:
-                return "PLUS";
-                break;
-            case Syntax::token_type_t::MINUS:
-                return "MINUS";
-                break;
-            case Syntax::token_type_t::STAR:
-                return "STAR";
-                break;
-            case Syntax::token_type_t::SLASH:
-                return "SLASH";
-                break;
-            case Syntax::token_type_t::MOD:
-                return "MOD";
-                break;
-            case Syntax::token_type_t::TILDE:
-                return "TILDE";
-                break;
-            case Syntax::token_type_t::PIPE:
-                return "PIPE";
-                break;
-            case Syntax::token_type_t::AMP:
-                return "AMP";
-                break;
-            case Syntax::token_type_t::BANG:
-                return "BANG";
-                break;
-            case Syntax::token_type_t::DPIPE:
-                return "DPIPE";
-                break;
-            case Syntax::token_type_t::DAMP:
-                return "DAMP";
-                break;
-            case Syntax::token_type_t::ASSIGN:
-                return "ASSIGN";
-                break;
-            case Syntax::token_type_t::PLUSASSIGN:
-                return "PLUSASSIGN";
-                break;
-            case Syntax::token_type_t::MINUSASSIGN:
-                return "MINUSASSIGN";
-                break;
-            case Syntax::token_type_t::STARASSIGN:
-                return "STARASSIGN";
-                break;
-            case Syntax::token_type_t::SLASHASSIGN:
-                return "SLASHASSIGN";
-                break;
-            case Syntax::token_type_t::INCR:
-                return "INCR";
-                break;
-            case Syntax::token_type_t::DECR:
-                return "DECR";
-                break;
-            case Syntax::token_type_t::EQUALS:
-                return "EQUALS";
-                break;
-            case Syntax::token_type_t::NEQUAL:
-                return "NEQUAL";
-                break;
-            case Syntax::token_type_t::GT:
-                return "GT";
-                break;
-            case Syntax::token_type_t::GE:
-                return "GE";
-                break;
-            case Syntax::token_type_t::LT:
-                return "LT";
-                break;
-            case Syntax::token_type_t::LE:
-                return "LE";
-                break;
-            default:
-                return "ERROR";
-        }
     }
 }

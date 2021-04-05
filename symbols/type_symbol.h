@@ -1,3 +1,4 @@
+#pragma once
 #ifndef TYPE_SYMBOL_H
 #define TYPE_SYMBOL_H
 
@@ -5,32 +6,39 @@
 
 namespace Symbols {
 
+using TypeAttribute = struct TypeAttribute;
+struct TypeAttribute {
+    bool is_struct;
+    bool is_integer_type;
+    bool is_numeric_type;
+};
+
 class TypeSymbol {
 private:
     std::string m_identifier;
-    bool m_is_struct;
-    bool m_is_const;
+    TypeAttribute m_attributes;
 public:
-    TypeSymbol(std::string id, bool is_struct = false, bool is_const = false) :
-        m_identifier(id), m_is_struct(is_struct), m_is_const(is_const) {}
+    TypeSymbol(std::string id, TypeAttribute attributes);
 
-    ~TypeSymbol() {}
+    ~TypeSymbol();
 
     /*
      * The name of the type.
      */
-    std::string name() const { return m_identifier; }
+    std::string name() const;
 
     /*
-     * Whether or not the type is a struct.
+     * Attributes related to this type.
      */
-    bool is_struct() const { return m_is_struct; }
+    TypeAttribute attributes() const;
 
-    /*
-     * Whether or not the type is read only.
-     */
-    bool is_const() const { return m_is_const; }
+};
 
+const TypeSymbol PrimativeTypes[4] = {
+    TypeSymbol("void", {false,false,false}),
+    TypeSymbol("char", {false,true,true}),
+    TypeSymbol("int", {false,true,true}),
+    TypeSymbol("float", {false,false,true})
 };
 
 }

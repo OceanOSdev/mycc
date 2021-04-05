@@ -42,8 +42,7 @@ void runLexer(parsed_args_t* pat) {
     print_token_list(tlist);
 }
 
-void runParser(parsed_args_t* pat) {
-    Driver d;
+void runParser(parsed_args_t* pat, Driver&& d) {
     std::vector<Syntax::TranslationUnitNode*> tun;
     for (int i = 0; i < pat->numFiles && !d.error_flag(); i++) {
         std::string filename = std::string( pat->inputFiles[i]);
@@ -53,7 +52,11 @@ void runParser(parsed_args_t* pat) {
         d.init_new_input();
         d.parse();
     }
+}
 
+void runSyntaxChecker(parsed_args_t* pat) {
+    Driver d;
+    runParser(pat, std::move(d));
     if (!d.error_flag()) {
         auto root = new Syntax::ProgramNode(d.get_translation_units());
         auto synt = new PartTwoSyntaxPrinter(root, logger);
@@ -63,6 +66,12 @@ void runParser(parsed_args_t* pat) {
 
 
     // print_symbol_parse_list(fout, spls, pat->numFiles);
+}
+
+void runSemanticAnalyzer(parsed_args_t* pat) {
+    Driver d;
+    runParser(pat, std::move(d));
+    SyntaxTreePrinter::print_nodes(d.get_translation_units()[0]);
 }
 
 void handleArgs(parsed_args_t* pat, char* oFileName) {
@@ -76,8 +85,8 @@ void handleArgs(parsed_args_t* pat, char* oFileName) {
         case MODE_ERR: break; // <-- Should literally never happen
         case MODE_ZERO: logger->log_info(std::string(versionInfo)); break;
         case MODE_ONE: runLexer(pat); break;
-        case MODE_TWO: runParser(pat); break;
-        case MODE_THREE: break;
+        case MODE_TWO: runSyntaxChecker(pat); break;
+        case MODE_THREE:runSemanticAnalyzer(pat); break;
         case MODE_FOUR: break;
         case MODE_FIVE: break;
     }

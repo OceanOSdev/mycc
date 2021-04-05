@@ -1,36 +1,37 @@
+#pragma once
 #ifndef PARAMETER_SYMBOL_H
 #define PARAMETER_SYMBOL_H
 
 #include <string>
-#include "type_symbol.h"
 
 namespace Symbols {
 
+class TypeSymbol;
+
 class ParameterSymbol {
 private:
-    TypeSymbol type; // todo: maybe fix
+    TypeSymbol* m_type;
     std::string name;
     bool is_array;
 public:
-    ParameterSymbol(TypeSymbol t, std::string n, bool is_arr) :
-        type(t), name(n), is_array(is_arr) {}
+    ParameterSymbol(TypeSymbol* t, std::string n, bool is_arr);
     
-    ~ParameterSymbol() {}
+    ~ParameterSymbol();
     
     /*
-     * Returns a string representation of this parameter's type.
+     * The type information related to this parameter.
      */
-    TypeSymbol var_type() const { return type; }
+    TypeSymbol* var_type() const;
 
     /*
      * Returns a string representation of this parameter's identifier.
      */
-    std::string var_name() const { return name; }
+    std::string var_name() const;
 
     /*
      * Returns whether this parameter is an arry type.
      */
-    bool array() const { return is_array; }
+    bool array() const;
 };
 
 }

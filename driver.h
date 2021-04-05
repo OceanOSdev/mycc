@@ -22,17 +22,14 @@ public:
     yy::parser::symbol_type lex();
     std::vector<LexemeDataNode> get_part_one_lexeme_list() const;
     std::vector<Syntax::TranslationUnitNode*> get_translation_units();
-    void add_translation_unit(Syntax::TranslationUnitNode* tu);
     bool error_flag() const;
     friend class yy::parser;
     friend class Lexer;
 
 private:
-    // Used internally by Lexer YY_USER_ACTION to update location indicator
-    //void increaseLocation(unsigned int loc);
-    
     // Used to get last Lexer location. Used in error messages.
     yy::location location() const;
+
     //unsigned int location() const;
     std::string curr_file;
     std::string curr_text; // <-- really disgusting I know

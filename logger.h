@@ -63,29 +63,6 @@ public:
     void log_lex_err_v2(LexemeDataNode lexeme_data);
 
     /*
-    * Logs the info related to a global struct definition symbol
-    * as generated from the parser.
-    */
-    //void log_parser_glob_struct_symbol(FILE* fout, struct_decl_symbol_t* sds);
-
-    /*
-    * Logs the info related to a function declaration symbol
-    * as generated from the parser.
-    */
-    //void log_parser_func_decl_symbol(FILE* fout, func_decl_symbol_t* fds);
-
-    /*
-    * Logs the info related to a function prototype symbol
-    * as generated from the parser.
-    */
-    //void log_parser_func_proto_symbol(FILE* fout, func_proto_symbol_t* fps);
-
-    /*
-    * Logs an error that has been thrown by the parser in yyerror.
-    */
-    //void log_parser_error(FILE* fout, parse_error_symbol_t* pes);
-
-    /*
     * Logs a list of strings such that they are comma delimited.
     */
     void log_string_list(char* argv[]);

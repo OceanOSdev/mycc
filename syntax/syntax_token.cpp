@@ -207,17 +207,16 @@ std::string SyntaxToken::get_str_value() const {
  * stored in the variant.
  */
 token_data_type SyntaxToken::get_type() const {
-    std::visit([](std::variant<int, float, char, std::string>&& arg) {
-        if (std::holds_alternative<int>(arg)) {
-            return token_data_type::INT;
-        } else if (std::holds_alternative<char>(arg)) {
-            return token_data_type::CHAR;
-        } else if (std::holds_alternative<float>(arg)) {
-            return token_data_type::FLOAT;
-        } else if (std::holds_alternative<std::string>(arg)) {
-            return token_data_type::STRING;
-        }
-    }, m_semantic_value);
+    if (std::holds_alternative<int>(m_semantic_value)) {
+        return token_data_type::INT;
+    } else if (std::holds_alternative<char>(m_semantic_value)) {
+        return token_data_type::CHAR;
+    } else if (std::holds_alternative<float>(m_semantic_value)) {
+        return token_data_type::FLOAT;
+    } else { //if (std::holds_alternative<std::string>(m_semantic_value)) {
+        return token_data_type::STRING;
+    }
+
 }
 
 }
