@@ -23,15 +23,15 @@ export MODULE_BIF_COLOR = \033[1;30m
 export MODULE_BIF_STR = "------------------------------------------------------------------------------"
 
 define run_and_test
-printf "%b" "$(COM_COLOR)$(COM_STRING) $(OBJ_COLOR)$(@F)$(NO_COLOR)\r"; \
+printf "%b" "$(COM_COLOR)$(COM_STRING) $(OBJ_COLOR)$(@F)$(MODULE_BIF_COLOR)...$(NO_COLOR)\r"; \
 $(1) 2> $@.log; \
 RESULT=$$?; \
 if [ $$RESULT -ne 0 ]; then \
-  printf "%-60b%b" "$(COM_COLOR)$(COM_STRING)$(OBJ_COLOR) $@" "$(ERROR_COLOR)$(ERROR_STRING)$(NO_COLOR)\n"   ; \
+  printf "%-80b%b" "$(COM_COLOR)$(COM_STRING)$(OBJ_COLOR) $@" "$(ERROR_COLOR)$(ERROR_STRING)$(NO_COLOR)\n"   ; \
 elif [ -s $@.log ]; then \
-  printf "%-60b%b" "$(COM_COLOR)$(COM_STRING)$(OBJ_COLOR) $@" "$(WARN_COLOR)$(WARN_STRING)$(NO_COLOR)\n"   ; \
+  printf "%-80b%b" "$(COM_COLOR)$(COM_STRING)$(OBJ_COLOR) $@" "$(WARN_COLOR)$(WARN_STRING)$(NO_COLOR)\n"   ; \
 else  \
-  printf "%-60b%b" "$(COM_COLOR)$(COM_STRING)$(OBJ_COLOR) $(@F)" "$(OK_COLOR)$(OK_STRING)$(NO_COLOR)\n"   ; \
+  printf "%-80b%b" "$(COM_COLOR)$(COM_STRING)$(OBJ_COLOR) $(@F)" "$(OK_COLOR)$(OK_STRING)$(NO_COLOR)\n"   ; \
 fi; \
 cat $@.log; \
 rm -f $@.log; \
@@ -39,15 +39,15 @@ exit $$RESULT
 endef
 
 define link_and_test
-printf "%b" "$(COM_COLOR)$(LD_STRING) $(OBJ_COLOR)$(@F)$(NO_COLOR)\r"; \
+printf "%b" "$(COM_COLOR)$(LD_STRING) $(OBJ_COLOR)$(@F)$(MODULE_BIF_COLOR)...$(NO_COLOR)\r"; \
 $(1) 2> $@.log; \
 RESULT=$$?; \
 if [ $$RESULT -ne 0 ]; then \
-  printf "%-60b%b" "$(COM_COLOR)$(LD_STRING)$(OBJ_COLOR) $@" "$(ERROR_COLOR)$(ERROR_STRING)$(NO_COLOR)\n"   ; \
+  printf "%-80b%b" "$(COM_COLOR)$(LD_STRING)$(OBJ_COLOR) $@" "$(ERROR_COLOR)$(ERROR_STRING)$(NO_COLOR)\n"   ; \
 elif [ -s $@.log ]; then \
-  printf "%-60b%b" "$(COM_COLOR)$(LD_STRING)$(OBJ_COLOR) $@" "$(WARN_COLOR)$(WARN_STRING)$(NO_COLOR)\n"   ; \
+  printf "%-80b%b" "$(COM_COLOR)$(LD_STRING)$(OBJ_COLOR) $@" "$(WARN_COLOR)$(WARN_STRING)$(NO_COLOR)\n"   ; \
 else  \
-  printf "%-60b%b" "$(COM_COLOR)$(LD_STRING)$(OBJ_COLOR) $(@F)" "$(OK_COLOR)$(OK_STRING)$(NO_COLOR)\n"   ; \
+  printf "%-80b%b" "$(COM_COLOR)$(LD_STRING)$(OBJ_COLOR) $(@F)" "$(OK_COLOR)$(OK_STRING)$(NO_COLOR)\n"   ; \
 fi; \
 cat $@.log; \
 rm -f $@.log; \
@@ -69,7 +69,7 @@ TARG = mycc
 export ECHOF = echo -e
 export ECHO = echo
 export CXX = g++
-export FLAGS = -std=c++17 -Werror -Wall -Wextra -Wstrict-aliasing -pedantic -Wunreachable-code
+export FLAGS = -std=c++20 -Werror -Wall -Wextra -Wstrict-aliasing -pedantic -Wunreachable-code
 LDFLAGS = -L ./lib -lSyntax
 BFLAGS = -d
 
@@ -115,9 +115,6 @@ subdirmake:
 	@$(ECHOF) "${MODULE_STR_COLOR}Compiling Main Module.${NO_COLOR}"
 	@$(ECHOF) "${MODULE_BIF_COLOR}${MODULE_BIF_STR}${NO_COLOR}"
 
-# dsubdirmake: 
-# 	@$(MAKE) -C syntax debug --no-print-directory
-# 	@$(MAKE) -C symbols debug --no-print-directory
 
 $(CORE_PCH): $(CORE_PCH_FILE)
 	@$(ECHOF) "${MODULE_STR_COLOR}Building precompiled header.${NO_COLOR}"
