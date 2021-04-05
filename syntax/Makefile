@@ -1,3 +1,49 @@
+######################################################
+#                                                    #
+#  Definitions for colorize and formatted            #
+#  output.                                           #
+#                                                    #
+######################################################
+
+define run_and_test
+printf "%b" "$(COM_COLOR)$(COM_STRING) $(OBJ_COLOR)$(@F)$(NO_COLOR)\r"; \
+$(1) 2> $@.log; \
+RESULT=$$?; \
+if [ $$RESULT -ne 0 ]; then \
+  printf "%-60b%b" "$(COM_COLOR)$(COM_STRING)$(OBJ_COLOR) $@" "$(ERROR_COLOR)$(ERROR_STRING)$(NO_COLOR)\n"   ; \
+elif [ -s $@.log ]; then \
+  printf "%-60b%b" "$(COM_COLOR)$(COM_STRING)$(OBJ_COLOR) $@" "$(WARN_COLOR)$(WARN_STRING)$(NO_COLOR)\n"   ; \
+else  \
+  printf "%-60b%b" "$(COM_COLOR)$(COM_STRING)$(OBJ_COLOR) $(@F)" "$(OK_COLOR)$(OK_STRING)$(NO_COLOR)\n"   ; \
+fi; \
+cat $@.log; \
+rm -f $@.log; \
+exit $$RESULT
+endef
+
+define link_and_test
+printf "%b" "$(COM_COLOR)$(LD_STRING) $(OBJ_COLOR)$(@F)$(NO_COLOR)\r"; \
+$(1) 2> $@.log; \
+RESULT=$$?; \
+if [ $$RESULT -ne 0 ]; then \
+  printf "%-60b%b" "$(COM_COLOR)$(LD_STRING)$(OBJ_COLOR) $@" "$(ERROR_COLOR)$(ERROR_STRING)$(NO_COLOR)\n"   ; \
+elif [ -s $@.log ]; then \
+  printf "%-60b%b" "$(COM_COLOR)$(LD_STRING)$(OBJ_COLOR) $@" "$(WARN_COLOR)$(WARN_STRING)$(NO_COLOR)\n"   ; \
+else  \
+  printf "%-60b%b" "$(COM_COLOR)$(LD_STRING)$(OBJ_COLOR) $(@F)" "$(OK_COLOR)$(OK_STRING)$(NO_COLOR)\n"   ; \
+fi; \
+cat $@.log; \
+rm -f $@.log; \
+exit $$RESULT
+endef
+
+######################################################
+#                                                    #
+#  Actual Makefile Suff                              #
+#                                                    #
+#                                                    #
+######################################################
+
 SRCS = syntax_token.cpp expression_node.cpp variable_group_declaration_node.cpp while_statement_node.cpp unary_expression_node.cpp translation_unit_node.cpp ternary_expression_node.cpp struct_declaration_node.cpp return_statement_node.cpp partial_variable_declaration_node.cpp
 SRCS += name_expression_node.cpp member_expression_node.cpp literal_val_expression_node.cpp index_expression_node.cpp increment_expression_node.cpp if_statement_node.cpp global_variable_group_declaration_node.cpp
 SRCS += global_struct_declaration_node.cpp function_prototype_node.cpp function_definition_node.cpp function_declaration_node.cpp formal_parameter_node.cpp for_statement_node.cpp expression_statement_node.cpp do_while_statement_node.cpp
@@ -10,27 +56,23 @@ BIN = libSyntax.a
 
 OBJS = $(patsubst %.cpp,$(OBJDIR)/%.o,$(SRCS))
 DEPS = $(patsubst %.cpp,$(OBJDIR)/%.d,$(SRCS))
-#LDOBJS = $(OBJS:.o=.ro)
 
-.PHONY: all clean
 
 all: $(OUTPUTDIR)/$(BIN)
+	@:
 
 debug: FLAGS += -g
 debug: $(OUTPUTDIR)/$(BIN)
 
+.PHONY: all clean
+
 $(OUTPUTDIR)/$(BIN) : $(OBJS)
-	@$(ECHO) Linking $@
-	@ar rcs $@ $^
+	@$(ECHOF) "${MODULE_BIF_COLOR}${MODULE_BIF_STR}${NO_COLOR}"
+	@$(call link_and_test,ar rcs $@ $^)
 
 
 $(OBJDIR)/%.o: %.cpp
-	@$(ECHO) Compiling $<
-	@$(CXX) $(FLAGS) -MMD -MF $(OBJDIR)/$*.d -c $< -o $@
-
-# $(OBJDIR)/%.ro: $(OBJDIR)/%.o
-# 	@$(ECHO) Generating relocatable file $<
-# 	@$(CXX) -Wl,-i -nostdlib -nostartfiles -o $@ $<
+	@$(call run_and_test,$(CXX) $(FLAGS) -MMD -MF $(OBJDIR)/$*.d -c $< -o $@)
 
 clean:
 	@$(ECHO) Removing all Syntax Library generated files.

@@ -1,23 +1,70 @@
+######################################################
+#                                                    #
+#  Definitions for colorize and formatted            #
+#  output.                                           #
+#                                                    #
+######################################################
+export COM_COLOR   = \033[0;34m
+export OBJ_COLOR   = \033[0;36m
+export OK_COLOR    = \033[0;32m
+export ERROR_COLOR = \033[0;31m
+export WARN_COLOR  = \033[0;33m
+export NO_COLOR    = \033[m
+
+export OK_STRING    = "[OK]"
+export ERROR_STRING = "[ERROR]"
+export WARN_STRING  = "[WARNING]"
+export COM_STRING   = "Compiling"
+export LD_STRING   	= "Linking"
+
+export MODULE_STR_COLOR = \033[1;35m
+export MODULE_BIF_COLOR = \033[1;30m
+
+export MODULE_BIF_STR = "------------------------------------------------------------------------------"
+
+define run_and_test
+printf "%b" "$(COM_COLOR)$(COM_STRING) $(OBJ_COLOR)$(@F)$(NO_COLOR)\r"; \
+$(1) 2> $@.log; \
+RESULT=$$?; \
+if [ $$RESULT -ne 0 ]; then \
+  printf "%-60b%b" "$(COM_COLOR)$(COM_STRING)$(OBJ_COLOR) $@" "$(ERROR_COLOR)$(ERROR_STRING)$(NO_COLOR)\n"   ; \
+elif [ -s $@.log ]; then \
+  printf "%-60b%b" "$(COM_COLOR)$(COM_STRING)$(OBJ_COLOR) $@" "$(WARN_COLOR)$(WARN_STRING)$(NO_COLOR)\n"   ; \
+else  \
+  printf "%-60b%b" "$(COM_COLOR)$(COM_STRING)$(OBJ_COLOR) $(@F)" "$(OK_COLOR)$(OK_STRING)$(NO_COLOR)\n"   ; \
+fi; \
+cat $@.log; \
+rm -f $@.log; \
+exit $$RESULT
+endef
+
+define link_and_test
+printf "%b" "$(COM_COLOR)$(LD_STRING) $(OBJ_COLOR)$(@F)$(NO_COLOR)\r"; \
+$(1) 2> $@.log; \
+RESULT=$$?; \
+if [ $$RESULT -ne 0 ]; then \
+  printf "%-60b%b" "$(COM_COLOR)$(LD_STRING)$(OBJ_COLOR) $@" "$(ERROR_COLOR)$(ERROR_STRING)$(NO_COLOR)\n"   ; \
+elif [ -s $@.log ]; then \
+  printf "%-60b%b" "$(COM_COLOR)$(LD_STRING)$(OBJ_COLOR) $@" "$(WARN_COLOR)$(WARN_STRING)$(NO_COLOR)\n"   ; \
+else  \
+  printf "%-60b%b" "$(COM_COLOR)$(LD_STRING)$(OBJ_COLOR) $(@F)" "$(OK_COLOR)$(OK_STRING)$(NO_COLOR)\n"   ; \
+fi; \
+cat $@.log; \
+rm -f $@.log; \
+exit $$RESULT
+endef
+
+######################################################
+#                                                    #
+#  Actual Makefile Suff                              #
+#                                                    #
+#                                                    #
+######################################################
+
+
 SRCS = driver.cpp arg_parser.cpp logger.cpp part_two_syntax_check.cpp syntax_tree_printer.cpp main.cpp
 OBJDIR = bin
 TARG = mycc
-
-# Color Codes (make the output less (or more) of an eyesore)
-RED=\033[0;31m
-DARK_GRAY=\033[1;30m
-CYAN=\033[0;36m
-YELLOW=\033[1;33m
-ORANGE=\033[0;33m
-GREEN=\033[0;32m
-export NC=\033[0m # No Color, resets foreground terminal color
-
-# Log type aliases
-export ITEM=$(CYAN)
-export WARNING=$(ORANGE)
-export INFO=$(YELLOW)
-export SUCCESS=$(GREEN)
-export ERROR=$(RED)
-export PUNCTUATION=$(DARK_GRAY)
 
 export ECHOF = echo -e
 export ECHO = echo
@@ -34,16 +81,12 @@ DEPS = $(patsubst %.cpp,$(OBJDIR)/%.d,$(SRCS))
 CORE_PCH_FILE = pch.h
 CORE_PCH = $(CORE_PCH_FILE).gch
 
-.PHONY: msg all nodoc subdirmake dsubdirmake debug benchmark verbose clean cclean destroy docs
-
-msg:
-	@$(ECHOF) "${INFO}Usage Information:${NC}"
 
 all: nodoc docs
 
 nodoc: subdirmake $(TARG)
 
-debug: FLAGS += -g
+debug: export FLAGS += -g
 debug: BFLAGS += --debug
 debug: dsubdirmake $(TARG)
 
@@ -53,37 +96,47 @@ benchmark: $(TARG)
 verbose: FLAGS += -v
 verbose: $(TARG)
 
+.PHONY: all nodoc subdirmake dsubdirmake debug benchmark verbose clean cclean destroy docs
+
 $(TARG): $(OBJS)
-	@$(ECHO) Linking $@
-	@$(CXX) -fuse-ld=gold $^ -o $@ $(LDFLAGS)
+	@$(ECHOF) "${MODULE_BIF_COLOR}${MODULE_BIF_STR}${NO_COLOR}"
+	@$(call link_and_test,$(CXX) -fuse-ld=gold $^ -o $@ $(LDFLAGS))
 
 subdirmake: 
-	@$(MAKE) -C syntax
-	@$(MAKE) -C symbols
+	@$(ECHOF) "${MODULE_BIF_COLOR}${MODULE_BIF_STR}${NO_COLOR}"
+	@$(ECHOF) "${MODULE_STR_COLOR}Compiling Abstract Syntax Tree Module.${NO_COLOR}"
+	@$(ECHOF) "${MODULE_BIF_COLOR}${MODULE_BIF_STR}${NO_COLOR}"
+	@$(MAKE) -C syntax --no-print-directory
+	@$(ECHOF) "${MODULE_BIF_COLOR}${MODULE_BIF_STR}${NO_COLOR}"
+	@$(ECHOF) "${MODULE_STR_COLOR}Compiling Symbols Table Module.${NO_COLOR}"
+	@$(ECHOF) "${MODULE_BIF_COLOR}${MODULE_BIF_STR}${NO_COLOR}"
+	@$(MAKE) -C symbols --no-print-directory
+	@$(ECHOF) "${MODULE_BIF_COLOR}${MODULE_BIF_STR}${NO_COLOR}"
+	@$(ECHOF) "${MODULE_STR_COLOR}Compiling Main Module.${NO_COLOR}"
+	@$(ECHOF) "${MODULE_BIF_COLOR}${MODULE_BIF_STR}${NO_COLOR}"
 
-dsubdirmake: 
-	@$(MAKE) -C syntax debug
-	@$(MAKE) -C symbols debug
+# dsubdirmake: 
+# 	@$(MAKE) -C syntax debug --no-print-directory
+# 	@$(MAKE) -C symbols debug --no-print-directory
 
 $(CORE_PCH): $(CORE_PCH_FILE)
-	@$(ECHO) Making precompiled header.
-	@$(CXX) $(FLAGS) -o $@ $<
+	@$(ECHOF) "${MODULE_STR_COLOR}Building precompiled header.${NO_COLOR}"
+	@$(call run_and_test,@$(CXX) $(FLAGS) -o $@ $<)
 
 $(OBJDIR)/%.o: %.cpp $(CORE_PCH)
-	@$(ECHO) Compiling $<
-	@$(CXX) $(FLAGS) -MMD -MF $(OBJDIR)/$*.d -c $< -o $@
+	@$(call run_and_test,$(CXX) $(FLAGS) -MMD -MF $(OBJDIR)/$*.d -c $< -o $@)
 
 lexer.cpp: lexer.l
-	@$(ECHO) Generating Lexer.
 	@flex -o lexer.cpp lexer.l
+#	@$(ECHO) Generating Lexer.
 
 mycc.tab.hpp mycc.tab.cpp: mycc.ypp
-	@$(ECHO) Generating Parser.
 	@bison mycc.ypp
+#	@$(ECHO) Generating Parser.
 
 clean:
 	@$(ECHO) Removing generated files.
-	@rm -f $(OBJS) $(LDALLOBJS) $(TARG)
+	@rm -f $(OBJS) $(DEPS) $(TARG)
 	@rm -f *.out *.aux *.log *.fls *.fdb_latexmk *.synctex*
 	@rm -f lexer.cpp lexer.o mycc.tab.hpp mycc.tab.cpp mycc.tab.o
 	@rm -f location.hh
