@@ -64,13 +64,16 @@
 {
     #include <iostream>
     #include <stdio.h>
-    #include <string.h>
+    #include <string>
+    #include <sstream>
     #include "lexer.h"
     #include "mycc.tab.hpp"
     #include "driver.h"
     #include "location.hh"
 
-    
+    std::vector<Syntax::GlobalDeclarationNode*> temporary_glob_decl_list;
+
+    void add_to_temp_list(Syntax::GlobalDeclarationNode* gdn);
     
     // yylex() arguments are defined in parser.y
     static yy::parser::symbol_type yylex(Lexer &lexer, __attribute__((unused)) Driver &driver) {
@@ -212,10 +215,10 @@ glob_decl_list : glob_decl                      { Syntax::GlobalDeclarationNode*
                | glob_decl_list glob_decl       { Syntax::GlobalDeclarationNode* p = $2; std::vector<Syntax::GlobalDeclarationNode*> &args = $1; args.push_back(p); $$ = args;}
                ;
 
-glob_decl : glob_var_decl       { $$ = $1; }                                      
-          | glob_struct_def     { $$ = $1; }                            
-          | func_proto          { $$ = $1; }                                
-          | func_def            { $$ = $1; }                                  
+glob_decl : glob_var_decl       { add_to_temp_list($1); $$ = $1; }                                      
+          | glob_struct_def     { add_to_temp_list($1); $$ = $1; }                            
+          | func_proto          { add_to_temp_list($1); $$ = $1; }                                
+          | func_def            { add_to_temp_list($1); $$ = $1; }                                  
           ;
 
 glob_var_decl : var_decl                                             { $$ = new Syntax::GlobalVariableGroupDeclarationNode($1); }
@@ -416,16 +419,20 @@ ident_ca : IDENT ASSIGN expr                                          { $$ = new
 %%
 
 void yy::parser::error(const location &loc , const std::string &message) {
-        
-        // Location should be initialized inside scanner action, but is not in this example.
-        // Let's grab location directly from driver class.
-	// cout << "Error: " << message << endl << "Location: " << loc << endl;
-        std::cerr << "Error near " << driver.curr_file //driver.location().begin.filename 
-                  << " line " << loc.begin.line //driver.location().begin.line 
-                  << " text '" << driver.part_one_lexeme_list.back().text << "'\n\t" << message << std::endl;	
-        
-        driver.m_error_flag = true;
-        //std::cout << "Error: " << message << std::endl << "Error location: " << driver.location() << std::endl;
+    std::ostringstream errstream;
+    errstream << "Error near " << driver.curr_file //driver.location().begin.filename 
+                << " line " << loc.begin.line //driver.location().begin.line 
+                << " text '" << driver.part_one_lexeme_list.back().text << "'\n\t" << message << std::endl;
+    std::string err_msg = errstream.str();
+    driver.m_diagnostics.push_back(err_msg);
+    driver.m_translation_units.push_back(new Syntax::TranslationUnitNode(temporary_glob_decl_list));	
+
+    driver.m_error_flag = true;
+    //std::cout << "Error: " << message << std::endl << "Error location: " << driver.location() << std::endl;
+}
+
+void add_to_temp_list(Syntax::GlobalDeclarationNode* gdn) {
+    temporary_glob_decl_list.push_back(gdn);
 }
 
 // void print_formal_param_list(std::vector<Symbol::ParameterSymbol> list) {

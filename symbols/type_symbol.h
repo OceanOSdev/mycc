@@ -3,6 +3,7 @@
 #define TYPE_SYMBOL_H
 
 #include <string>
+#include "symbol.h"
 
 namespace Symbols {
 
@@ -13,9 +14,8 @@ struct TypeAttribute {
     bool is_numeric_type;
 };
 
-class TypeSymbol {
+class TypeSymbol : public Symbol{
 private:
-    std::string m_identifier;
     TypeAttribute m_attributes;
 public:
     TypeSymbol(std::string id, TypeAttribute attributes);
@@ -23,14 +23,14 @@ public:
     ~TypeSymbol();
 
     /*
-     * The name of the type.
-     */
-    std::string name() const;
-
-    /*
      * Attributes related to this type.
      */
     TypeAttribute attributes() const;
+
+    /*
+     * The type of symbol this is.
+     */
+    SymbolKind kind() const override;
 
 };
 

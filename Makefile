@@ -73,9 +73,11 @@ export FLAGS = -std=c++20 -Werror -Wall -Wextra -Wstrict-aliasing -pedantic -Wun
 LDFLAGS = -L ./lib -lSyntax
 BFLAGS = -d
 
+SYMBOL_OBJS = symbol.o type_symbol.o variable_symbol.o parameter_symbol.o struct_symbol.o function_symbol.o
+
 OBJS = $(OBJDIR)/mycc.tab.o $(OBJDIR)/lexer.o
+OBJS += $(patsubst %.o,$(OBJDIR)/%.o,$(SYMBOL_OBJS))
 OBJS += $(patsubst %.cpp,$(OBJDIR)/%.o,$(SRCS))
-OBJS += $(OBJDIR)/type_symbol.o $(OBJDIR)/variable_symbol.o $(OBJDIR)/parameter_symbol.o $(OBJDIR)/struct_symbol.o $(OBJDIR)/function_symbol.o
 DEPS = $(patsubst %.cpp,$(OBJDIR)/%.d,$(SRCS))
 
 CORE_PCH_FILE = pch.h

@@ -27,8 +27,20 @@ public:
 
     ~Logger();
 
+    /*
+     * Logs string as info.
+     */
     void log_info(std::string str);
+
+    /*
+     * Logs string as info with newline at end.
+     */
     void log_info_nl(std::string str);
+
+    /*
+     * Logs a string as an error.
+     */
+    void log_err(std::string err);
 
     /*
     * Logs the current file name, the line number, the text, and the token

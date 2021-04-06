@@ -22,6 +22,7 @@ public:
     yy::parser::symbol_type lex();
     std::vector<LexemeDataNode> get_part_one_lexeme_list() const;
     std::vector<Syntax::TranslationUnitNode*> get_translation_units();
+    std::vector<std::string> get_diagnostics() const;
     bool error_flag() const;
     friend class yy::parser;
     friend class Lexer;
@@ -39,5 +40,6 @@ private:
     yy::location m_location;
     std::vector<LexemeDataNode> part_one_lexeme_list;
     std::vector<Syntax::TranslationUnitNode*> m_translation_units;
+    std::vector<std::string> m_diagnostics;
 };
 #endif

@@ -6,6 +6,8 @@ mycc.tab.hpp
 mycc.tab.cpp
 location.hh
 pch.h.gch
+mycc.ypp.*
+vgcore.*
 
 ## Core latex/pdflatex auxiliary files:
 *.aux

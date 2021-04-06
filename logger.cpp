@@ -14,6 +14,10 @@ void Logger::log_info(std::string str) {
     (*m_outstream) << str;
 }
 
+void Logger::log_err(std::string err) {
+    *(m_is_stdio ? &std::cerr : m_outstream) << err;
+}
+
 std::string token_to_string(token_type token);
 void log_string_list(std::ostream& fout, char* argv[]);
 //void log_struct_names(ofstream fout, struct_decl_symbol_t** structs);

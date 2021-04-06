@@ -4,24 +4,19 @@
 
 #include <vector>
 #include <string>
+#include "symbol.h"
 
 namespace Symbols {
 class TypeSymbol;
 class ParameterSymbol;
 
-class FunctionSymbol {
+class FunctionSymbol : public Symbol {
 private:
-    std::string m_name;
     TypeSymbol* m_type;
     std::vector<ParameterSymbol*> m_params;
 public:
     FunctionSymbol(std::string name, TypeSymbol* type, std::vector<ParameterSymbol*> params);
     ~FunctionSymbol();
-
-    /*
-     * The name identifier for this function.
-     */
-    std::string name() const;
 
     /*
      * The type of value that this function returns.
@@ -32,6 +27,11 @@ public:
      * The list of paramters that this function takes in.
      */
     std::vector<ParameterSymbol*> params() const;
+
+    /*
+     * The type of symbol this is.
+     */
+    SymbolKind kind() const override;
 };
 
 }

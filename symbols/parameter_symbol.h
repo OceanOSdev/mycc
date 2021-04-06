@@ -3,18 +3,18 @@
 #define PARAMETER_SYMBOL_H
 
 #include <string>
+#include "symbol.h"
 
 namespace Symbols {
 
 class TypeSymbol;
 
-class ParameterSymbol {
+class ParameterSymbol : public Symbol {
 private:
     TypeSymbol* m_type;
-    std::string name;
     bool is_array;
 public:
-    ParameterSymbol(TypeSymbol* t, std::string n, bool is_arr);
+    ParameterSymbol(std::string n, TypeSymbol* t, bool is_arr);
     
     ~ParameterSymbol();
     
@@ -24,14 +24,14 @@ public:
     TypeSymbol* var_type() const;
 
     /*
-     * Returns a string representation of this parameter's identifier.
-     */
-    std::string var_name() const;
-
-    /*
      * Returns whether this parameter is an arry type.
      */
     bool array() const;
+
+    /*
+     * The type of symbol this is.
+     */
+    SymbolKind kind() const override;
 };
 
 }

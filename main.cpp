@@ -42,9 +42,9 @@ void runLexer(parsed_args_t* pat) {
     print_token_list(tlist);
 }
 
-void runParser(parsed_args_t* pat, Driver&& d) {
+bool runParser(parsed_args_t* pat, Driver&& d) {
     std::vector<Syntax::TranslationUnitNode*> tun;
-    for (int i = 0; i < pat->numFiles && !d.error_flag(); i++) {
+    for (int i = 0; i < pat->numFiles /*&& !d.error_flag()*/; i++) {
         std::string filename = std::string( pat->inputFiles[i]);
         std::ifstream ifstrm(filename);
         std::istream* ist = &ifstrm;
@@ -52,16 +52,19 @@ void runParser(parsed_args_t* pat, Driver&& d) {
         d.init_new_input();
         d.parse();
     }
+
+    return !d.error_flag();
 }
 
 void runSyntaxChecker(parsed_args_t* pat) {
     Driver d;
-    runParser(pat, std::move(d));
-    if (!d.error_flag()) {
-        auto root = new Syntax::ProgramNode(d.get_translation_units());
-        auto synt = new PartTwoSyntaxPrinter(root, logger);
-        synt->print_info();
-    }
+    auto parsed = runParser(pat, std::move(d));
+    auto root = new Syntax::ProgramNode(d.get_translation_units());
+    auto synt = new PartTwoSyntaxPrinter(root, logger);
+    synt->print_info();
+    if (!parsed)
+        for (auto diagnostic : d.get_diagnostics())
+            logger->log_err(diagnostic);
     //SyntaxTreePrinter::print_nodes(tun[0]);
 
 
@@ -70,8 +73,12 @@ void runSyntaxChecker(parsed_args_t* pat) {
 
 void runSemanticAnalyzer(parsed_args_t* pat) {
     Driver d;
-    runParser(pat, std::move(d));
-    SyntaxTreePrinter::print_nodes(d.get_translation_units()[0]);
+    if (runParser(pat, std::move(d)))
+        SyntaxTreePrinter::print_nodes(d.get_translation_units()[0]);
+    else
+        for (auto diagnostic : d.get_diagnostics())
+            logger->log_err(diagnostic);
+
 }
 
 void handleArgs(parsed_args_t* pat, char* oFileName) {

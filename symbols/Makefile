@@ -44,7 +44,7 @@ endef
 #                                                    #
 ######################################################
 
-SRCS = type_symbol.cpp variable_symbol.cpp parameter_symbol.cpp struct_symbol.cpp function_symbol.cpp
+SRCS = symbol.cpp type_symbol.cpp variable_symbol.cpp parameter_symbol.cpp struct_symbol.cpp function_symbol.cpp
 
 OBJDIR = ../bin
 

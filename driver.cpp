@@ -16,6 +16,10 @@ std::vector<Syntax::TranslationUnitNode*> Driver::get_translation_units() {
     return m_translation_units;
 }
 
+std::vector<std::string> Driver::get_diagnostics() const {
+    return m_diagnostics;
+}
+
 void Driver::init_new_input() {
     m_location.initialize(&curr_file);
 }

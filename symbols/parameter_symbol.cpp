@@ -3,8 +3,8 @@
 
 namespace Symbols {
 
-ParameterSymbol::ParameterSymbol(TypeSymbol* t, std::string n, bool is_arr) :
-    m_type(t), name(n), is_array(is_arr) {}
+ParameterSymbol::ParameterSymbol(std::string n, TypeSymbol* t, bool is_arr) :
+    Symbol(n), m_type(t), is_array(is_arr) {}
     
 ParameterSymbol::~ParameterSymbol() {}
     
@@ -14,14 +14,13 @@ ParameterSymbol::~ParameterSymbol() {}
 TypeSymbol* ParameterSymbol::var_type() const { return m_type; }
 
 /*
- * Returns a string representation of this parameter's identifier.
- */
-std::string ParameterSymbol::var_name() const { return name; }
-
-/*
  * Returns whether this parameter is an arry type.
  */
 bool ParameterSymbol::array() const { return is_array; }
 
+/*
+ * The type of symbol this is.
+ */
+SymbolKind ParameterSymbol::kind() const { return SymbolKind::PARAMETER; }
 
 }
