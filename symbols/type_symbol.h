@@ -3,15 +3,17 @@
 #define TYPE_SYMBOL_H
 
 #include <string>
+#include <compare>
 #include "symbol.h"
 
 namespace Symbols {
 
 using TypeAttribute = struct TypeAttribute;
 struct TypeAttribute {
-    bool is_struct;
-    bool is_integer_type;
-    bool is_numeric_type;
+    bool is_struct = false;
+    bool is_integer_type = false;
+    bool is_numeric_type = false;
+    std::partial_ordering operator<=>(const TypeAttribute& other) const;
 };
 
 class TypeSymbol : public Symbol{
@@ -32,13 +34,14 @@ public:
      */
     SymbolKind kind() const override;
 
-};
+    std::partial_ordering operator<=>(const TypeSymbol& other) const;
 
-const TypeSymbol PrimativeTypes[4] = {
-    TypeSymbol("void", {false,false,false}),
-    TypeSymbol("char", {false,true,true}),
-    TypeSymbol("int", {false,true,true}),
-    TypeSymbol("float", {false,false,true})
+    static const TypeSymbol Void;
+    static const TypeSymbol Char;
+    static const TypeSymbol Int;
+    static const TypeSymbol Float;
+    static const TypeSymbol Error;
+
 };
 
 }

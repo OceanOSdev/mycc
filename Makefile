@@ -58,7 +58,6 @@ endef
 #                                                    #
 #  Actual Makefile Suff                              #
 #                                                    #
-#                                                    #
 ######################################################
 
 
@@ -74,7 +73,7 @@ LDFLAGS =
 #LDFLAGS = -L ./lib -lSyntax
 BFLAGS = -d
 
-SUBDIRS = syntax symbols
+SUBDIRS = symbols syntax binding  
 
 OBJS = $(OBJDIR)/mycc.tab.o $(OBJDIR)/lexer.o
 OBJS += $(patsubst %.cpp,$(OBJDIR)/%.o,$(SRCS))
@@ -92,21 +91,22 @@ SYMBOLS_SRC_ALL = $(wildcard $(SYMBOLS_DIR)/*.cpp)
 SYMBOLS_SRCS = $(filter-out $(SYMBOLS_IGNORE),$(SYMBOLS_SRC_ALL))
 SYMBOLS_OBJS = $(patsubst $(SYMBOLS_DIR)/%.cpp,$(OBJDIR)/%.o,$(SYMBOLS_SRCS))
 
+BINDING_DIR = binding
+BINDING_IGNORE = 
+BINDING_SRC_ALL = $(wildcard $(BINDING_DIR)/*.cpp)
+BINDING_SRCS = $(filter-out $(BINDING_IGNORE),$(BINDING_SRC_ALL))
+BINDING_OBJS = $(patsubst $(BINDING_DIR)/%.cpp,$(OBJDIR)/%.o,$(BINDING_SRCS))
+
 CORE_PCH_FILE = pch.h
 CORE_PCH = $(CORE_PCH_FILE).gch
 
-#@$(ECHOF) "${MODULE_STR_COLOR}Compiling Main Module.${NO_COLOR}"
-#@$(ECHOF) "${MODULE_BIF_COLOR}${MODULE_BIF_STR}${NO_COLOR}"
-
 all: nodoc docs
-
-#nodoc: subdirmake $(OBJS) $(TARG)
 
 nodoc: $(TARG) | $(SUBDIRS)
 
 debug: export FLAGS += -g
 debug: BFLAGS += --debug
-debug: dsubdirmake $(TARG)
+debug: nodoc
 
 benchmark: FLAGS += -ftime-report
 benchmark: $(TARG)
@@ -115,7 +115,7 @@ verbose: FLAGS += -v
 verbose: $(TARG)
 
 
-$(TARG): $(OBJS) $(SYMBOLS_OBJS) $(SYNTAX_OBJS)
+$(TARG): $(OBJS) $(SYMBOLS_OBJS) $(SYNTAX_OBJS) $(BINDING_OBJS)
 	@$(call link_and_test,$(CXX) -fuse-ld=gold $^ -o $@ $(LDFLAGS))
 
 $(OBJS): | $(SUBDIRS)
@@ -124,12 +124,7 @@ $(OBJS): | $(SUBDIRS)
 $(SUBDIRS): 
 	@$(MAKE) -C $@ --no-print-directory
 
-# $(SUBDIRS): 
-# 	@$(ECHOF) "${MODULE_BIF_COLOR}${MODULE_BIF_STR}${NO_COLOR}"
-# 	@$(ECHOF) "${MODULE_STR_COLOR}Compiling $@ Module.${NO_COLOR}"
-# 	@$(ECHOF) "${MODULE_BIF_COLOR}${MODULE_BIF_STR}${NO_COLOR}"
-# 	@$(MAKE) -C $@ --no-print-directory
-# 	@$(ECHOF) "${MODULE_BIF_COLOR}${MODULE_BIF_STR}${NO_COLOR}"
+$(BINDING_DIR): | $(SYMBOLS_DIR)
 
 $(CORE_PCH): $(CORE_PCH_FILE)
 	@$(ECHOF) "${MODULE_STR_COLOR}Building precompiled header.${NO_COLOR}"
@@ -150,13 +145,14 @@ clean:
 	@$(ECHO) Removing generated files.
 	@rm -f $(OBJS) $(DEPS) $(TARG)
 	@rm -f *.out *.aux *.log *.fls *.fdb_latexmk *.synctex*
-	@rm -f lexer.cpp lexer.o mycc.tab.hpp mycc.tab.cpp mycc.tab.o
+	@rm -f lexer.cpp lexer.o lexer.d mycc.tab.hpp mycc.tab.cpp mycc.tab.o mycc.tab.d
 	@rm -f location.hh
 	@rm -f vgcore.*
 
 cclean: clean
 	$(MAKE) -C syntax clean
 	$(MAKE) -C symbols clean
+	$(MAKE) -C binding clean
 
 destroy: cclean
 	@$(ECHO) Removing pdfs and pch
@@ -173,6 +169,6 @@ lexer.o: mycc.tab.hpp lexer.cpp
 mycc.tab.o: mycc.tab.hpp
 
 
-.PHONY: all $(SYMBOLS_OBJS) $(SYNTAX_OBJS) nodoc $(SUBDIRS) debug benchmark verbose clean cclean destroy docs
+.PHONY: all $(SYMBOLS_OBJS) $(SYNTAX_OBJS) $(BINDING_OBJS) nodoc $(SUBDIRS) debug benchmark verbose clean cclean destroy docs
 
 -include $(DEPS)

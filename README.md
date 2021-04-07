@@ -2,6 +2,7 @@
 
 ## How to build
 To build the project and documentation, simply run `make`. 
+For speedy build times, run `make -jN` where N is some number.
 To remove generated files, run `make clean`.
 For convenience, to build just the latex documentation, you can run `make docs`.
 
