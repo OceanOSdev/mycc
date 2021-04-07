@@ -70,23 +70,39 @@ export ECHOF = echo -e
 export ECHO = echo
 export CXX = g++
 export FLAGS = -std=c++20 -Werror -Wall -Wextra -Wstrict-aliasing -pedantic -Wunreachable-code
-LDFLAGS = -L ./lib -lSyntax
+LDFLAGS = 
+#LDFLAGS = -L ./lib -lSyntax
 BFLAGS = -d
 
-SYMBOL_OBJS = symbol.o type_symbol.o variable_symbol.o parameter_symbol.o struct_symbol.o function_symbol.o
+SUBDIRS = syntax symbols
 
 OBJS = $(OBJDIR)/mycc.tab.o $(OBJDIR)/lexer.o
-OBJS += $(patsubst %.o,$(OBJDIR)/%.o,$(SYMBOL_OBJS))
 OBJS += $(patsubst %.cpp,$(OBJDIR)/%.o,$(SRCS))
 DEPS = $(patsubst %.cpp,$(OBJDIR)/%.d,$(SRCS))
+
+SYNTAX_DIR = syntax
+SYNTAX_IGNORE = 
+SYNTAX_SRC_ALL = $(wildcard $(SYNTAX_DIR)/*.cpp)
+SYNTAX_SRCS = $(filter-out $(SYNTAX_IGNORE),$(SYNTAX_SRC_ALL))
+SYNTAX_OBJS = $(patsubst $(SYNTAX_DIR)/%.cpp,$(OBJDIR)/%.o,$(SYNTAX_SRCS))
+
+SYMBOLS_DIR = symbols
+SYMBOLS_IGNORE = $(SYMBOLS_DIR)/scoped_symbol_table.cpp
+SYMBOLS_SRC_ALL = $(wildcard $(SYMBOLS_DIR)/*.cpp)
+SYMBOLS_SRCS = $(filter-out $(SYMBOLS_IGNORE),$(SYMBOLS_SRC_ALL))
+SYMBOLS_OBJS = $(patsubst $(SYMBOLS_DIR)/%.cpp,$(OBJDIR)/%.o,$(SYMBOLS_SRCS))
 
 CORE_PCH_FILE = pch.h
 CORE_PCH = $(CORE_PCH_FILE).gch
 
+#@$(ECHOF) "${MODULE_STR_COLOR}Compiling Main Module.${NO_COLOR}"
+#@$(ECHOF) "${MODULE_BIF_COLOR}${MODULE_BIF_STR}${NO_COLOR}"
 
 all: nodoc docs
 
-nodoc: subdirmake $(TARG)
+#nodoc: subdirmake $(OBJS) $(TARG)
+
+nodoc: $(TARG) | $(SUBDIRS)
 
 debug: export FLAGS += -g
 debug: BFLAGS += --debug
@@ -98,25 +114,22 @@ benchmark: $(TARG)
 verbose: FLAGS += -v
 verbose: $(TARG)
 
-.PHONY: all nodoc subdirmake dsubdirmake debug benchmark verbose clean cclean destroy docs
 
-$(TARG): $(OBJS)
-	@$(ECHOF) "${MODULE_BIF_COLOR}${MODULE_BIF_STR}${NO_COLOR}"
+$(TARG): $(OBJS) $(SYMBOLS_OBJS) $(SYNTAX_OBJS)
 	@$(call link_and_test,$(CXX) -fuse-ld=gold $^ -o $@ $(LDFLAGS))
 
-subdirmake: 
-	@$(ECHOF) "${MODULE_BIF_COLOR}${MODULE_BIF_STR}${NO_COLOR}"
-	@$(ECHOF) "${MODULE_STR_COLOR}Compiling Abstract Syntax Tree Module.${NO_COLOR}"
-	@$(ECHOF) "${MODULE_BIF_COLOR}${MODULE_BIF_STR}${NO_COLOR}"
-	@$(MAKE) -C syntax --no-print-directory
-	@$(ECHOF) "${MODULE_BIF_COLOR}${MODULE_BIF_STR}${NO_COLOR}"
-	@$(ECHOF) "${MODULE_STR_COLOR}Compiling Symbols Table Module.${NO_COLOR}"
-	@$(ECHOF) "${MODULE_BIF_COLOR}${MODULE_BIF_STR}${NO_COLOR}"
-	@$(MAKE) -C symbols --no-print-directory
-	@$(ECHOF) "${MODULE_BIF_COLOR}${MODULE_BIF_STR}${NO_COLOR}"
-	@$(ECHOF) "${MODULE_STR_COLOR}Compiling Main Module.${NO_COLOR}"
-	@$(ECHOF) "${MODULE_BIF_COLOR}${MODULE_BIF_STR}${NO_COLOR}"
+$(OBJS): | $(SUBDIRS)
 
+
+$(SUBDIRS): 
+	@$(MAKE) -C $@ --no-print-directory
+
+# $(SUBDIRS): 
+# 	@$(ECHOF) "${MODULE_BIF_COLOR}${MODULE_BIF_STR}${NO_COLOR}"
+# 	@$(ECHOF) "${MODULE_STR_COLOR}Compiling $@ Module.${NO_COLOR}"
+# 	@$(ECHOF) "${MODULE_BIF_COLOR}${MODULE_BIF_STR}${NO_COLOR}"
+# 	@$(MAKE) -C $@ --no-print-directory
+# 	@$(ECHOF) "${MODULE_BIF_COLOR}${MODULE_BIF_STR}${NO_COLOR}"
 
 $(CORE_PCH): $(CORE_PCH_FILE)
 	@$(ECHOF) "${MODULE_STR_COLOR}Building precompiled header.${NO_COLOR}"
@@ -158,5 +171,8 @@ docs:
 #dependencies
 lexer.o: mycc.tab.hpp lexer.cpp
 mycc.tab.o: mycc.tab.hpp
+
+
+.PHONY: all $(SYMBOLS_OBJS) $(SYNTAX_OBJS) nodoc $(SUBDIRS) debug benchmark verbose clean cclean destroy docs
 
 -include $(DEPS)

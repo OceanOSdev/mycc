@@ -60,7 +60,8 @@ OBJS = $(patsubst %.cpp,$(OBJDIR)/%.o,$(SRCS))
 DEPS = $(patsubst %.cpp,$(OBJDIR)/%.d,$(SRCS))
 
 
-all: $(OUTPUTDIR)/$(BIN)
+#all: $(OUTPUTDIR)/$(BIN)
+all: $(OBJS)
 	@:
 
 debug: FLAGS += -g
@@ -68,16 +69,16 @@ debug: $(OUTPUTDIR)/$(BIN)
 
 .PHONY: all clean
 
-$(OUTPUTDIR)/$(BIN) : $(OBJS)
-	@$(ECHOF) "${MODULE_BIF_COLOR}${MODULE_BIF_STR}${NO_COLOR}"
-	@$(call archive_and_test,ar rcs $@ $^)
+# $(OUTPUTDIR)/$(BIN) : $(OBJS)
+# 	@$(ECHOF) "${MODULE_BIF_COLOR}${MODULE_BIF_STR}${NO_COLOR}"
+# 	@$(call archive_and_test,ar rcs $@ $^)
 
 
 $(OBJDIR)/%.o: %.cpp
 	@$(call run_and_test,$(CXX) $(FLAGS) -MMD -MF $(OBJDIR)/$*.d -c $< -o $@)
 
 clean:
-	@$(ECHO) Removing all Syntax Library generated files.
+	@$(ECHO) Removing all Syntax Module generated files.
 	@rm -f $(BIN)
 	@rm -f $(OBJS)
 	@rm -f $(DEPS)
