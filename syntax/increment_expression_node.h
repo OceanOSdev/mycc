@@ -28,6 +28,8 @@ public:
      * Pre-increment: false.
      */
     bool is_post() const;
+
+    SyntaxKind kind() const override;
 };
 
 }

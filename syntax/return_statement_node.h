@@ -22,6 +22,8 @@ public:
      * Whether or not this is a statement of the form "return;"
      */
     bool is_empty_return() const;
+
+    SyntaxKind kind() const override;
 };
 
 }

@@ -1,4 +1,5 @@
 #include "function_prototype_node.h"
+#include "syntax_kind.h"
 
 namespace Syntax {
 
@@ -14,6 +15,10 @@ FunctionPrototypeNode::~FunctionPrototypeNode() {
  */
 FunctionDeclarationNode* FunctionPrototypeNode::function_declaration() const { 
     return m_func_decl; 
+}
+
+SyntaxKind FunctionPrototypeNode::kind() const{
+    return SyntaxKind::FunctionPrototype;
 }
 
 }

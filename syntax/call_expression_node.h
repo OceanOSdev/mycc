@@ -27,6 +27,8 @@ public:
      * The list of expressions being passed as arguments.
      */
     std::vector<ExpressionNode*> expressions() const;
+
+    SyntaxKind kind() const override;
 };
 
 }

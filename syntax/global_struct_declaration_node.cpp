@@ -1,4 +1,5 @@
 #include "global_struct_declaration_node.h"
+#include "syntax_kind.h"
 
 namespace Syntax {
 
@@ -14,6 +15,10 @@ GlobalStructDeclarationNode::~GlobalStructDeclarationNode() {
  */
 StructDeclarationNode* GlobalStructDeclarationNode::struct_declaration() const { 
     return m_struct_declaration; 
+}
+
+SyntaxKind GlobalStructDeclarationNode::kind() const {
+    return SyntaxKind::GlobalStructDeclaration;
 }
 
 }

@@ -1,4 +1,5 @@
 #include "if_statement_node.h"
+#include "syntax_kind.h"
 
 namespace Syntax {
 
@@ -38,6 +39,10 @@ StatementNode* IfStatementNode::else_statement() const {
  */
 bool IfStatementNode::has_else_statement() const { 
     return else_stmt != nullptr; 
+}
+
+SyntaxKind IfStatementNode::kind() const {
+    return SyntaxKind::IfStatement;
 }
 
 

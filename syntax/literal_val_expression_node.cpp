@@ -1,5 +1,6 @@
 #include "literal_val_expression_node.h"
 #include "syntax_token.h"
+#include "syntax_kind.h"
 
 namespace Syntax {
 
@@ -43,5 +44,8 @@ char LiteralValExpressionNode::char_value() const {
     return m_token->get_char_value(); 
 }
 
+SyntaxKind LiteralValExpressionNode::kind() const {
+    return SyntaxKind::LiteralValExpression;
+}
 
 }

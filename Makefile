@@ -125,13 +125,13 @@ $(SUBDIRS):
 	@$(MAKE) -C $@ --no-print-directory
 
 $(SYNTAX_DIR): | $(SYMBOLS_DIR)
-$(BINDING_DIR): | $(SYNTAX_DIR)
+$(BINDING_DIR): | $(SYNTAX_DIR) logger.cpp
 
-$(CORE_PCH): $(CORE_PCH_FILE)
-	@$(ECHOF) "${MODULE_STR_COLOR}Building precompiled header.${NO_COLOR}"
-	@$(call run_and_test,@$(CXX) $(FLAGS) -o $@ $<)
+# $(CORE_PCH): $(CORE_PCH_FILE)
+# 	@$(ECHOF) "${MODULE_STR_COLOR}Building precompiled header.${NO_COLOR}"
+# 	@$(call run_and_test,$(CXX) $(FLAGS) -o $@ $<)
 
-$(OBJDIR)/%.o: %.cpp $(CORE_PCH)
+$(OBJDIR)/%.o: %.cpp 
 	@$(call run_and_test,$(CXX) $(FLAGS) -MMD -MF $(OBJDIR)/$*.d -c $< -o $@)
 
 lexer.cpp: lexer.l

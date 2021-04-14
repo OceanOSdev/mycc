@@ -10,6 +10,7 @@ class BreakStatementNode : public StatementNode {
 public:
     BreakStatementNode();
     ~BreakStatementNode();
+    SyntaxKind kind() const override;
 };
 
 }

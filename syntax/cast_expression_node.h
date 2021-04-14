@@ -25,6 +25,7 @@ public:
      * The expression being casted.
      */
     ExpressionNode* expression() const;
+    SyntaxKind kind() const override;
 };
 
 }

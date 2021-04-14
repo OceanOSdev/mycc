@@ -1,4 +1,5 @@
 #include "do_while_statement_node.h"
+#include "syntax_kind.h"
 
 namespace Syntax {
 
@@ -24,5 +25,8 @@ ExpressionNode* DoWhileStatementNode::conditional_expression() const {
     return cond_expr; 
 }
 
+SyntaxKind DoWhileStatementNode::kind() const {
+    return SyntaxKind::DoWhileStatement;
+}
 
 }

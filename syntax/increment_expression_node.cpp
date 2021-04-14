@@ -1,4 +1,5 @@
 #include "increment_expression_node.h"
+#include "syntax_kind.h"
 
 namespace Syntax {
 
@@ -27,5 +28,8 @@ bool IncrementExpressionNode::is_post() const {
     return is_post_increment; 
 }
 
+SyntaxKind IncrementExpressionNode::kind() const {
+    return SyntaxKind::IncrementExpression;
+}
 
 }

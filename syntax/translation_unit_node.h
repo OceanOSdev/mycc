@@ -20,6 +20,8 @@ public:
      * List of global declarations in this translation unit.
      */
     std::vector<GlobalDeclarationNode*> global_declarations() const;
+
+    SyntaxKind kind() const override;
 };
 
 }

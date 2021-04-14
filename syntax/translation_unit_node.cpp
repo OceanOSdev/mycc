@@ -1,4 +1,5 @@
 #include "translation_unit_node.h"
+#include "syntax_kind.h"
 
 namespace Syntax {
 TranslationUnitNode::TranslationUnitNode(std::vector<GlobalDeclarationNode*> glob_decs) :
@@ -15,6 +16,10 @@ TranslationUnitNode::~TranslationUnitNode(){
  */
 std::vector<GlobalDeclarationNode*> TranslationUnitNode::global_declarations() const { 
     return m_global_declarations; 
+}
+
+SyntaxKind TranslationUnitNode::kind() const {
+    return SyntaxKind::TranslationUnit;
 }
 
 }

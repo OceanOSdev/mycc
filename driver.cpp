@@ -1,5 +1,6 @@
 #include "driver.h"
 #include "mycc.tab.hpp"
+#include "syntax/translation_unit_node.h"
 
 Driver::Driver() :
     m_lexer(*this),

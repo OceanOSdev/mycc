@@ -1,4 +1,5 @@
 #include "block_statement_node.h"
+#include "syntax_kind.h"
 
 namespace Syntax {
 
@@ -16,6 +17,10 @@ BlockStatementNode::~BlockStatementNode() {
  */
 std::vector<StatementNode*> BlockStatementNode::statements() const { 
     return stmt_nodes; 
+}
+
+SyntaxKind BlockStatementNode::kind() const {
+    return SyntaxKind::BlockStatement;
 }
 
 }

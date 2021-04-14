@@ -52,6 +52,8 @@ public:
      */
     ExpressionNode* expression() const;
 
+    SyntaxKind kind() const override;
+
 };
 
 }

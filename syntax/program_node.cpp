@@ -1,4 +1,5 @@
 #include "program_node.h"
+#include "syntax_kind.h"
 
 namespace Syntax {
 
@@ -16,6 +17,10 @@ ProgramNode::~ProgramNode() {
  */
 std::vector<TranslationUnitNode*> ProgramNode::units() const {
     return m_units;
+}
+
+SyntaxKind ProgramNode::kind() const {
+    return SyntaxKind::Program;
 }
 
 }

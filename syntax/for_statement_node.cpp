@@ -1,4 +1,5 @@
 #include "for_statement_node.h"
+#include "syntax_kind.h"
 
 namespace Syntax {
 
@@ -59,6 +60,10 @@ bool ForStatementNode::has_conditional_expression() const {
  */
 bool ForStatementNode::has_third_expression() const { 
     return inc_expr != nullptr; 
+}
+
+SyntaxKind ForStatementNode::kind() const {
+    return SyntaxKind::ForStatement;
 }
 
 

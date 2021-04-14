@@ -48,6 +48,8 @@ public:
      */
     bool is_array() const;
 
+    SyntaxKind kind() const override;
+
 };
 
 }

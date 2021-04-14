@@ -1,5 +1,6 @@
 #include "struct_declaration_node.h"
 #include "../symbols/variable_symbol.h"
+#include "syntax_kind.h"
 
 namespace Syntax {
 
@@ -41,6 +42,10 @@ std::vector<VariableGroupDeclarationNode*> StructDeclarationNode::struct_members
  */
 std::vector<Symbols::VariableSymbol*> StructDeclarationNode::struct_member_list() const {
     return m_members;
+}
+
+SyntaxKind StructDeclarationNode::kind() const {
+    return SyntaxKind::StructDeclaration;
 }
 
 }

@@ -1,4 +1,5 @@
 #include "while_statement_node.h"
+#include "syntax_kind.h"
 
 namespace Syntax {
 
@@ -22,6 +23,10 @@ ExpressionNode* WhileStatementNode::conditional_expression() const {
  */
 StatementNode* WhileStatementNode::body_statement() const { 
     return body_stmt; 
+}
+
+SyntaxKind WhileStatementNode::kind() const {
+    return SyntaxKind::WhileStatement;
 }
 
 }

@@ -36,6 +36,8 @@ public:
      * Whether or not this if statement contains an 'else' block
      */
     bool has_else_statement() const;
+
+    SyntaxKind kind() const override;
 };
 
 }

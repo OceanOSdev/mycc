@@ -1,4 +1,5 @@
 #include "expression_statement_node.h"
+#include "syntax_kind.h"
 
 namespace Syntax {
 
@@ -14,6 +15,10 @@ ExpressionStatementNode::~ExpressionStatementNode() {
  */
 ExpressionNode* ExpressionStatementNode::expression() const { 
     return expr; 
+}
+
+SyntaxKind ExpressionStatementNode::kind() const {
+    return SyntaxKind::ExpressionStatement;
 }
 
 }

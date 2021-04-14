@@ -38,6 +38,8 @@ public:
      * The char value (if the type stored is a char).
      */
     char char_value() const;
+
+    SyntaxKind kind() const override;
 };
 
 }

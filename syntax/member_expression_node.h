@@ -25,6 +25,8 @@ public:
      * The expression of the member of the encapsulating type.
      */
     ExpressionNode* member() const;
+
+    SyntaxKind kind() const override;
 };
 
 }

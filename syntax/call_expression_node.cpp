@@ -1,4 +1,5 @@
 #include "call_expression_node.h"
+#include "syntax_kind.h"
 
 namespace Syntax {
 
@@ -26,5 +27,8 @@ std::vector<ExpressionNode*> CallExpressionNode::expressions() const {
     return expression_list; 
 }
 
+SyntaxKind CallExpressionNode::kind() const {
+    return SyntaxKind::CallExpression;
+}
 
 }

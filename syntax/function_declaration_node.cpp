@@ -2,6 +2,7 @@
 #include "../symbols/type_symbol.h"
 #include "../symbols/function_symbol.h"
 #include "../symbols/parameter_symbol.h"
+#include "syntax_kind.h"
 
 namespace Syntax {
 
@@ -96,6 +97,10 @@ bool FunctionDeclarationNode::is_struct() const {
  */
 bool FunctionDeclarationNode::is_const() const {
     return m_is_const; 
+}
+
+SyntaxKind FunctionDeclarationNode::kind() const {
+    return SyntaxKind::FunctionDeclaration;
 }
 
 }

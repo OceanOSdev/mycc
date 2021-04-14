@@ -40,6 +40,8 @@ public:
      */
     std::vector<Symbols::VariableSymbol*> struct_member_list() const;
 
+    SyntaxKind kind() const override;
+
 };
 
 }

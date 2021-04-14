@@ -19,6 +19,8 @@ public:
      * The name of the identifier (as an l_val).
      */
     std::string name() const;
+    
+    SyntaxKind kind() const override;
 };
 
 }

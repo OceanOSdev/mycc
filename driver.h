@@ -1,6 +1,5 @@
 #ifndef DRIVER_H
 #define DRIVER_H
-#include "pch.h"
 #include "lexer.h"
 #include "mycc.tab.hpp"
 #include "lexeme_data.h"
@@ -12,6 +11,10 @@
 
 // #define YY_DECL yy::parser::symbol_type yylex (Driver& drv)
 // YY_DECL;
+
+namespace Syntax {
+    class TranslationUnitNode;
+}
 
 class Driver {
 public:

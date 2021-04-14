@@ -1,4 +1,5 @@
 #include "return_statement_node.h"
+#include "syntax_kind.h"
 
 namespace Syntax {
 
@@ -22,6 +23,10 @@ ExpressionNode* ReturnStatementNode::expression() const {
  */
 bool ReturnStatementNode::is_empty_return() const { 
     return expr == nullptr;
+}
+
+SyntaxKind ReturnStatementNode::kind() const {
+    return SyntaxKind::ReturnStatement;
 }
 
 }

@@ -26,6 +26,8 @@ public:
      */
     ExpressionNode* conditional_expression() const;
 
+    SyntaxKind kind() const override;
+
 };
 
 }

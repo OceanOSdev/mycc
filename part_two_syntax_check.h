@@ -1,10 +1,21 @@
 #ifndef PART_TWO_SYNTAX_CHECK_H
 #define PART_TWO_SYNTAX_CHECK_H
-#include "pch.h"
 #include "logger.h"
 #include <vector>
 #include <string>
 #include <variant>
+
+namespace Syntax {
+    class VariablegroupDeclarationNode;
+    class StructDeclarationNode;
+    class SyntaxNode;
+    class GlobalDeclarationNode;
+    class TranslationUnitNode;
+    class FunctionPrototypeNode;
+    class FunctionDefinitionNode;
+    class FormalParameterNode;
+    class ProgramNode;
+}
 
 using func_wrapper = std::variant<Syntax::FunctionPrototypeNode*, Syntax::FunctionDefinitionNode*>;
 

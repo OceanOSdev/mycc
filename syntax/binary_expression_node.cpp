@@ -1,4 +1,5 @@
 #include "binary_expression_node.h"
+#include "syntax_kind.h"
 
 namespace Syntax {
 
@@ -31,6 +32,8 @@ ExpressionNode* BinaryExpressionNode::right_expression() const {
     return right_expr; 
 }
 
-
+SyntaxKind BinaryExpressionNode::kind() const {
+    return SyntaxKind::BinaryExpression;
+}
 
 }

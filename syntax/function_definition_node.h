@@ -37,6 +37,8 @@ public:
      * The statements in this function after the declarations.
      */
     std::vector<Syntax::StatementNode*> statements() const;
+
+    SyntaxKind kind() const override;
 };
 
 }

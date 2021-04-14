@@ -1,4 +1,5 @@
 #include "unary_expression_node.h"
+#include "syntax_kind.h"
 
 namespace Syntax {
 
@@ -22,4 +23,9 @@ token_type_t UnaryExpressionNode::syntax_token_type() const {
 ExpressionNode* UnaryExpressionNode::expression() const { 
     return expr; 
 }
+
+SyntaxKind UnaryExpressionNode::kind() const {
+    return SyntaxKind::UnaryExpression;
+}
+
 }

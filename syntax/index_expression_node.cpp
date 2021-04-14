@@ -1,4 +1,5 @@
 #include "index_expression_node.h"
+#include "syntax_kind.h"
 
 namespace Syntax {
 
@@ -23,5 +24,8 @@ ExpressionNode* IndexExpressionNode::expression() const {
     return expr; 
 }
 
+SyntaxKind IndexExpressionNode::kind() const {
+    return SyntaxKind::IndexExpression;
+}
 
 }

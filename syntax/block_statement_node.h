@@ -18,6 +18,8 @@ public:
      * The list of statements in this code block.
      */
     std::vector<StatementNode*> statements() const;
+
+    SyntaxKind kind() const override;
 };
 
 }

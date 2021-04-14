@@ -1,4 +1,3 @@
-#include "pch.h"
 #include <stdio.h>
 #include <vector>
 #include "arg_parser.h"
@@ -74,9 +73,9 @@ void runSyntaxChecker(parsed_args_t* pat) {
 void runSemanticAnalyzer(parsed_args_t* pat) {
     Driver d;
     if (runParser(pat, std::move(d))) {
-        auto root = new Syntax::ProgramNode(d.get_translation_units());
-        //SyntaxTreePrinter::print_nodes(d.get_translation_units()[0]);
-        QuickSemanticAnalyzer::analyze(root);
+        //auto root = new Syntax::ProgramNode(d.get_translation_units());
+        SyntaxTreePrinter::print_nodes(d.get_translation_units()[0]);
+        //QuickSemanticAnalyzer::analyze(root);
     } else {
         for (auto diagnostic : d.get_diagnostics())
             logger->log_err(diagnostic);

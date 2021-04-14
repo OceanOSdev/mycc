@@ -1,4 +1,5 @@
 #include "function_definition_node.h"
+#include "syntax_kind.h"
 
 namespace Syntax {
 
@@ -40,5 +41,8 @@ std::vector<Syntax::StatementNode*> FunctionDefinitionNode::statements() const {
     return m_statements; 
 }
 
+SyntaxKind FunctionDefinitionNode::kind() const {
+    return SyntaxKind::FunctionDefinition;
+}
 
 }

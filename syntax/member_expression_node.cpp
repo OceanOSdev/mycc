@@ -1,4 +1,5 @@
 #include "member_expression_node.h"
+#include "syntax_kind.h"
 
 namespace Syntax {
 
@@ -24,5 +25,8 @@ ExpressionNode* MemberExpressionNode::member() const {
     return rhs; 
 }
 
+SyntaxKind MemberExpressionNode::kind() const {
+    return SyntaxKind::MemberExpression;
+}
 
 }

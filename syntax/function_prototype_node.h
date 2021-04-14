@@ -19,6 +19,8 @@ public:
      * The function that this prototype is declaring.
      */
     FunctionDeclarationNode* function_declaration() const;
+
+    SyntaxKind kind() const override;
 };
 
 }

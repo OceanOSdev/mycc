@@ -25,6 +25,8 @@ public:
      * The body statement that runs every loop.
      */
     StatementNode* body_statement() const;
+
+    SyntaxKind kind() const override;
 };
 
 }

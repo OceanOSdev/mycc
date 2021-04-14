@@ -10,6 +10,8 @@ class ContinueStatementNode : public StatementNode {
 public:
     ContinueStatementNode();
     ~ContinueStatementNode();
+
+    SyntaxKind kind() const override;
 };
 
 }

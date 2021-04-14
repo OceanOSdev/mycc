@@ -1,4 +1,5 @@
 #include "decrement_expression_node.h"
+#include "syntax_kind.h"
 
 namespace Syntax {
 
@@ -25,6 +26,10 @@ ExpressionNode* DecrementExpressionNode::identifier_expression() const {
  */
 bool DecrementExpressionNode::is_post() const { 
     return is_post_decrement; 
+}
+
+SyntaxKind DecrementExpressionNode::kind() const {
+    return SyntaxKind::DecrementExpression;
 }
 
 }

@@ -18,6 +18,8 @@ public:
      * The expression contained in this statement.
      */
     ExpressionNode* expression() const;
+
+    SyntaxKind kind() const override;
 };
 
 }

@@ -1,6 +1,8 @@
 #include "variable_group_declaration_node.h"
 #include "../symbols/variable_symbol.h"
 #include "../symbols/type_symbol.h"
+#include "syntax_kind.h"
+
 namespace Syntax{
 
 VariableGroupDeclarationNode::VariableGroupDeclarationNode(std::string type, std::vector<PartialVariableDeclarationNode*> vars, bool r_o, bool cust) :
@@ -63,6 +65,10 @@ bool VariableGroupDeclarationNode::is_const() const {
  */
 bool VariableGroupDeclarationNode::is_struct() const { 
     return custom_type; 
+}
+
+SyntaxKind VariableGroupDeclarationNode::kind() const {
+    return SyntaxKind::VariableDeclaration;
 }
 
 }

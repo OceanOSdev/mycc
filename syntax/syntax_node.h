@@ -4,12 +4,18 @@
 
 namespace Syntax {
 class SyntaxToken;
+enum SyntaxKind: int;
 
 class SyntaxNode {
 
 public:
     SyntaxNode() {}
     virtual ~SyntaxNode() = default;
+
+    /*
+     * What kind of syntax node this is.
+     */
+    virtual SyntaxKind kind() const = 0;
 };
 
 }

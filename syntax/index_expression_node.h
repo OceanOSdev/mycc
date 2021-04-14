@@ -25,6 +25,8 @@ public:
      * The expression that evaluates to the index.
      */
     ExpressionNode* expression() const;
+
+    SyntaxKind kind() const override;
 };
 
 }

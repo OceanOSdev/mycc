@@ -1,4 +1,5 @@
 #include "name_expression_node.h"
+#include "syntax_kind.h"
 
 namespace Syntax {
 
@@ -12,6 +13,10 @@ NameExpressionNode::~NameExpressionNode() {}
  */
 std::string NameExpressionNode::name() const { 
     return identifier; 
+}
+
+SyntaxKind NameExpressionNode::kind() const {
+    return SyntaxKind::NameExpression;
 }
 
 }

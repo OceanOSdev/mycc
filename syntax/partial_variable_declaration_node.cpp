@@ -1,4 +1,5 @@
 #include "partial_variable_declaration_node.h"
+#include "syntax_kind.h"
 
 namespace Syntax {
 
@@ -51,5 +52,8 @@ ExpressionNode* PartialVariableDeclarationNode::expression() const {
     return expr; 
 }
 
+SyntaxKind PartialVariableDeclarationNode::kind() const {
+    return SyntaxKind::PartialVariableDeclaration;
+}
 
 }

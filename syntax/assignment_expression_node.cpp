@@ -1,5 +1,5 @@
 #include "assignment_expression_node.h"
-
+#include "syntax_kind.h"
 namespace Syntax {
 
 AssignmentExpressionNode::AssignmentExpressionNode(SyntaxToken* token, ExpressionNode* id_exp, token_type_t assign, ExpressionNode* expr) :
@@ -32,5 +32,8 @@ ExpressionNode* AssignmentExpressionNode::expression() const {
     return rhs; 
 }
 
+SyntaxKind AssignmentExpressionNode::kind() const {
+    return SyntaxKind::AssignmentExpression;
+}
 
 }

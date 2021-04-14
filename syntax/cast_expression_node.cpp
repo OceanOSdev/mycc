@@ -1,4 +1,5 @@
 #include "cast_expression_node.h"
+#include "syntax_kind.h"
 
 namespace Syntax {
 
@@ -21,6 +22,10 @@ std::string CastExpressionNode::type() const {
  */
 ExpressionNode* CastExpressionNode::expression() const { 
     return expression_node; 
+}
+
+SyntaxKind CastExpressionNode::kind() const {
+    return SyntaxKind::CastExpression;
 }
 
 }

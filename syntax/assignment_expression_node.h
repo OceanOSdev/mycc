@@ -32,6 +32,8 @@ public:
      * The expression that the identifier will be assigned.
      */
     ExpressionNode* expression() const;
+
+    SyntaxKind kind() const override;
 };
 
 }

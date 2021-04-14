@@ -2,7 +2,7 @@
 #include "bound_statement_node.h"
 #include "bound_expression_statement_node.h"
 #include "../syntax/statement_node.h"
-
+#include "../logger.h"
 namespace Binding {
 
 /*
@@ -23,7 +23,8 @@ bool Binder::err_flag() const {
 
 
 BoundStatementNode* Binder::BindStatement(Syntax::StatementNode* statement) {
-    //auto syntaxKind = statement->
+    if (statement != nullptr) m_logger->log_info("bleh");
+    return nullptr;
 }
 
 }

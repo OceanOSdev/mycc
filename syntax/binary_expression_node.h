@@ -30,6 +30,8 @@ public:
      * The expression on the right-hand side of the operator.
      */
     ExpressionNode* right_expression() const;
+
+    SyntaxKind kind() const override;
 };
 
 }

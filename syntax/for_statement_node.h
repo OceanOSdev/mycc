@@ -52,6 +52,8 @@ public:
      * Whether or not this for loop contains a third expression.
      */
     bool has_third_expression() const;
+
+    SyntaxKind kind() const override;
 };
 
 }

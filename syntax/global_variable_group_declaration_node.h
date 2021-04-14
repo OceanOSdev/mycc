@@ -21,6 +21,8 @@ public:
      */
     VariableGroupDeclarationNode* variable_group() const;
 
+    SyntaxKind kind() const override;
+
 };
 
 }

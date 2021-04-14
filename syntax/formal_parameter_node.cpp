@@ -1,4 +1,5 @@
 #include "formal_parameter_node.h"
+#include "syntax_kind.h"
 
 namespace Syntax {
 
@@ -50,6 +51,10 @@ bool FormalParameterNode::is_const() const {
  */
 bool FormalParameterNode::is_array() const { 
     return m_is_array; 
+}
+
+SyntaxKind FormalParameterNode::kind() const {
+    return SyntaxKind::FormalParameter;
 }
 
 

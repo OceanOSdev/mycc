@@ -2,7 +2,7 @@
 #ifndef QSEM_H
 #define QSEM_H
 
-#include "syntax/syntax_node.h"
+namespace Syntax {class SyntaxNode;}
 #include <string>
 
 namespace QuickSemanticAnalyzer {

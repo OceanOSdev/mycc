@@ -18,6 +18,8 @@ public:
      * Gets the translation units in the program.
      */
     std::vector<TranslationUnitNode*> units() const;
+
+    SyntaxKind kind() const override;
 };
 
 }

@@ -20,6 +20,7 @@ public:
      */
     StructDeclarationNode* struct_declaration() const;
 
+    SyntaxKind kind() const override;
 };
 
 }

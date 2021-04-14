@@ -50,6 +50,8 @@ public:
      * Whether or not the variables are struct types.
      */
     bool is_struct() const;
+
+    SyntaxKind kind() const override;
 };
 
 }

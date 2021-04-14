@@ -1,4 +1,5 @@
 #include "ternary_expression_node.h"
+#include "syntax_kind.h"
 
 namespace Syntax {
 
@@ -34,5 +35,8 @@ ExpressionNode* TernaryExpressionNode::false_expression() const {
     return false_expr; 
 }
 
+SyntaxKind TernaryExpressionNode::kind() const {
+    return SyntaxKind::TernaryExpression;
+}
 
 }

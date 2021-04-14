@@ -32,6 +32,8 @@ public:
      * if the conditional expression is false.
      */
     ExpressionNode* false_expression() const;
+
+    SyntaxKind kind() const override;
 };
 
 }

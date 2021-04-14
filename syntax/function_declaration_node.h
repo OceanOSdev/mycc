@@ -74,6 +74,8 @@ public:
      */
     bool is_const() const;
 
+    SyntaxKind kind() const override;
+
 };
 
 }
