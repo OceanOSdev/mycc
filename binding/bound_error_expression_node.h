@@ -19,7 +19,7 @@ public:
     /*
      * The type that this expression evaluates to.
      */
-    Symbols::TypeSymbol type() const override;
+    const Symbols::TypeSymbol* type() const override;
 };
 
 }

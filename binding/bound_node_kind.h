@@ -5,6 +5,8 @@
 namespace Binding {
 
 enum BoundNodeKind {
+    CastExpression,
+    BinaryExpression,
     ErrorExpression
 };
 

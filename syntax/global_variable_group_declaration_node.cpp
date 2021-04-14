@@ -3,7 +3,7 @@
 namespace Syntax {
 
 GlobalVariableGroupDeclarationNode::GlobalVariableGroupDeclarationNode(VariableGroupDeclarationNode* var_group) :
-    m_variable_group(var_group) {}
+    m_variable_group(var_group) { }
 
 GlobalVariableGroupDeclarationNode::~GlobalVariableGroupDeclarationNode() {
     delete m_variable_group;

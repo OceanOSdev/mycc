@@ -4,7 +4,7 @@
 
 namespace Symbols {
 
-FunctionSymbol::FunctionSymbol(std::string name, TypeSymbol* type, std::vector<ParameterSymbol*> params) :
+FunctionSymbol::FunctionSymbol(std::string name, const TypeSymbol* type, std::vector<ParameterSymbol*> params) :
     Symbol(name), m_type(type), m_params(params) {}
 
 FunctionSymbol::~FunctionSymbol() {
@@ -14,7 +14,7 @@ FunctionSymbol::~FunctionSymbol() {
 /*
  * The type of value that this function returns.
  */
-TypeSymbol* FunctionSymbol::type() const { return m_type; }
+const TypeSymbol* FunctionSymbol::type() const { return m_type; }
 
 /*
  * The list of paramters that this function takes in.

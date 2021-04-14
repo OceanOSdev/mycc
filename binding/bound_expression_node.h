@@ -3,7 +3,10 @@
 #define BOUND_EXPRESSION_NODE_H
 
 #include "bound_node.h"
-#include "../symbols/type_symbol.h"
+
+namespace Symbols {
+    class TypeSymbol;
+}
 
 namespace Binding {
 
@@ -14,7 +17,7 @@ public:
     /*
      * The type that this expression evaluates to.
      */
-    virtual Symbols::TypeSymbol type() const = 0;
+    virtual const Symbols::TypeSymbol* type() const = 0;
 };
 
 }

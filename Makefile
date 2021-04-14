@@ -61,7 +61,7 @@ endef
 ######################################################
 
 
-SRCS = driver.cpp arg_parser.cpp logger.cpp part_two_syntax_check.cpp syntax_tree_printer.cpp main.cpp
+SRCS = driver.cpp arg_parser.cpp logger.cpp part_two_syntax_check.cpp qsem.cpp syntax_tree_printer.cpp main.cpp
 OBJDIR = bin
 TARG = mycc
 
@@ -124,7 +124,8 @@ $(OBJS): | $(SUBDIRS)
 $(SUBDIRS): 
 	@$(MAKE) -C $@ --no-print-directory
 
-$(BINDING_DIR): | $(SYMBOLS_DIR)
+$(SYNTAX_DIR): | $(SYMBOLS_DIR)
+$(BINDING_DIR): | $(SYNTAX_DIR)
 
 $(CORE_PCH): $(CORE_PCH_FILE)
 	@$(ECHOF) "${MODULE_STR_COLOR}Building precompiled header.${NO_COLOR}"

@@ -4,6 +4,7 @@
 
 #include "global_declaration_node.h"
 #include "variable_group_declaration_node.h"
+#include <vector>
 
 namespace Syntax {
 
@@ -19,6 +20,7 @@ public:
      * The variable group declarations.
      */
     VariableGroupDeclarationNode* variable_group() const;
+
 };
 
 }

@@ -28,7 +28,9 @@ endef
 #                                                    #
 ######################################################
 
-SRCS = bound_error_expression_node.cpp
+SRCS = bound_error_expression_node.cpp bound_binary_expression_node.cpp bound_cast_expression_node.cpp
+SRCS += bound_expression_statement_node.cpp
+SRCS += binder.cpp
 OBJDIR = ../bin
 
 OBJS = $(patsubst %.cpp,$(OBJDIR)/%.o,$(SRCS))
@@ -51,7 +53,6 @@ $(OBJDIR)/%.o: %.cpp
 
 clean:
 	@$(ECHO) Removing all Binding Module generated files.
-	@rm -f $(BIN)
 	@rm -f $(OBJS)
 	@rm -f $(DEPS)
 

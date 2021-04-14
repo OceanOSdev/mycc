@@ -7,7 +7,7 @@
 namespace Syntax {
 // Hack to get around bison making it super
 // inconvinient to get token info outside of .l and .ypp files
-enum btokentype {
+enum btokentype : int {
     END = 0,
     IDENT = 258,
     TYPE = 259,

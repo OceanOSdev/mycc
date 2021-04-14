@@ -12,16 +12,16 @@ class ParameterSymbol;
 
 class FunctionSymbol : public Symbol {
 private:
-    TypeSymbol* m_type;
+    const TypeSymbol* m_type;
     std::vector<ParameterSymbol*> m_params;
 public:
-    FunctionSymbol(std::string name, TypeSymbol* type, std::vector<ParameterSymbol*> params);
+    FunctionSymbol(std::string name, const TypeSymbol* type, std::vector<ParameterSymbol*> params);
     ~FunctionSymbol();
 
     /*
      * The type of value that this function returns.
      */
-    TypeSymbol* type() const;
+    const TypeSymbol* type() const;
 
     /*
      * The list of paramters that this function takes in.

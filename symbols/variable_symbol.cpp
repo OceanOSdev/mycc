@@ -3,7 +3,7 @@
 
 namespace Symbols {
 
-VariableSymbol::VariableSymbol(std::string n, TypeSymbol* t, bool is_arr, int arr_size, bool is_const) :
+VariableSymbol::VariableSymbol(std::string n, const TypeSymbol* t, bool is_arr, int arr_size, bool is_const) :
         Symbol(n), m_type(t), arr(is_arr), arr_c(arr_size), m_is_const(is_const) {}
 
 VariableSymbol::~VariableSymbol() {}
@@ -11,7 +11,7 @@ VariableSymbol::~VariableSymbol() {}
 /*
  * Returns this variable's type.
  */
-TypeSymbol* VariableSymbol::var_type() const { return m_type; }
+const TypeSymbol* VariableSymbol::var_type() const { return m_type; }
 
 /*
  * Whether or not this variable is an array.

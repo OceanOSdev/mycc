@@ -1,4 +1,5 @@
 #include "bound_error_expression_node.h"
+#include "../symbols/type_symbol.h"
 
 namespace Binding {
 
@@ -16,8 +17,8 @@ BoundNodeKind BoundErrorExpressionNode::kind() const {
 /*
  * The type that this expression evaluates to.
  */
-Symbols::TypeSymbol BoundErrorExpressionNode::type() const {
-    return Symbols::TypeSymbol::Error;
+const Symbols::TypeSymbol* BoundErrorExpressionNode::type() const {
+    return &Symbols::TypeSymbol::Error;
 }
 
 }

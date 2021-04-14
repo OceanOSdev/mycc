@@ -5,6 +5,7 @@
 #include "lexeme_data.h"
 #include "logger.h"
 #include "driver.h"
+#include "qsem.h"
 #include "syntax_tree_printer.h"
 #include "part_two_syntax_check.h"
 
@@ -43,7 +44,6 @@ void runLexer(parsed_args_t* pat) {
 }
 
 bool runParser(parsed_args_t* pat, Driver&& d) {
-    std::vector<Syntax::TranslationUnitNode*> tun;
     for (int i = 0; i < pat->numFiles /*&& !d.error_flag()*/; i++) {
         std::string filename = std::string( pat->inputFiles[i]);
         std::ifstream ifstrm(filename);
@@ -73,11 +73,14 @@ void runSyntaxChecker(parsed_args_t* pat) {
 
 void runSemanticAnalyzer(parsed_args_t* pat) {
     Driver d;
-    if (runParser(pat, std::move(d)))
-        SyntaxTreePrinter::print_nodes(d.get_translation_units()[0]);
-    else
+    if (runParser(pat, std::move(d))) {
+        auto root = new Syntax::ProgramNode(d.get_translation_units());
+        //SyntaxTreePrinter::print_nodes(d.get_translation_units()[0]);
+        QuickSemanticAnalyzer::analyze(root);
+    } else {
         for (auto diagnostic : d.get_diagnostics())
             logger->log_err(diagnostic);
+    }
 
 }
 

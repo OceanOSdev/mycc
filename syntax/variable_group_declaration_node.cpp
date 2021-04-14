@@ -1,8 +1,27 @@
 #include "variable_group_declaration_node.h"
+#include "../symbols/variable_symbol.h"
+#include "../symbols/type_symbol.h"
 namespace Syntax{
 
 VariableGroupDeclarationNode::VariableGroupDeclarationNode(std::string type, std::vector<PartialVariableDeclarationNode*> vars, bool r_o, bool cust) :
-   group_type(type), dec_group(vars), read_only(r_o), custom_type(cust) {}
+   group_type(type), dec_group(vars), read_only(r_o), custom_type(cust) {
+       Symbols::TypeAttribute t;
+       t.is_struct = true;
+       t.is_integer_type = false;
+       t.is_numeric_type = false;
+
+       const Symbols::TypeSymbol* typeSymbol = cust ?
+            new Symbols::TypeSymbol(type, t)
+            : Symbols::TypeSymbol::try_lookup_primitive(type);
+
+       for (auto pvd : vars) {
+           std::string id = pvd->identifier();
+           bool is_arr = pvd->is_array();
+           int array_size = is_arr ? pvd->array_length() : -1;
+
+           m_vars.push_back(new Symbols::VariableSymbol(id, typeSymbol, is_arr, array_size, r_o));
+       }
+   }
 
 
 VariableGroupDeclarationNode::~VariableGroupDeclarationNode() {
@@ -23,6 +42,13 @@ std::string VariableGroupDeclarationNode::type() const {
  */
 std::vector<PartialVariableDeclarationNode*> VariableGroupDeclarationNode::partial_variable_group () const { 
     return dec_group; 
+}
+
+/*
+ * The list of all variables in this group (in a more useful type).
+ */
+std::vector<Symbols::VariableSymbol*> VariableGroupDeclarationNode::variable_list() const {
+    return m_vars;
 }
 
 /*

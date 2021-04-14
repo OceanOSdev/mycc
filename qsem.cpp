@@ -3,426 +3,299 @@
 #include <vector>
 #include <string>
 #include <iostream>
+#include <compare>
 #include "qsem.h"
+#include "symbols/parameter_symbol.h"
+#include "symbols/type_symbol.h"
+#include "symbols/function_symbol.h"
+#include "symbols/struct_symbol.h"
 
 namespace QuickSemanticAnalyzer {
-    void print_node(Syntax::SyntaxNode* n, std::string indent);
+    void analyze_node(Syntax::SyntaxNode* n);
 
-    void print_formal_parameter_node(Syntax::FormalParameterNode *f, std::string indent ) {
-        std::cout << "[Param]: ";
-        if (f->is_const()) std::cout << "const ";
-        if (f->is_struct()) std::cout << "struct ";
-        std::cout << f->type_identifier() << " ";
-        std::cout << f->param_name();
-        if (f->is_array()) std::cout << "[]";
+    // void analyze_formal_parameter_node(Syntax::FormalParameterNode *f ) {
+    //     std::cout << "Parameter: " <<  f->param_name() << " has type " << f->type_identifier() << std::endl;
+    // }
+
+    void analyze_function_declaration_node(Syntax::FunctionDeclarationNode* f) {
+        auto fsymb = f->function_symbol();
+        std::cout << "Function " << fsymb->name();
+        //bool is_void = std::is_neq(*(fsymb->type()) <=> Symbols::TypeSymbol::Void);
+        std::cout << ", returns ";
+        if (fsymb->type()->attributes().is_struct)
+            std::cout << "struct ";
+        std::cout << fsymb->type()->name();
         std::cout << std::endl;
-    }
-
-    void print_function_declaration_node(Syntax::FunctionDeclarationNode* f, std::string indent) {
-        //std::cout << indent;
-        std::cout << "[Func Decl]: ";
-        if (f->is_const()) std::cout << "const ";
-        if (f->is_struct()) std::cout << "struct ";
-        std::cout << f->type_identifier() << " ";
-        std::cout << f->function_name() << " ";
-        std::cout << std::endl;
-        auto parameters = f->parameters();
-        if (!parameters.empty()) {
-            std::vector<Syntax::FormalParameterNode*>::iterator param_iter;
-            auto last = std::prev(parameters.end(), 1);
-            for (param_iter = parameters.begin(); param_iter != parameters.end(); param_iter++) {
-                bool final = (param_iter == last);
-                std::string ind = final ? "└──" : "├──"; 
-                std::string mark2 = final ?  "   " : "│  ";
-                auto node = *param_iter;
-                std::cout << indent << ind;
-                print_node(node, indent + mark2);
-            }
-        }
-    }
-
-    void print_expression_node(Syntax::ExpressionNode* e, std::string indent) {
-        if (auto ce = dynamic_cast<Syntax::CastExpressionNode*>(e)) {
-            std::cout << "[Cast Expr]: ";
-            std::cout << ce->type();
+        std::cout << "\tParameters" << std::endl;
+        for (auto param : fsymb->params()) {
+            std::cout << "\t\t";
+            if (param->is_constant())
+                std::cout << "const ";
+            if (param->type()->attributes().is_struct)
+                std::cout << "struct ";
+            std::cout << param->type()->name();
+            if (param->is_array())
+                std::cout << "[]";
+            std::cout << " " << param->name();
             std::cout << std::endl;
-            std::cout << indent + "└──";
+        }
+        std::cout << std::endl;
+    }
+
+    void analyze_expression_node(Syntax::ExpressionNode* e) {
+        if (auto ce = dynamic_cast<Syntax::CastExpressionNode*>(e)) {
             auto node = ce->expression();
-            print_node(node, indent + "   ");
+            analyze_node(node);
 
         } else if (auto te = dynamic_cast<Syntax::TernaryExpressionNode*>(e)) {
-            std::cout << "[Ternary Expr]: ";
-            std::cout << std::endl;
-            std::cout << indent + "├──";
             auto cond_node = te->conditional_expression();
-            print_node(cond_node, indent + "│  ");
-            std::cout << indent + "├──";
+            analyze_node(cond_node);
             auto t_node = te->true_expression();
-            print_node(t_node, indent + "│  ");
-            std::cout << indent + "└──";
+            analyze_node(t_node);
             auto f_node = te->false_expression();
-            print_node(f_node, indent + "   ");
+            analyze_node(f_node);
 
         } else if (auto ie = dynamic_cast<Syntax::IncrementExpressionNode*>(e)) {
-            if (ie->is_post()) std::cout << "[Post-Incr Expr]: ";
-            else std::cout << "[Pre-Incr Expr]: ";
-            std::cout << std::endl;
-            std::cout << indent + "└──";
             auto node = ie->identifier_expression();
-            print_node(node, indent + "   ");
+            analyze_node(node);
 
         } else if (auto de = dynamic_cast<Syntax::DecrementExpressionNode*>(e)) {
-            if (de->is_post()) std::cout << "[Post-Decr Expr]: ";
-            else std::cout << "[Pre-Decr Expr]: ";
-            std::cout << std::endl;
-            std::cout << indent + "└──";
             auto node = de->identifier_expression();
-            print_node(node, indent + "   ");
+            analyze_node(node);
 
         } else if (auto ae = dynamic_cast<Syntax::AssignmentExpressionNode*>(e)) {
-            std::cout << "[Assignment Expr]: ";
-            std::cout << std::endl;
-
-            std::cout << indent + "├──";
             auto id_node = ae->identifier_expression();
-            print_node(id_node, indent + "│  ");
-            std::cout << indent + "├──";
-            auto a_t = ae->assignment_type();
-            std::cout << syntax_token_type_as_string(a_t) << std::endl;
-            std::cout << indent + "└──";
+            analyze_node(id_node);
+            __attribute__((unused)) auto a_t = ae->assignment_type();
             auto node = ae->expression();
-            print_node(node, indent + "   ");
+            analyze_node(node);
 
         } else if (auto cle = dynamic_cast<Syntax::CallExpressionNode*>(e)) {
-            std::cout << "[Call Expr]:" << std::endl;
-            std::cout << indent + "├──" << "[name]: " << cle->name() << std::endl;
             auto exprs = cle->expressions();
-            std::vector<Syntax::ExpressionNode*>::iterator expr_iter;
-            auto last = std::prev(exprs.end(), 1);
-            for (expr_iter = exprs.begin(); expr_iter != exprs.end(); expr_iter++) {
-                bool final = (expr_iter == last);
-                std::string ind = final ? "└──" : "├──"; 
-                std::string mark2 = final ?  "   " : "│  ";
-                auto node = *expr_iter;
-                std::cout << indent << ind;
-                print_node(node, indent + mark2);
+            for (auto pexpr : exprs) {
+                analyze_node(pexpr);
             }
 
-        } else if (auto ne = dynamic_cast<Syntax::NameExpressionNode*>(e)) {
-            std::cout << "[Name Expr]: ";
-            std::cout << ne->name();
-            std::cout << std::endl;
+        } else if ( __attribute__((unused)) auto ne = dynamic_cast<Syntax::NameExpressionNode*>(e)) {
+
 
         } else if (auto ine = dynamic_cast<Syntax::IndexExpressionNode*>(e)) {
-            std::cout << "[Index Expr]:";
-            std::cout << std::endl << indent + "├──" << "[ident]: " << ine->name() << std::endl;
-            std::cout << indent + "└──";
             auto node = ine->expression();
-            print_node(node, indent + "   ");
+            analyze_node(node);
 
         } else if (auto me = dynamic_cast<Syntax::MemberExpressionNode*>(e)) {
-            std::cout << "[Member Expr]:";
-            std::cout << std::endl << indent + "├──" << "[LHS]: ";
             auto lhs = me->encapsulator();
-            std::cout << std::endl;
-            std::cout << indent + "│  " + "└──";
-            print_node(lhs, indent + "│  ");
-            std::cout << indent + "└──";
+            analyze_node(lhs);
             auto node = me->member();
-            print_node(node, indent + "   ");
+            analyze_node(node);
 
         } else if (auto ue = dynamic_cast<Syntax::UnaryExpressionNode*>(e)) {
-            std::cout << "[Unary Expr]:";
-            std::cout << std::endl << indent + "├──" << "[OP]: " << syntax_token_type_as_string(ue->syntax_token_type());
-            std::cout << std::endl;
-            std::cout << indent + "└──";
             auto node = ue->expression();
-            print_node(node, indent + "   ");
+            analyze_node(node);
 
         } else if (auto be = dynamic_cast<Syntax::BinaryExpressionNode*>(e)) {
-            std::cout << "[Binary Expr]:" << std::endl;
-            std::cout << indent + "├──";
             auto lnode = be->left_expression();
-            print_node(lnode, indent + "│  ");
-            std::cout << indent + "├──" << "[OP]: " << syntax_token_type_as_string(be->syntax_token_type());
-            std::cout << std::endl;
-            std::cout << indent + "└──";
+            analyze_node(lnode);
             auto node = be->right_expression();
-            print_node(node, indent + "   ");
+            analyze_node(node);
 
-        } else if (auto lve = dynamic_cast<Syntax::LiteralValExpressionNode*>(e)) {
-            std::cout << "[Literal Val Expr]: ";
+        } else if ( __attribute__((unused)) auto lve = dynamic_cast<Syntax::LiteralValExpressionNode*>(e)) {
+            //std::cout << "[Literal Val Expr]: ";
             try {
             switch (lve->value_type()) {
                 case Syntax::token_data_type::CHAR:
-                    std::cout << lve->char_value();
+                    // std::cout << lve->char_value();
                     break;
                 case Syntax::token_data_type::STRING:
-                    std::cout << lve->string_value();
+                    // std::cout << lve->string_value();
                     break;
                 case Syntax::token_data_type::INT:
-                    std::cout << lve->int_value();
+                    // std::cout << lve->int_value();
                     break;
                 case Syntax::token_data_type::FLOAT:
-                    std::cout << lve->float_value();
+                    // std::cout << lve->float_value();
                     break;
             }
             } catch (const std::bad_variant_access& bva) {
                 std::cout << bva.what();
             }
-            std::cout << std::endl;
+            //std::cout << std::endl;
         }
     }
 
-    void print_block_statement_node(Syntax::BlockStatementNode* node, std::string indent) {
-        std::cout << "[Block]:" << std::endl;
+    void analyze_block_statement_node(Syntax::BlockStatementNode* node) {
         auto stmts = node->statements();
-        std::vector<Syntax::StatementNode*>::iterator iter;
-        auto last = std::prev(stmts.end(),1);
-        for (iter = stmts.begin(); iter != stmts.end(); iter++) {
-            bool final = (iter == last);
-            std::string ind = final ? "└──" : "├──"; 
-            std::string mark2 = final ?  "   " : "│  ";
-            auto fnode = *iter;
-            std::cout << indent << ind;
-            print_node(fnode, indent + mark2);
+        for (auto stmt : stmts) {
+            analyze_node(stmt);
         }
     }
 
-    void print_break_statement_node(Syntax::BreakStatementNode* node, std::string indent) {
+    void analyze_break_statement_node(__attribute__((unused)) Syntax::BreakStatementNode* node) {
         std::cout << "[BREAK]" << std::endl;
     }
 
-    void print_continue_statement_node(Syntax::ContinueStatementNode* node, std::string indent) {
-        std::cout << "[CONTINUE]" << std::endl;
+    void analyze_continue_statement_node(__attribute__((unused)) Syntax::ContinueStatementNode* node) {
     }
 
-    void print_do_while_statement_node(Syntax::DoWhileStatementNode* node, std::string indent) {
-        std::cout << "[DOWHILE]:" << std::endl;
-        std::cout << indent + "├──" << "[BODY]:" << std::endl;
-        print_node(node->body_statement(), indent + "│  ");
-        std::cout << indent + "└──" << "[COND]:" << std::endl;
-        print_node(node->conditional_expression(), indent + "   ");
+    void analyze_do_while_statement_node(Syntax::DoWhileStatementNode* node) {
+        analyze_node(node->body_statement());
+        analyze_node(node->conditional_expression());
     }
 
-    void print_expression_statement_node(Syntax::ExpressionStatementNode* node, std::string indent) {
-        print_node(node->expression(), indent);
+    void analyze_expression_statement_node(Syntax::ExpressionStatementNode* node) {
+        analyze_node(node->expression());
     }
 
-    void print_for_statement_node(Syntax::ForStatementNode* node, std::string indent) {
+    void analyze_for_statement_node(__attribute__((unused)) Syntax::ForStatementNode* node) {
 
     }
 
-    void print_if_statement_node(Syntax::IfStatementNode* node, std::string indent) {
-        std::cout << "[IF]:" << std::endl;
-        std::cout << indent + "├──" << "[COND]:" << std::endl;
-        print_node(node->condition(), indent + "│  ");
-        std::string marker = "├──";
-        std::string mind = "│  ";
-        if (!node->has_else_statement()) {
-            marker = "└──";
-            mind = "   ";
-        }
-        std::cout << indent + marker << "[THEN]:" << std::endl;
-        print_node(node->then_statement(), indent + mind);
-
+    void analyze_if_statement_node(Syntax::IfStatementNode* node) {
+        analyze_node(node->condition());
+        analyze_node(node->then_statement());
         if (node->has_else_statement()) {
-            std::cout << indent + "└──" << "[ELSE]:" << std::endl;
-            print_node(node->then_statement(), indent + "   ");
+            analyze_node(node->then_statement());
         }
     }
 
-    void print_return_statement_node(Syntax::ReturnStatementNode* node, std::string indent) {
-        std::cout << "[RETURN]:" << std::endl;
+    void analyze_return_statement_node(Syntax::ReturnStatementNode* node) {
         if (!node->is_empty_return()) {
-            std::cout << indent + "└──";
-            print_node(node->expression(), indent + "   ");
+            analyze_node(node->expression());
         }
     }
 
-    void print_while_statement_node(Syntax::WhileStatementNode* node, std::string indent) {
-        std::cout << "[WHILE]:" << std::endl;
-        std::cout << indent + "├──" << "[COND]:" << std::endl;
-        std::string tind = indent + "│  ";
-        std::cout << tind + "└──";
-        print_node(node->conditional_expression(), tind  + "   ");
-        std::cout << indent + "└──" << "[BODY]:" << std::endl;
-        print_node(node->body_statement(), indent + "   ");
+    void analyze_while_statement_node(Syntax::WhileStatementNode* node) {
+        analyze_node(node->conditional_expression());
+        analyze_node(node->body_statement());
     }
 
 
-    void print_statement_node(Syntax::StatementNode* s, std::string indent) {
+    void analyze_statement_node(Syntax::StatementNode* s) {
         if (auto blk = dynamic_cast<Syntax::BlockStatementNode*>(s)) {
-            print_block_statement_node(blk, indent);
+            analyze_block_statement_node(blk);
 
         } else if (auto brk = dynamic_cast<Syntax::BreakStatementNode*>(s)) {
-            print_break_statement_node(brk, indent);
+            analyze_break_statement_node(brk);
 
         } else if (auto cont = dynamic_cast<Syntax::ContinueStatementNode*>(s)) {
-            print_continue_statement_node(cont, indent);
+            analyze_continue_statement_node(cont);
 
         } else if (auto dow = dynamic_cast<Syntax::DoWhileStatementNode*>(s)) {
-            print_do_while_statement_node(dow, indent);
+            analyze_do_while_statement_node(dow);
 
         } else if (auto exprst = dynamic_cast<Syntax::ExpressionStatementNode*>(s)) {
-            print_expression_statement_node(exprst, indent);
+            analyze_expression_statement_node(exprst);
 
         } else if (auto forst = dynamic_cast<Syntax::ForStatementNode*>(s)) {
-            print_for_statement_node(forst, indent);
+            analyze_for_statement_node(forst);
 
         } else if (auto ifst = dynamic_cast<Syntax::IfStatementNode*>(s)) {
-            print_if_statement_node(ifst, indent);
+            analyze_if_statement_node(ifst);
 
         } else if (auto retst = dynamic_cast<Syntax::ReturnStatementNode*>(s)) {
-            print_return_statement_node(retst, indent);
+            analyze_return_statement_node(retst);
 
         } else if (auto whilest = dynamic_cast<Syntax::WhileStatementNode*>(s)) {
-            print_while_statement_node(whilest, indent);
+            analyze_while_statement_node(whilest);
 
         }
     }
 
-    void print_global_declaration_node(Syntax::GlobalDeclarationNode* g, std::string indent) {
+    void analyze_global_declaration_node(Syntax::GlobalDeclarationNode* g) {
         if (auto gvgd = dynamic_cast<Syntax::GlobalVariableGroupDeclarationNode*>(g)) {
-            print_node(gvgd->variable_group(), indent);
+            analyze_node(gvgd->variable_group());
 
         } else if (auto gsd = dynamic_cast<Syntax::GlobalStructDeclarationNode*>(g)) {
-            print_node(gsd->struct_declaration(), indent);
+            analyze_node(gsd->struct_declaration());
             
         } else if (auto fp = dynamic_cast<Syntax::FunctionPrototypeNode*>(g)) {
-            print_node(fp->function_declaration(), indent);
+            analyze_node(fp->function_declaration());
 
         } else if (auto fd = dynamic_cast<Syntax::FunctionDefinitionNode*>(g)) {
-            std::cout << "[FUNC DEF]:" << std::endl;
-            
-            std::cout << indent + "├──" << "[LOCALDECS]:" << std::endl;
+            analyze_node(fd->function_declaration());
             auto local_decs = fd->local_declarations();
-            std::string tind = indent +"│  ";
-            std::vector<Syntax::LocalDeclarationNode*>::iterator iter;
-            auto last = std::prev(local_decs.end(),1);
-            for (iter = local_decs.begin(); iter != local_decs.end(); iter++) {
-                bool final = (iter == last);
-                std::string ind = final ? "└──" : "├──"; 
-                std::string mark2 = final ?  "   " : "│  ";
-                auto fnode = *iter;
-                std::cout << tind << ind;
-                print_node(fnode, tind + mark2);
+            for (auto dec : local_decs) {
+                analyze_node(dec);
             }
-
             
-            std::cout << indent + "└──" << "[STMTS]:" << std::endl;
-            std::string sind = indent + "   ";
             auto stmts = fd->statements();
-            std::vector<Syntax::StatementNode*>::iterator stmtiter;
-            auto laststmt = std::prev(stmts.end(),1);
-            for (stmtiter = stmts.begin(); stmtiter != stmts.end(); stmtiter++) {
-                bool final = (stmtiter == laststmt);
-                std::string ind = final ? "└──" : "├──"; 
-                std::string mark2 = final ?  "   " : "│  ";
-                auto fnode = *stmtiter;
-                std::cout << sind << ind;
-                print_node(fnode, sind + mark2);
+            for (auto stmt : stmts) {
+                analyze_node(stmt);
             }
-            //std::cout << indent + "├──";
-            //print_node(fd->function_declaration(), indent + "│  ");
-            //std::cout << indent + "├──";
-            //print_node(fd->local_declarations(), indent + "│  ");
         }
     }
 
-    void print_local_declaration_node(Syntax::LocalDeclarationNode* ld, std::string indent) {
+    void analyze_local_declaration_node(Syntax::LocalDeclarationNode* ld) {
         if (auto vgd = dynamic_cast<Syntax::VariableGroupDeclarationNode*>(ld)) {
-            std::cout << "[Variable Decl Group]: ";
-            if (vgd->is_const()) std::cout << "const ";
-            if (vgd->is_struct()) std::cout << "struct ";
-            std::cout << vgd->type();
-            std::cout << std::endl;
             auto vars = vgd->partial_variable_group();
-            std::vector<Syntax::PartialVariableDeclarationNode*>::iterator iter;
-            auto last = std::prev(vars.end(),1);
-            for (iter = vars.begin(); iter != vars.end(); iter++) {
-                bool final = (iter == last);
-                std::string ind = final ? "└──" : "├──"; 
-                std::string mark2 = final ?  "   " : "│  ";
-                auto node = *iter;
-                std::cout << indent << ind;
-                print_node(node, indent + mark2);
+            for (auto var : vars) {
+                analyze_node(var);
             }
+
         } else if (auto sd = dynamic_cast<Syntax::StructDeclarationNode*>(ld)) {
-            std::cout << "[Struct Decl]: ";
-            std::cout << sd->struct_name();
-            std::cout << std::endl;
             auto vars = sd->struct_members();
-            std::vector<Syntax::VariableGroupDeclarationNode*>::iterator iter;
-            auto last = std::prev(vars.end(),1);
-            for (iter = vars.begin(); iter != vars.end(); iter++) {
-                bool final = (iter == last);
-                std::string ind = final ? "└──" : "├──"; 
-                std::string mark2 = final ?  "   " : "│  ";
-                auto node = *iter;
-                std::cout << indent << ind;
-                print_node(node, indent + mark2);
+            for (auto var : vars) {
+                analyze_node(var);
             }
+            
         }
     }
 
-    void print_partial_variable_declaration_node(Syntax::PartialVariableDeclarationNode* p, std::string indent) {
-        std::cout << "[Partial Var Decl]: ";
-        std::cout << p->identifier();
-        if (p->is_array()) {
-            std::cout << "[" << p->array_length() << "] ";
-        }
-        std::cout << std::endl;
+    void analyze_partial_variable_declaration_node(Syntax::PartialVariableDeclarationNode* p) {
         if (p->is_assigned()) {
-            std::cout << indent + "└──";
             auto node = p->expression();
-            print_node(node, indent + "   ");
+            analyze_node(node);
         }
     }
 
-    void print_tranlation_unit_node(Syntax::TranslationUnitNode* t, std::string indent) {
-        std::vector<Syntax::GlobalDeclarationNode*>::iterator gd_iter;
+    void analyze_tranlation_unit_node(Syntax::TranslationUnitNode* t) {
         auto gds = t->global_declarations();
-        auto last = std::prev(gds.end(), 1); 
-        std::cout << "[Translation Unit]" << std::endl;
-        for (gd_iter = gds.begin(); gd_iter != gds.end(); gd_iter++) {
-            auto node = *gd_iter;
-            bool final = (gd_iter == last);
-            std::string ind = final ? "└──" : "├──";
-            std::string mark2 = final ?  "   " : "│  ";
-            std::cout << ind;
-            print_node(node, indent + mark2);
+        for (auto gd : gds) {
+            analyze_node(gd);
         }
     }
 
-    void print_node(Syntax::SyntaxNode* n, std::string indent) {
-        if (auto pvd = dynamic_cast<Syntax::PartialVariableDeclarationNode*>(n)) {
-            print_partial_variable_declaration_node(pvd, indent);
+    void analyze_program_node(Syntax::ProgramNode* p) {
+        auto units = p->units();
+        for (auto unit : units) {
+            analyze_node(unit);
+        }
+    }
 
-        } else if (auto fp = dynamic_cast<Syntax::FormalParameterNode*>(n)) {
-            print_formal_parameter_node(fp, indent);
+    void analyze_node(Syntax::SyntaxNode* n) {
+        if (auto pvd = dynamic_cast<Syntax::PartialVariableDeclarationNode*>(n)) {
+            analyze_partial_variable_declaration_node(pvd);
+
+        // } else if (auto fp = dynamic_cast<Syntax::FormalParameterNode*>(n)) {
+        //     analyze_formal_parameter_node(fp);
 
         } else if (auto ld = dynamic_cast<Syntax::LocalDeclarationNode*>(n)) {
-            print_local_declaration_node(ld, indent);
+            analyze_local_declaration_node(ld);
 
         } else if (auto fd = dynamic_cast<Syntax::FunctionDeclarationNode*>(n)) {
-            print_function_declaration_node(fd, indent);
+            analyze_function_declaration_node(fd);
             
         } else if (auto e = dynamic_cast<Syntax::ExpressionNode*>(n)) {
-            print_expression_node(e, indent);
+            analyze_expression_node(e);
 
         } else if (auto s = dynamic_cast<Syntax::StatementNode*>(n)) {
-            print_statement_node(s, indent);
+            analyze_statement_node(s);
 
         } else if (auto gd = dynamic_cast<Syntax::GlobalDeclarationNode*>(n)) {
-            print_global_declaration_node(gd, indent);
+            analyze_global_declaration_node(gd);
 
         } else if (auto tu = dynamic_cast<Syntax::TranslationUnitNode*>(n)) {
-            print_tranlation_unit_node(tu, indent);
+            analyze_tranlation_unit_node(tu);
+
+        } else if (auto p = dynamic_cast<Syntax::ProgramNode*>(n)) {
+            analyze_program_node(p);
         }
     }
 
-    void print_nodes(Syntax::SyntaxNode* n) {
-        print_node(n, "");
+    void analyze(Syntax::SyntaxNode* n) {
+        analyze_node(n);
+
+        // auto wider = Symbols::TypeSymbol::get_wider_type(&Symbols::TypeSymbol::Char, &Symbols::TypeSymbol::Int);
+        // std::cout << wider->name() << std::endl;
     }
 }
