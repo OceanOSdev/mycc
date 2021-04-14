@@ -81,6 +81,10 @@ const TypeSymbol* TypeSymbol::get_wider_type(const TypeSymbol* lhs, const TypeSy
         return order < 0 ? rhs : (order > 0) ? lhs : nullptr;
 }
 
+bool TypeSymbol::are_types_equivalent(const TypeSymbol* lhs, const TypeSymbol* rhs) {
+        return std::is_eq(*lhs <=> *rhs);
+}
+
 const TypeSymbol TypeSymbol::Void = TypeSymbol("void", {false,false,false});
 const TypeSymbol TypeSymbol::Char = TypeSymbol("char", {false,true,true});
 const TypeSymbol TypeSymbol::Int = TypeSymbol("int", {false,true,true});

@@ -92,7 +92,7 @@ SYMBOLS_SRCS = $(filter-out $(SYMBOLS_IGNORE),$(SYMBOLS_SRC_ALL))
 SYMBOLS_OBJS = $(patsubst $(SYMBOLS_DIR)/%.cpp,$(OBJDIR)/%.o,$(SYMBOLS_SRCS))
 
 BINDING_DIR = binding
-BINDING_IGNORE = 
+BINDING_IGNORE = $(BINDING_DIR)/bound_program.cpp
 BINDING_SRC_ALL = $(wildcard $(BINDING_DIR)/*.cpp)
 BINDING_SRCS = $(filter-out $(BINDING_IGNORE),$(BINDING_SRC_ALL))
 BINDING_OBJS = $(patsubst $(BINDING_DIR)/%.cpp,$(OBJDIR)/%.o,$(BINDING_SRCS))

@@ -56,7 +56,7 @@ public:
     static const TypeSymbol Float;
     static const TypeSymbol Error;
     static const TypeSymbol* get_wider_type(const TypeSymbol* lhs, const TypeSymbol* rhs);
-
+    static bool are_types_equivalent(const TypeSymbol* lhs, const TypeSymbol* rhs);
 };
 
 }

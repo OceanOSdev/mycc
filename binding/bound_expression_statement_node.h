@@ -14,6 +14,11 @@ public:
     BoundExpressionStatementNode(BoundExpressionNode* expression);
     ~BoundExpressionStatementNode();
 
+    /*
+     * An enum representing the kind of bound node this is
+     */
+    BoundNodeKind kind() const override;
+
     BoundExpressionNode* expression() const;
 };
 

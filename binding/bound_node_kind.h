@@ -5,9 +5,14 @@
 namespace Binding {
 
 enum BoundNodeKind {
+    // Expressions
     CastExpression,
     BinaryExpression,
-    ErrorExpression
+    ErrorExpression,
+
+    // Statements
+    ExpressionStatement,
+    BlockStatement
 };
 
 using BoundNodeKind = enum BoundNodeKind;

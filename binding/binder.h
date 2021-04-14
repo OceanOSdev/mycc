@@ -9,18 +9,30 @@ class Logger;
 
 namespace Syntax {
     class StatementNode;
+    class ExpressionStatementNode;
+    class ExpressionNode;
 }
 
 namespace Binding {
 // Forward decs
 class BoundStatementNode;
+class BoundExpressionNode;
 
 class Binder {
 private:
     std::vector<std::string> m_diagnostics;
     bool m_err_flag;
     Logger* m_logger;
-    BoundStatementNode* BindStatement(Syntax::StatementNode* statement);
+
+    /* statement bindings */
+
+    BoundStatementNode* bind_statement(Syntax::StatementNode* statement);
+    BoundStatementNode* bind_expression_statement(Syntax::ExpressionStatementNode* expressionStatement);
+
+    /* expression bindings */
+
+    BoundExpressionNode* bind_expression(Syntax::ExpressionNode* expression, bool canBeVoid = false);
+    BoundExpressionNode* bind_expression_internal(Syntax::ExpressionNode* expression);
 public:
 
     /*

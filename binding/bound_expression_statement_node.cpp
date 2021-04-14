@@ -10,6 +10,13 @@ BoundExpressionStatementNode::~BoundExpressionStatementNode() {
 
 }
 
+/*
+ * An enum representing the kind of bound node this is
+ */
+BoundNodeKind BoundExpressionStatementNode::kind() const {
+    return BoundNodeKind::ExpressionStatement;
+}
+
 BoundExpressionNode* BoundExpressionStatementNode::expression() const {
     return m_expression;
 }
