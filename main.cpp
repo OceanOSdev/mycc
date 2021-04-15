@@ -7,6 +7,8 @@
 #include "qsem.h"
 #include "syntax_tree_printer.h"
 #include "part_two_syntax_check.h"
+#include "diagnostics.h"
+#include "binding/binder.h"
 
 const char* versionInfo =
 "My bare-bones C compiler (for COM 440)\n"
@@ -73,8 +75,12 @@ void runSyntaxChecker(parsed_args_t* pat) {
 void runSemanticAnalyzer(parsed_args_t* pat) {
     Driver d;
     if (runParser(pat, std::move(d))) {
+        auto root = new Syntax::ProgramNode(nullptr, d.get_translation_units());
+        auto binder = Binding::Binder::bind_program(root);
+        if (binder->err_flag())
+            logger->log_diagnostics_list(binder->diagnostics());
         //auto root = new Syntax::ProgramNode(d.get_translation_units());
-        SyntaxTreePrinter::print_nodes(d.get_translation_units()[0]);
+        //SyntaxTreePrinter::print_nodes(d.get_translation_units()[0]);
         //QuickSemanticAnalyzer::analyze(root);
     } else {
         for (auto diagnostic : d.get_diagnostics())

@@ -1,4 +1,6 @@
 #include "logger.h"
+#include "diagnostics.h"
+#include <sstream>
 
 Logger::~Logger() {
     if (!m_is_stdio) {
@@ -16,6 +18,20 @@ void Logger::log_info(std::string str) {
 
 void Logger::log_err(std::string err) {
     *(m_is_stdio ? &std::cerr : m_outstream) << err;
+}
+
+void Logger::log_diagnostic(Diagnostic* diagnostic) {
+    std::ostringstream errstream;
+    errstream << "Error near " << diagnostic->location().file_name 
+                << " line " << diagnostic->location().line_number 
+                << "\n\t" << diagnostic->message() << std::endl;
+    std::string err_msg = errstream.str();
+    log_err(err_msg);
+}
+
+void Logger::log_diagnostics_list(DiagnosticsList* diagnostic_list) {
+    for (auto diagnostic : diagnostic_list->diagnostics())
+        log_diagnostic(diagnostic);
 }
 
 std::string token_to_string(token_type token);

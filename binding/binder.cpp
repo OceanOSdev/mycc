@@ -32,7 +32,8 @@
 
 namespace Binding {
 
-Binder::Binder(BoundScope* parent) : m_scope(new BoundScope(parent)) {
+Binder::Binder(DiagnosticsList* diagnostics, BoundScope* parent) : 
+    m_diagnostics(diagnostics), m_scope(new BoundScope(parent)) {
 
 }
 
@@ -52,14 +53,15 @@ BoundScope* Binder::init_global_scope() {
 
 
 /*
- * For right now, don't return anything since I'm not sure
+ * For right now, return the local binder since I'm not sure
  * what to include in the BoundProgram.
  */
-void Binder::bind_program(Syntax::ProgramNode* program) {
+Binder* Binder::bind_program(Syntax::ProgramNode* program) {
     // Create root scope directly since we aren't
     // *actually* supporting multiple input files
     BoundScope* scope = init_global_scope();
-    auto binder = new Binder(scope);
+    DiagnosticsList* diag = new DiagnosticsList();
+    auto binder = new Binder(diag, scope);
 
     // Again, since we only really support one input
     // file, we only need to grab the first translation
@@ -70,6 +72,7 @@ void Binder::bind_program(Syntax::ProgramNode* program) {
     }
 
 
+    return binder;
 }
 
 /*
@@ -121,7 +124,10 @@ void Binder::bind_global_declaration(Syntax::GlobalDeclarationNode* gdn) {
             break;
         }
         case Syntax::SyntaxKind::FunctionPrototype:
-            break;
+        {
+            auto proto = dynamic_cast<Syntax::FunctionPrototypeNode*>(gdn);
+            bind_function_prototype(proto);
+        }
         case Syntax::SyntaxKind::FunctionDefinition:
             break;
         default:
@@ -129,20 +135,46 @@ void Binder::bind_global_declaration(Syntax::GlobalDeclarationNode* gdn) {
     }
 }
 
-void Binder::bind_function_declaration(Syntax::FunctionDeclarationNode* declaration) {
+Symbols::FunctionSymbol* Binder::bind_function_declaration(Syntax::FunctionDeclarationNode* declaration) {
     std::vector<Symbols::ParameterSymbol*> params;
     std::set<std::string> param_name_set; // keep track if we've seen a parameter with a given name
     for (auto parameter_syntax : declaration->parameters()) {
         auto ins_res = param_name_set.insert(parameter_syntax->param_name());
         if (!ins_res.second) {
-            //m_diagnostics->report_redefinition_of_parameter(parameter_syntax->token(), )
+            m_diagnostics->report_redefinition_of_parameter(parameter_syntax->token(), parameter_syntax->param_name());
+            m_err_flag = true;
+            return nullptr;
         }
+        std::string type_symbol_id = parameter_syntax->type_identifier();
+        auto param_type = bind_type_clause(type_symbol_id);
+        if (Symbols::TypeSymbol::are_types_equivalent(param_type, &Symbols::TypeSymbol::Error)) {
+            if (parameter_syntax->is_struct()) type_symbol_id = "struct " + type_symbol_id; // probably not the best way to accomplish this.
+            m_diagnostics->report_no_definition_for_type_symbol(parameter_syntax->token(), type_symbol_id);
+            m_err_flag = true;
+            return nullptr;
+        }
+
+        params.push_back(new Symbols::ParameterSymbol(parameter_syntax->param_name(), param_type, parameter_syntax->is_array(), parameter_syntax->is_const()));
     }
+
+    std::string func_type_id = declaration->type_identifier();
+    auto func_type = bind_type_clause(func_type_id);
+    if (Symbols::TypeSymbol::are_types_equivalent(func_type, &Symbols::TypeSymbol::Error)) {
+        if (declaration->is_struct()) func_type_id = "struct " + func_type_id;
+        m_diagnostics->report_no_definition_for_type_symbol(declaration->token(), func_type_id);
+        m_err_flag = true;
+        return nullptr;
+    }
+
+    return new Symbols::FunctionSymbol(declaration->function_name(), func_type, params);
 }
 
-void Binder::bind_function_prototype(__attribute__((unused)) Syntax::FunctionPrototypeNode* prototype) {
-    
-
+void Binder::bind_function_prototype(Syntax::FunctionPrototypeNode* prototype) {
+    auto symbol = bind_function_declaration(prototype->function_declaration());
+    if (!m_scope->try_declare_function(symbol)) {
+        m_diagnostics->report_conflicting_function_declarations(prototype->token(), symbol->name());
+        m_err_flag = true;
+    }
 }
 
 BoundFunctionDefinitionNode* Binder::bind_function_definition(Syntax::FunctionDefinitionNode* function_definition) {
@@ -190,7 +222,7 @@ BoundStatementNode* Binder::bind_expression_statement(Syntax::ExpressionStatemen
 BoundExpressionNode* Binder::bind_expression(Syntax::ExpressionNode* expression, bool canBeVoid) {
     auto result = bind_expression_internal(expression);
     if (!canBeVoid && Symbols::TypeSymbol::are_types_equivalent(result->type(), &Symbols::TypeSymbol::Void)) {
-        //m_diagnostics.push_back("Expression must have value.");
+        m_diagnostics->report_expression_cannot_be_void(expression->token());
         return new BoundErrorExpressionNode();
     }
     return result;

@@ -124,8 +124,10 @@ $(OBJS): | $(SUBDIRS)
 $(SUBDIRS): 
 	@$(MAKE) -C $@ --no-print-directory
 
-$(SYNTAX_DIR): | $(SYMBOLS_DIR) diagnostics.cpp
-$(BINDING_DIR): | $(SYNTAX_DIR) logger.cpp
+$(SYNTAX_DIR): | $(SYMBOLS_DIR) 
+$(BINDING_DIR): | $(SYNTAX_DIR) logger.cpp diagnostics.cpp
+
+diagnostics.cpp: | $(SYNTAX_DIR)
 
 # $(CORE_PCH): $(CORE_PCH_FILE)
 # 	@$(ECHOF) "${MODULE_STR_COLOR}Building precompiled header.${NO_COLOR}"

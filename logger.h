@@ -8,6 +8,8 @@
 #include <string>
 
 typedef enum yy::parser::token::yytokentype token_type;
+class DiagnosticsList;
+class Diagnostic;
 
 class Logger {
 private:
@@ -41,6 +43,22 @@ public:
      * Logs a string as an error.
      */
     void log_err(std::string err);
+
+    /*
+     * Logs an error recorded in a diagnostic.
+     */
+    void log_diagnostic(Diagnostic* diagnostic);
+
+    /*
+     * Logs all diagnostics in diagnostic_list.
+     */
+    void log_diagnostics_list(DiagnosticsList* diagnostic_list);
+
+    /*
+     * ========================================================
+     * DEPRECATED FUNCTIONS BELOW
+     * ========================================================
+     */
 
     /*
     * Logs the current file name, the line number, the text, and the token

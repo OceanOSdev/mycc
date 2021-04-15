@@ -5,7 +5,6 @@
 #include <vector>
 #include <string>
 
-class Logger;
 class DiagnosticsList;
 
 namespace Syntax {
@@ -21,6 +20,7 @@ namespace Syntax {
 
 namespace Symbols {
     class TypeSymbol;
+    class FunctionSymbol;
 }
 
 namespace Binding {
@@ -37,14 +37,13 @@ private:
     std::vector<std::string> m_part_three_info_list;
     std::vector<BoundGlobalDeclarationNode*> m_global_decls;
     bool m_err_flag;
-    Logger* m_logger;
     BoundScope* m_scope;
 
     static BoundScope* init_global_scope();
 
     /* global bindings */
     
-    void bind_function_declaration(Syntax::FunctionDeclarationNode* declaration);
+    Symbols::FunctionSymbol* bind_function_declaration(Syntax::FunctionDeclarationNode* declaration);
     void bind_function_prototype(Syntax::FunctionPrototypeNode* prototype);
     BoundFunctionDefinitionNode* bind_function_definition(Syntax::FunctionDefinitionNode* function_definition);
 
@@ -62,13 +61,13 @@ private:
     /* type bindings */
     const Symbols::TypeSymbol* bind_type_clause(std::string type_name);
 public:
-    Binder(BoundScope* parent);
+    Binder(DiagnosticsList* diagnostics, BoundScope* parent);
 
     /*
      * For right now, don't return anything since I'm not sure
      * what to include in the BoundProgram.
      */
-    static void bind_program(Syntax::ProgramNode* program);
+    static Binder* bind_program(Syntax::ProgramNode* program);
 
     void bind_global_declaration(Syntax::GlobalDeclarationNode* gdn);
 
