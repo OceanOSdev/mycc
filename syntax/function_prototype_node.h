@@ -6,12 +6,12 @@
 #include "function_declaration_node.h"
 
 namespace Syntax {
-
+class SyntaxToken;
 class FunctionPrototypeNode : public GlobalDeclarationNode {
 private:
     FunctionDeclarationNode* m_func_decl;
 public:
-    FunctionPrototypeNode(FunctionDeclarationNode* func);
+    FunctionPrototypeNode(SyntaxToken* token, FunctionDeclarationNode* func);
     
     ~FunctionPrototypeNode();
 

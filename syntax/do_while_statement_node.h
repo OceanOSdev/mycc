@@ -6,13 +6,13 @@
 #include "expression_node.h"
 
 namespace Syntax {
-
+class SyntaxToken;
 class DoWhileStatementNode : public StatementNode {
 private:
     StatementNode* body_stmt;
     ExpressionNode* cond_expr;
 public:
-    DoWhileStatementNode(StatementNode* body, ExpressionNode* condition);
+    DoWhileStatementNode(SyntaxToken* token, StatementNode* body, ExpressionNode* condition);
     
     ~DoWhileStatementNode();
     

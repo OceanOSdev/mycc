@@ -5,10 +5,10 @@
 #include "statement_node.h"
 
 namespace Syntax {
-
+class SyntaxToken;
 class LocalDeclarationNode : public StatementNode {
 public:
-    LocalDeclarationNode() {}
+    LocalDeclarationNode(SyntaxToken* token) : StatementNode(token) {}
 };
 
 }

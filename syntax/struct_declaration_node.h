@@ -11,14 +11,14 @@ namespace Symbols {
 class VariableSymbol;
 }
 namespace Syntax {
-
+class SyntaxToken;
 class StructDeclarationNode : public LocalDeclarationNode {
 private:
     std::string name;
     std::vector<VariableGroupDeclarationNode*> members;
     std::vector<Symbols::VariableSymbol*> m_members;
 public:
-    StructDeclarationNode(std::string id, std::vector<VariableGroupDeclarationNode*> vars);
+    StructDeclarationNode(SyntaxToken* token, std::string id, std::vector<VariableGroupDeclarationNode*> vars);
 
     ~StructDeclarationNode();
 

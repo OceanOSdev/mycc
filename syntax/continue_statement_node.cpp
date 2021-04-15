@@ -3,7 +3,8 @@
 
 namespace Syntax {
 
-ContinueStatementNode::ContinueStatementNode() {}
+ContinueStatementNode::ContinueStatementNode(SyntaxToken* token)
+    : StatementNode(token) {}
 ContinueStatementNode::~ContinueStatementNode() {}
 
 SyntaxKind ContinueStatementNode::kind() const {

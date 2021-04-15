@@ -6,12 +6,12 @@
 #include "struct_declaration_node.h"
 
 namespace Syntax {
-
+class SyntaxToken;
 class GlobalStructDeclarationNode : public GlobalDeclarationNode {
 private:
     StructDeclarationNode* m_struct_declaration;
 public:
-    GlobalStructDeclarationNode(StructDeclarationNode* struct_dec);
+    GlobalStructDeclarationNode(SyntaxToken* token, StructDeclarationNode* struct_dec);
     
     ~GlobalStructDeclarationNode();
 

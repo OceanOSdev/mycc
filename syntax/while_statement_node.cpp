@@ -3,8 +3,8 @@
 
 namespace Syntax {
 
-WhileStatementNode::WhileStatementNode(ExpressionNode* condition, StatementNode* body) : 
-        cond_expr(condition), body_stmt(body) {}
+WhileStatementNode::WhileStatementNode(SyntaxToken* token, ExpressionNode* condition, StatementNode* body) : 
+        StatementNode(token), cond_expr(condition), body_stmt(body) {}
 
 WhileStatementNode::~WhileStatementNode() { 
     delete cond_expr;

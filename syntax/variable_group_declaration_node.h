@@ -13,7 +13,7 @@ class VariableSymbol;
 }
 
 namespace Syntax {
-
+class SyntaxToken;
 class VariableGroupDeclarationNode : public LocalDeclarationNode {
 private:
     std::string group_type;
@@ -22,7 +22,7 @@ private:
     bool custom_type;
     std::vector<Symbols::VariableSymbol*> m_vars;
 public:
-    VariableGroupDeclarationNode(std::string type, std::vector<PartialVariableDeclarationNode*> vars, bool r_o, bool cust);
+    VariableGroupDeclarationNode(SyntaxToken* token, std::string type, std::vector<PartialVariableDeclarationNode*> vars, bool r_o, bool cust);
     
     ~VariableGroupDeclarationNode();
 

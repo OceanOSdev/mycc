@@ -4,8 +4,8 @@
 
 namespace Syntax {
 
-StructDeclarationNode::StructDeclarationNode(std::string id, std::vector<VariableGroupDeclarationNode*> vars) : 
-    name(id), members(vars) { 
+StructDeclarationNode::StructDeclarationNode(SyntaxToken* token, std::string id, std::vector<VariableGroupDeclarationNode*> vars) : 
+    LocalDeclarationNode(token), name(id), members(vars) { 
 
         for (auto mlist : vars) {
             auto v_sym_list = mlist->variable_list();

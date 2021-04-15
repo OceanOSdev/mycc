@@ -1,25 +1,98 @@
 #include <stdexcept>
+#include <set>
 #include "binder.h"
 #include "bound_statement_node.h"
 #include "bound_expression_statement_node.h"
 #include "bound_error_expression_node.h"
+#include "bound_scope.h"
+#include "bound_global_declaration_node.h"
+#include "bound_global_statement_node.h"
+#include "bound_function_definition_node.h"
 #include "../syntax/statement_node.h"
 #include "../logger.h"
+#include "../diagnostics.h"
 #include "../symbols/type_symbol.h"
+#include "../symbols/parameter_symbol.h"
+#include "../symbols/function_symbol.h"
+#include "../symbols/variable_symbol.h"
+#include "../symbols/struct_symbol.h"
+#include "../symbols/parameter_symbol.h"
 #include "../syntax/syntax_kind.h"
 #include "../syntax/statement_node.h"
 #include "../syntax/expression_node.h"
 #include "../syntax/expression_statement_node.h"
+#include "../syntax/global_declaration_node.h"
+#include "../syntax/global_variable_group_declaration_node.h"
+#include "../syntax/global_struct_declaration_node.h"
+#include "../syntax/function_prototype_node.h"
+#include "../syntax/function_definition_node.h"
+#include "../syntax/formal_parameter_node.h"
+#include "../syntax/program_node.h"
 
 
 namespace Binding {
 
+Binder::Binder(BoundScope* parent) : m_scope(new BoundScope(parent)) {
+
+}
+
+BoundScope* Binder::init_global_scope() {
+    BoundScope* scope = new BoundScope(nullptr);
+
+    // add default types
+    scope->try_declare_type(&Symbols::TypeSymbol::Char);
+    scope->try_declare_type(&Symbols::TypeSymbol::Int);
+    scope->try_declare_type(&Symbols::TypeSymbol::Float);
+    scope->try_declare_type(&Symbols::TypeSymbol::Void);
+    // Maybe declare error type?
+    //scope->try_declare_type(&Symbols::TypeSymbol::Error);
+
+    return scope;
+}
+
+
 /*
- * List of strings describing any errors that may
+ * For right now, don't return anything since I'm not sure
+ * what to include in the BoundProgram.
+ */
+void Binder::bind_program(Syntax::ProgramNode* program) {
+    // Create root scope directly since we aren't
+    // *actually* supporting multiple input files
+    BoundScope* scope = init_global_scope();
+    auto binder = new Binder(scope);
+
+    // Again, since we only really support one input
+    // file, we only need to grab the first translation
+    // unit.
+    auto translationUnit = program->units()[0];
+    for (auto dec : translationUnit->global_declarations()) {
+        binder->bind_global_declaration(dec);
+    }
+
+
+}
+
+/*
+ * List of top level statements and declarations in the program.
+ */
+std::vector<BoundGlobalDeclarationNode*> Binder::global_decls() const {
+    return m_global_decls;
+}
+
+/*
+ * List of diagnostics describing any errors that may
  * have occured during binding.
  */
-std::vector<std::string> Binder::diagnostics() const {
+DiagnosticsList* Binder::diagnostics() const {
     return m_diagnostics;
+}
+
+/*
+ * List of strings containing the info to output
+ * for part 3.
+ */
+std::vector<std::string> Binder::part_three_info_list() const {
+    return m_part_three_info_list;
 }
 
 /*
@@ -30,6 +103,52 @@ bool Binder::err_flag() const {
     return m_err_flag;
 }
 
+void Binder::bind_global_declaration(Syntax::GlobalDeclarationNode* gdn) {
+    auto syntaxKind = gdn->kind();
+    switch (syntaxKind) {
+        case Syntax::SyntaxKind::GlobalVariableDeclaration:
+        {
+            auto vardec = 
+                (dynamic_cast<Syntax::GlobalVariableGroupDeclarationNode*>(gdn))->variable_group();
+            m_global_decls.push_back(new BoundGlobalStatementNode(bind_statement(vardec)));
+            break;
+        }
+        case Syntax::SyntaxKind::GlobalStructDeclaration:
+        {
+            auto structdec = 
+                (dynamic_cast<Syntax::GlobalStructDeclarationNode*>(gdn))->struct_declaration();
+            m_global_decls.push_back(new BoundGlobalStatementNode(bind_statement(structdec)));
+            break;
+        }
+        case Syntax::SyntaxKind::FunctionPrototype:
+            break;
+        case Syntax::SyntaxKind::FunctionDefinition:
+            break;
+        default:
+            throw std::runtime_error("Unexpected syntax while binding global statement.");
+    }
+}
+
+void Binder::bind_function_declaration(Syntax::FunctionDeclarationNode* declaration) {
+    std::vector<Symbols::ParameterSymbol*> params;
+    std::set<std::string> param_name_set; // keep track if we've seen a parameter with a given name
+    for (auto parameter_syntax : declaration->parameters()) {
+        auto ins_res = param_name_set.insert(parameter_syntax->param_name());
+        if (!ins_res.second) {
+            //m_diagnostics->report_redefinition_of_parameter(parameter_syntax->token(), )
+        }
+    }
+}
+
+void Binder::bind_function_prototype(__attribute__((unused)) Syntax::FunctionPrototypeNode* prototype) {
+    
+
+}
+
+BoundFunctionDefinitionNode* Binder::bind_function_definition(Syntax::FunctionDefinitionNode* function_definition) {
+    bind_function_declaration(function_definition->function_declaration());
+    return nullptr;
+}
 
 BoundStatementNode* Binder::bind_statement(Syntax::StatementNode* statement) {
     auto syntaxKind = statement->kind();
@@ -71,7 +190,7 @@ BoundStatementNode* Binder::bind_expression_statement(Syntax::ExpressionStatemen
 BoundExpressionNode* Binder::bind_expression(Syntax::ExpressionNode* expression, bool canBeVoid) {
     auto result = bind_expression_internal(expression);
     if (!canBeVoid && Symbols::TypeSymbol::are_types_equivalent(result->type(), &Symbols::TypeSymbol::Void)) {
-        m_diagnostics.push_back("Expression must have value.");
+        //m_diagnostics.push_back("Expression must have value.");
         return new BoundErrorExpressionNode();
     }
     return result;
@@ -111,5 +230,13 @@ BoundExpressionNode* Binder::bind_expression_internal(Syntax::ExpressionNode* ex
     return nullptr;
 }
 
+
+const Symbols::TypeSymbol* Binder::bind_type_clause(std::string type_name) {
+    const Symbols::TypeSymbol* type;
+    if (!m_scope->try_look_up_type(type_name, type)) {
+        return &Symbols::TypeSymbol::Error;
+    }
+    return type;
+}
 
 }

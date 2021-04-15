@@ -2,8 +2,8 @@
 #include "syntax_kind.h"
 
 namespace Syntax {
-TranslationUnitNode::TranslationUnitNode(std::vector<GlobalDeclarationNode*> glob_decs) :
-        m_global_declarations(glob_decs) {}
+TranslationUnitNode::TranslationUnitNode(SyntaxToken* token, std::vector<GlobalDeclarationNode*> glob_decs) :
+        SyntaxNode(token), m_global_declarations(glob_decs) {}
 
 TranslationUnitNode::~TranslationUnitNode(){
     std::vector<GlobalDeclarationNode*>::iterator gd_iter;

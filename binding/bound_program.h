@@ -6,21 +6,15 @@
 #include <vector>
 #include <string>
 
-namespace Symbols {
-    class FunctionSymbol;
-}
-
 namespace Binding {
-
-class BoundBlockStatement;
+class BoundGlobalDeclarationNode;
 
 class BoundProgram {
 private:
     std::vector<std::string> m_diagnostics;
-    Symbols::FunctionSymbol* m_main_function;
-    std::unordered_map<Symbols::FunctionSymbol*, BoundBlockStatement*> m_functions;
-
-
+    std::vector<BoundGlobalDeclarationNode*> m_global_statements;
+    
+    
 };
 
 }

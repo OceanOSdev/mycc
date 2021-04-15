@@ -3,7 +3,7 @@
 namespace Syntax {
 
 ExpressionNode::ExpressionNode(SyntaxToken* token)
-    : m_token(token), m_expr_type(nullptr) {}
+    : SyntaxNode(token), m_expr_type(nullptr) {}
 
 /*
  * This method allows us to bind type information on 

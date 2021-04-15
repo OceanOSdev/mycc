@@ -7,7 +7,7 @@
 #include "expression_node.h"
 
 namespace Syntax {
-
+class SyntaxToken;
 class PartialVariableDeclarationNode : public SyntaxNode {
 private:
     std::string ident;
@@ -16,7 +16,7 @@ private:
     int array_size;
     ExpressionNode* expr;
 public:
-    PartialVariableDeclarationNode(std::string id, bool assign = false, bool arr = false, int arr_c = -1, ExpressionNode* e = nullptr);
+    PartialVariableDeclarationNode(SyntaxToken* token, std::string id, bool assign = false, bool arr = false, int arr_c = -1, ExpressionNode* e = nullptr);
     
     ~PartialVariableDeclarationNode();
 

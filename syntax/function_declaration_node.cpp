@@ -6,11 +6,13 @@
 
 namespace Syntax {
 
-FunctionDeclarationNode::FunctionDeclarationNode(std::string type_identifier,
+FunctionDeclarationNode::FunctionDeclarationNode(SyntaxToken* token,
+                        std::string type_identifier,
                         std::string function_name,
                         std::vector<FormalParameterNode*> params,
                         bool is_struct,
                         bool is_const) :
+    SyntaxNode(token),
     m_type_identifier(type_identifier),
     m_function_name(function_name),
     m_parameters(params),

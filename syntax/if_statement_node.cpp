@@ -3,8 +3,8 @@
 
 namespace Syntax {
 
-IfStatementNode::IfStatementNode(ExpressionNode* condition, StatementNode* t, StatementNode* e) : 
-    if_expr(condition), then_stmt(t), else_stmt(e) {}
+IfStatementNode::IfStatementNode(SyntaxToken* token, ExpressionNode* condition, StatementNode* t, StatementNode* e) : 
+    StatementNode(token), if_expr(condition), then_stmt(t), else_stmt(e) {}
 
 IfStatementNode::~IfStatementNode() { 
     delete if_expr;

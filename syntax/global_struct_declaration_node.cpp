@@ -3,8 +3,8 @@
 
 namespace Syntax {
 
-GlobalStructDeclarationNode::GlobalStructDeclarationNode(StructDeclarationNode* struct_dec) :
-    m_struct_declaration(struct_dec) {}
+GlobalStructDeclarationNode::GlobalStructDeclarationNode(SyntaxToken* token, StructDeclarationNode* struct_dec) :
+    GlobalDeclarationNode(token), m_struct_declaration(struct_dec) {}
 
 GlobalStructDeclarationNode::~GlobalStructDeclarationNode() {
     delete m_struct_declaration;

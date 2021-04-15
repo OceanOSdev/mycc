@@ -3,8 +3,8 @@
 
 namespace Syntax {
 
-ForStatementNode::ForStatementNode(ExpressionNode* ini, ExpressionNode* condition, ExpressionNode* inc, StatementNode* body) :
-    init_expr(ini), cond_expr(condition), inc_expr(inc), body_stmt(body) {}
+ForStatementNode::ForStatementNode(SyntaxToken* token, ExpressionNode* ini, ExpressionNode* condition, ExpressionNode* inc, StatementNode* body) :
+    StatementNode(token), init_expr(ini), cond_expr(condition), inc_expr(inc), body_stmt(body) {}
 
 ForStatementNode::~ForStatementNode() {
     if (init_expr != nullptr) delete init_expr;

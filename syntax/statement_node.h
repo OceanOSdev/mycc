@@ -5,10 +5,10 @@
 #include "syntax_node.h"
 
 namespace Syntax {
-
+class SyntaxToken;
 class StatementNode : public SyntaxNode {
 public:
-    StatementNode() {}
+    StatementNode(SyntaxToken* token) : SyntaxNode(token) {}
 };
 
 }

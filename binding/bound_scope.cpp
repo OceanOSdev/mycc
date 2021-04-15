@@ -12,6 +12,14 @@ BoundScope* BoundScope::parent() const {
     return m_parent;
 }
 
+bool BoundScope::try_declare_type(const Symbols::TypeSymbol* type_symbol) {
+    if (m_types.contains(type_symbol->name()))
+        return false;
+    
+    m_types[type_symbol->name()] = type_symbol;
+    return true;
+}
+
 bool BoundScope::try_declare_variable(Symbols::VariableSymbol* variable_symbol) {
     return try_declare_symbol(variable_symbol);
 }
@@ -57,13 +65,32 @@ bool BoundScope::try_look_up_function(std::string identifier, Symbols::FunctionS
     return false;
 }
 
+bool BoundScope::try_look_up_type(std::string identifier, const Symbols::TypeSymbol*& symbol) {
+    if (m_types.contains(identifier)) {
+        symbol = m_types[identifier];
+        return true;
+    }
+    if (is_root()) return false;
+    return m_parent->try_look_up_type(identifier, symbol);
+}
+
 bool BoundScope::try_declare_symbol(Symbols::Symbol* symbol) {
-    if (m_symbols.contains(symbol->name()))
+    if (m_symbols.contains(symbol->name())) {
+        if (symbol->kind() == Symbols::SymbolKind::FUNCTION) {
+            // if the function exists in scope already, check if what we
+            // are trying to declare has is the same function up to parameter
+            // names, in which case we can report back successful.
+            auto new_func = dynamic_cast<Symbols::FunctionSymbol*>(symbol);
+            auto orig_func = dynamic_cast<Symbols::FunctionSymbol*>(m_symbols[symbol->name()]);
+            return (*new_func == *orig_func);
+        }
         return false;
+    }
     
     m_symbols[symbol->name()] = symbol;
     return true;
 }
+
 
 bool BoundScope::is_root() const {
     return (m_parent == nullptr);

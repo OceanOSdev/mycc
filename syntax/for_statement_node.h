@@ -6,7 +6,7 @@
 #include "expression_node.h"
 
 namespace Syntax {
-
+class SyntaxToken;
 class ForStatementNode : public StatementNode {
 private:
     ExpressionNode* init_expr;
@@ -14,7 +14,7 @@ private:
     ExpressionNode* inc_expr;
     StatementNode* body_stmt;
 public:
-    ForStatementNode(ExpressionNode* ini, ExpressionNode* condition, ExpressionNode* inc, StatementNode* body);
+    ForStatementNode(SyntaxToken* token, ExpressionNode* ini, ExpressionNode* condition, ExpressionNode* inc, StatementNode* body);
     
     ~ForStatementNode();
 

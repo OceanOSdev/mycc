@@ -3,8 +3,8 @@
 
 namespace Syntax {
 
-FunctionPrototypeNode::FunctionPrototypeNode(FunctionDeclarationNode* func) : 
-    m_func_decl(func) {}
+FunctionPrototypeNode::FunctionPrototypeNode(SyntaxToken* token, FunctionDeclarationNode* func) : 
+    GlobalDeclarationNode(token), m_func_decl(func) {}
 
 FunctionPrototypeNode::~FunctionPrototypeNode() {
     delete m_func_decl;

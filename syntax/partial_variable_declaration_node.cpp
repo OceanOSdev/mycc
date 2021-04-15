@@ -3,8 +3,8 @@
 
 namespace Syntax {
 
-PartialVariableDeclarationNode::PartialVariableDeclarationNode(std::string id, bool assign, bool arr, int arr_c, ExpressionNode* e) : 
-    ident(id), is_assign(assign), is_arr(arr), array_size(arr_c), expr(e) {}
+PartialVariableDeclarationNode::PartialVariableDeclarationNode(SyntaxToken* token, std::string id, bool assign, bool arr, int arr_c, ExpressionNode* e) : 
+    SyntaxNode(token), ident(id), is_assign(assign), is_arr(arr), array_size(arr_c), expr(e) {}
 
 PartialVariableDeclarationNode::~PartialVariableDeclarationNode() {
     if (expr != nullptr) delete expr; 

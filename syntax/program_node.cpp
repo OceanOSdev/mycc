@@ -3,8 +3,8 @@
 
 namespace Syntax {
 
-ProgramNode::ProgramNode(std::vector<TranslationUnitNode*> units) :
-    m_units(units) {}
+ProgramNode::ProgramNode(SyntaxToken* token, std::vector<TranslationUnitNode*> units) :
+    SyntaxNode(token), m_units(units) {}
 
 ProgramNode::~ProgramNode() {
     std::vector<TranslationUnitNode*>::iterator tu_iter;

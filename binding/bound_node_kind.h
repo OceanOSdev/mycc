@@ -12,7 +12,11 @@ enum BoundNodeKind {
 
     // Statements
     ExpressionStatement,
-    BlockStatement
+    BlockStatement,
+
+    // Globals
+    GlobalStatement,
+    FunctionDefinition
 };
 
 using BoundNodeKind = enum BoundNodeKind;

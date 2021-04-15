@@ -14,7 +14,7 @@ namespace Symbols {
 }
 
 namespace Syntax {
-
+class SyntaxToken;
 class FunctionDeclarationNode : public SyntaxNode {
 private:
     std::string m_type_identifier;
@@ -26,7 +26,8 @@ private:
     std::vector<Symbols::ParameterSymbol*> m_param_symbols;
     Symbols::FunctionSymbol* m_function_symbol;
 public:
-    FunctionDeclarationNode(std::string type_identifier,
+    FunctionDeclarationNode(SyntaxToken* token,
+                            std::string type_identifier,
                             std::string function_name,
                             std::vector<FormalParameterNode*> params,
                             bool is_struct = false,

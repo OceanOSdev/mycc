@@ -3,8 +3,8 @@
 
 namespace Syntax {
 
-BlockStatementNode::BlockStatementNode(std::vector<StatementNode*> stmts) : 
-    stmt_nodes(stmts) { }
+BlockStatementNode::BlockStatementNode(SyntaxToken* token, std::vector<StatementNode*> stmts) : 
+    StatementNode(token), stmt_nodes(stmts) { }
 
 BlockStatementNode::~BlockStatementNode() {
     std::vector<StatementNode*>::iterator stmt_iter;

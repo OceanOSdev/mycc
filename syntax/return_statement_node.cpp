@@ -3,8 +3,8 @@
 
 namespace Syntax {
 
-ReturnStatementNode::ReturnStatementNode(ExpressionNode* e) : 
-    expr(e) {}
+ReturnStatementNode::ReturnStatementNode(SyntaxToken* token, ExpressionNode* e) : 
+    StatementNode(token), expr(e) {}
 
 ReturnStatementNode::~ReturnStatementNode() {
     if (!is_empty_return())

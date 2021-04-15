@@ -5,8 +5,8 @@
 
 namespace Syntax{
 
-VariableGroupDeclarationNode::VariableGroupDeclarationNode(std::string type, std::vector<PartialVariableDeclarationNode*> vars, bool r_o, bool cust) :
-   group_type(type), dec_group(vars), read_only(r_o), custom_type(cust) {
+VariableGroupDeclarationNode::VariableGroupDeclarationNode(SyntaxToken* token, std::string type, std::vector<PartialVariableDeclarationNode*> vars, bool r_o, bool cust) :
+   LocalDeclarationNode(token), group_type(type), dec_group(vars), read_only(r_o), custom_type(cust) {
        Symbols::TypeAttribute t;
        t.is_struct = true;
        t.is_integer_type = false;

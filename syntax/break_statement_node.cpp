@@ -3,7 +3,9 @@
 
 namespace Syntax {
 
-BreakStatementNode::BreakStatementNode() { }
+BreakStatementNode::BreakStatementNode(SyntaxToken* token) :
+    StatementNode(token) { }
+    
 BreakStatementNode::~BreakStatementNode() { }
 
 SyntaxKind BreakStatementNode::kind() const {

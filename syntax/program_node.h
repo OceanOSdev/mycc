@@ -6,12 +6,12 @@
 #include "translation_unit_node.h"
 #include <vector>
 namespace Syntax {
-
+class SyntaxToken;
 class ProgramNode : public SyntaxNode {
 private:
     std::vector<TranslationUnitNode*> m_units;
 public:
-    ProgramNode(std::vector<TranslationUnitNode*> units);
+    ProgramNode(SyntaxToken* token, std::vector<TranslationUnitNode*> units);
     ~ProgramNode();
 
     /*

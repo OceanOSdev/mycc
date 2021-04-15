@@ -6,12 +6,12 @@
 #include "statement_node.h"
 
 namespace Syntax {
-
+class SyntaxToken;
 class BlockStatementNode : public StatementNode {
 private:
     std::vector<StatementNode*> stmt_nodes;
 public:
-    BlockStatementNode(std::vector<StatementNode*> stmts);
+    BlockStatementNode(SyntaxToken* token, std::vector<StatementNode*> stmts);
     ~BlockStatementNode();
 
     /*

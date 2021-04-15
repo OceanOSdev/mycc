@@ -3,9 +3,11 @@
 
 namespace Syntax {
 
-FunctionDefinitionNode::FunctionDefinitionNode(FunctionDeclarationNode* func,
+FunctionDefinitionNode::FunctionDefinitionNode(SyntaxToken* token,
+                       FunctionDeclarationNode* func,
                        std::vector<Syntax::LocalDeclarationNode*> local_decs,
                        std::vector<Syntax::StatementNode*> statements) : 
+    GlobalDeclarationNode(token),
     m_func_decl(func),
     m_local_declarations(local_decs),
     m_statements(statements) {}

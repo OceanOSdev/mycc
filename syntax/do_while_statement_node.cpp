@@ -3,8 +3,8 @@
 
 namespace Syntax {
 
-DoWhileStatementNode::DoWhileStatementNode(StatementNode* body, ExpressionNode* condition) : 
-    body_stmt(body), cond_expr(condition) {}
+DoWhileStatementNode::DoWhileStatementNode(SyntaxToken* token, StatementNode* body, ExpressionNode* condition) : 
+    StatementNode(token), body_stmt(body), cond_expr(condition) {}
 
 DoWhileStatementNode::~DoWhileStatementNode() {
     delete cond_expr;

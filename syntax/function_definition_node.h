@@ -10,14 +10,15 @@
 #include "statement_node.h"
 
 namespace Syntax {
-
+class SyntaxToken;
 class FunctionDefinitionNode : public GlobalDeclarationNode {
 private:
     FunctionDeclarationNode* m_func_decl;
     std::vector<Syntax::LocalDeclarationNode*> m_local_declarations;
     std::vector<Syntax::StatementNode*> m_statements;
 public:
-    FunctionDefinitionNode(FunctionDeclarationNode* func,
+    FunctionDefinitionNode(SyntaxToken* token,
+                           FunctionDeclarationNode* func,
                            std::vector<Syntax::LocalDeclarationNode*> local_decs,
                            std::vector<Syntax::StatementNode*> statements);
     

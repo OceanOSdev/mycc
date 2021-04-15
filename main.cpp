@@ -58,7 +58,7 @@ bool runParser(parsed_args_t* pat, Driver&& d) {
 void runSyntaxChecker(parsed_args_t* pat) {
     Driver d;
     auto parsed = runParser(pat, std::move(d));
-    auto root = new Syntax::ProgramNode(d.get_translation_units());
+    auto root = new Syntax::ProgramNode(nullptr, d.get_translation_units());
     auto synt = new PartTwoSyntaxPrinter(root, logger);
     synt->print_info();
     if (!parsed)

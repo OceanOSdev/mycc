@@ -12,7 +12,6 @@ namespace Syntax {
 class SyntaxToken;
 class ExpressionNode : public SyntaxNode {
 protected:
-    SyntaxToken* m_token;
     const Symbols::TypeSymbol* m_expr_type;
 public:
     ExpressionNode(SyntaxToken* token);

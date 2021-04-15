@@ -3,8 +3,8 @@
 
 namespace Syntax {
 
-ExpressionStatementNode::ExpressionStatementNode(ExpressionNode* e) : 
-    expr(e) {}
+ExpressionStatementNode::ExpressionStatementNode(SyntaxToken* token, ExpressionNode* e) : 
+    StatementNode(token), expr(e) {}
 
 ExpressionStatementNode::~ExpressionStatementNode() {
     delete expr; 

@@ -7,12 +7,12 @@
 #include "global_declaration_node.h"
 
 namespace Syntax {
-
+class SyntaxToken;
 class TranslationUnitNode : public SyntaxNode {
 private:
     std::vector<GlobalDeclarationNode*> m_global_declarations;
 public:
-    TranslationUnitNode(std::vector<GlobalDeclarationNode*> glob_decs);
+    TranslationUnitNode(SyntaxToken* token, std::vector<GlobalDeclarationNode*> glob_decs);
 
     ~TranslationUnitNode();
 

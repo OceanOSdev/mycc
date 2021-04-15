@@ -6,11 +6,11 @@
 #include "expression_node.h"
 
 namespace Syntax {
-
+class SyntaxToken;
 class ReturnStatementNode : public StatementNode {
     ExpressionNode* expr;
 public:
-    ReturnStatementNode(ExpressionNode* e);
+    ReturnStatementNode(SyntaxToken* token, ExpressionNode* e);
     ~ReturnStatementNode();
 
     /*

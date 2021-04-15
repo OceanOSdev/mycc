@@ -6,14 +6,14 @@
 #include "expression_node.h"
 
 namespace Syntax {
-
+class SyntaxToken;
 class IfStatementNode : public StatementNode {
 private:
     ExpressionNode* if_expr;
     StatementNode* then_stmt;
     StatementNode* else_stmt; 
 public:
-    IfStatementNode(ExpressionNode* condition, StatementNode* t, StatementNode* e);
+    IfStatementNode(SyntaxToken* token, ExpressionNode* condition, StatementNode* t, StatementNode* e);
     
     ~IfStatementNode();
 

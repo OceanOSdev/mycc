@@ -3,11 +3,13 @@
 
 namespace Syntax {
 
-FormalParameterNode::FormalParameterNode(std::string id, 
+FormalParameterNode::FormalParameterNode(SyntaxToken* token,
+                    std::string id, 
                     std::string name,
                     bool is_struct,
                     bool is_const,
                     bool is_array) :
+    SyntaxNode(token),
     m_type_identifier(id),
     m_param_name(name),
     m_is_struct(is_struct),

@@ -5,10 +5,10 @@
 #include "statement_node.h"
 
 namespace Syntax {
-
+class SyntaxToken;
 class ContinueStatementNode : public StatementNode {
 public:
-    ContinueStatementNode();
+    ContinueStatementNode(SyntaxToken* token);
     ~ContinueStatementNode();
 
     SyntaxKind kind() const override;

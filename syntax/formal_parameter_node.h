@@ -6,7 +6,7 @@
 #include "syntax_node.h"
 
 namespace Syntax {
-
+class SyntaxToken;
 class FormalParameterNode : public SyntaxNode {
 private:
     std::string m_type_identifier;
@@ -15,7 +15,8 @@ private:
     bool m_is_const;
     bool m_is_array;
 public:
-    FormalParameterNode(std::string id, 
+    FormalParameterNode(SyntaxToken* token,
+                        std::string id, 
                         std::string name,
                         bool is_struct = false,
                         bool is_const = false,

@@ -216,7 +216,6 @@ token_data_type SyntaxToken::get_type() const {
     } else { //if (std::holds_alternative<std::string>(m_semantic_value)) {
         return token_data_type::STRING;
     }
-
 }
 
 }

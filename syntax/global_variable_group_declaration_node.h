@@ -7,12 +7,12 @@
 #include <vector>
 
 namespace Syntax {
-
+class SyntaxToken;
 class GlobalVariableGroupDeclarationNode : public GlobalDeclarationNode {
 private:
     VariableGroupDeclarationNode* m_variable_group;
 public:
-    GlobalVariableGroupDeclarationNode(VariableGroupDeclarationNode* var_group);
+    GlobalVariableGroupDeclarationNode(SyntaxToken* token, VariableGroupDeclarationNode* var_group);
     
     ~GlobalVariableGroupDeclarationNode();
 

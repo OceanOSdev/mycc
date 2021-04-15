@@ -7,15 +7,18 @@ class SyntaxToken;
 enum SyntaxKind: int;
 
 class SyntaxNode {
-
+protected:
+    SyntaxToken* m_token;
 public:
-    SyntaxNode() {}
+    SyntaxNode(SyntaxToken* token);
     virtual ~SyntaxNode() = default;
 
     /*
      * What kind of syntax node this is.
      */
     virtual SyntaxKind kind() const = 0;
+
+    SyntaxToken* token() const;
 };
 
 }
