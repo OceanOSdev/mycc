@@ -86,3 +86,9 @@ void DiagnosticsList::report_variable_already_declared(Syntax::SyntaxToken* toke
     std::string message = scope_id + " variable " + identifier + " already declared";
     report(loc,message);
 }
+
+void DiagnosticsList::report_struct_already_defined(Syntax::SyntaxToken* token, std::string identifier) {
+    Location loc = from_syntax_token(token);
+    std::string message = "struct " + identifier + " already defined.";
+    report(loc,message);
+}

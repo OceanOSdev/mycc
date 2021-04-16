@@ -14,6 +14,7 @@ namespace Syntax {
     class BlockStatementNode;
     class ReturnStatementNode;
     class VariableGroupDeclarationNode;
+    class StructDeclarationNode;
     
     // Expression Syntax Forward Declarations
     class ExpressionNode;
@@ -39,7 +40,6 @@ class BoundStatementNode;
 class BoundExpressionNode;
 class BoundGlobalDeclarationNode;
 class BoundFunctionDefinitionNode;
-class BoundIndexExpressionNode;
 class BoundScope;
 
 class Binder {
@@ -66,6 +66,7 @@ private:
     BoundStatementNode* bind_block_statement(Syntax::BlockStatementNode* block_statement, bool create_new_scope = true);
     BoundStatementNode* bind_variable_group_declaration(Syntax::VariableGroupDeclarationNode* variable_group);
     BoundStatementNode* bind_return_statement(Syntax::ReturnStatementNode* return_statement);
+    BoundStatementNode* bind_struct_declaration(Syntax::StructDeclarationNode* struct_declaration);
 
     /* expression bindings */
     BoundExpressionNode* bind_expression(Syntax::ExpressionNode* expression, bool canBeVoid = false);

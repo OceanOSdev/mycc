@@ -1,6 +1,7 @@
 /* LIB INCLUDES */
 #include <stdexcept>
 #include <set>
+#include <algorithm>
 
 /* HEADER INCLUDE */
 #include "binder.h"
@@ -18,6 +19,7 @@
 #include "bound_variable_group_declaration_node.h"
 #include "bound_literal_val_expression_node.h"
 #include "bound_index_expression_node.h"
+#include "bound_struct_declaration_node.h"
 
 /* UTILITY INCLUDES */
 #include "../logger.h"
@@ -49,6 +51,7 @@
 #include "../syntax/partial_variable_declaration_node.h"
 #include "../syntax/literal_val_expression_node.h"
 #include "../syntax/index_expression_node.h"
+#include "../syntax/struct_declaration_node.h"
 #include "../syntax/program_node.h"
 
 
@@ -274,7 +277,7 @@ BoundStatementNode* Binder::bind_statement(Syntax::StatementNode* statement) {
         case Syntax::SyntaxKind::ForStatement: 
             break;
         case Syntax::SyntaxKind::StructDeclaration: 
-            break;
+            return bind_struct_declaration(dynamic_cast<Syntax::StructDeclarationNode*>(statement));
         case Syntax::SyntaxKind::VariableDeclaration: 
             return bind_variable_group_declaration(
                 dynamic_cast<Syntax::VariableGroupDeclarationNode*>(statement)
@@ -311,6 +314,38 @@ BoundStatementNode* Binder::bind_block_statement(Syntax::BlockStatementNode* blo
 BoundStatementNode* Binder::bind_expression_statement(Syntax::ExpressionStatementNode* expression_statement) {
     auto expression = bind_expression(expression_statement->expression(), true);
     return new BoundExpressionStatementNode(expression);
+}
+
+BoundStatementNode* Binder::bind_struct_declaration(Syntax::StructDeclarationNode* struct_declaration) {
+    std::string identifier = struct_declaration->struct_name();
+    // create new scope so that struct member names don't have conflicts with
+    // current scope variable names
+    m_scope = new BoundScope(m_scope);
+    std::vector<BoundVariableGroupDeclarationNode*> bound_member_groups;
+    for (auto var_group : struct_declaration->struct_members()) {
+        auto bound_group = bind_statement(var_group);
+        bound_member_groups.push_back(dynamic_cast<BoundVariableGroupDeclarationNode*>(bound_group));
+    }
+
+    m_scope = m_scope->parent();
+    
+    std::vector<Symbols::VariableSymbol*> bound_members;
+    for (auto member_group : bound_member_groups) {
+        for (auto member_decl : member_group->variable_declarations()) {
+            bound_members.push_back(member_decl->variable_symbol());
+        }
+    }
+
+    Symbols::StructSymbol* struct_symbol = new Symbols::StructSymbol(identifier, bound_members);
+    const Symbols::TypeSymbol* struct_type_symbol = new Symbols::TypeSymbol(identifier, {true});
+    bool decl_results = m_scope->try_declare_type(struct_type_symbol);
+    decl_results &= m_scope->try_declare_struct(struct_symbol);
+    if (!decl_results) {
+        m_diagnostics->report_struct_already_defined(struct_declaration->token(), identifier);
+        m_err_flag = true;
+        return bind_error_statement();
+    }
+    return new BoundStructDeclarationNode(struct_symbol);
 }
 
 BoundStatementNode* Binder::bind_variable_group_declaration(Syntax::VariableGroupDeclarationNode* variable_group) {

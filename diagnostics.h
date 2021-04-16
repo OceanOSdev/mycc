@@ -53,6 +53,7 @@ public:
     void report_invalid_return_type(Syntax::SyntaxToken* token, std::string actual_type, std::string expected_type);
     void report_incompatible_conversion(Syntax::SyntaxToken* token, std::string actual_type, std::string expected_type);
     void report_variable_already_declared(Syntax::SyntaxToken* token, std::string identifier, bool is_global_scope);
+    void report_struct_already_defined(Syntax::SyntaxToken* token, std::string identifier);
 };
 
 #endif

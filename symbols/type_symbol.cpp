@@ -107,6 +107,13 @@ const TypeSymbol* TypeSymbol::get_wider_type(const TypeSymbol* lhs, const TypeSy
         return order < 0 ? rhs : (order > 0) ? lhs : nullptr;
 }
 
+/*
+ * Determines whether the lhs type is the same as the rhs type
+ * 
+ * OR
+ * 
+ * whether the lhs type can be implicitly widened to the rhs type. 
+ */
 bool TypeSymbol::are_types_equivalent(const TypeSymbol* lhs, const TypeSymbol* rhs) {
         return std::is_lteq(*lhs <=> *rhs);
 }

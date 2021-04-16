@@ -11,6 +11,7 @@ enum BoundNodeKind {
     ErrorExpression,
     LiteralExpression,
     IndexExpression,
+    MemberExpression,
 
     // Statements
     ExpressionStatement,
@@ -18,6 +19,7 @@ enum BoundNodeKind {
     ReturnStatement,
     VariableDeclaration,
     VariableGroupDeclaration,
+    StructDeclaration,
 
     // Globals
     GlobalStatement,

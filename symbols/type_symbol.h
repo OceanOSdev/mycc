@@ -69,6 +69,14 @@ public:
     static const TypeSymbol String;
     static const TypeSymbol Error;
     static const TypeSymbol* get_wider_type(const TypeSymbol* lhs, const TypeSymbol* rhs);
+
+    /*
+     * Determines whether the lhs type is the same as the rhs type
+     * 
+     * OR
+     * 
+     * whether the lhs type can be implicitly widened to the rhs type. 
+     */
     static bool are_types_equivalent(const TypeSymbol* lhs, const TypeSymbol* rhs);
 };
 
