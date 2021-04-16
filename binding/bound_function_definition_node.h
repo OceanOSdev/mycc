@@ -9,14 +9,14 @@ namespace Symbols {
 }
 
 namespace Binding {
-class BoundBlockStatement;
+class BoundBlockStatementNode;
 
 class BoundFunctionDefinitionNode : public BoundGlobalDeclarationNode {
 private:
     Symbols::FunctionSymbol* m_function_symbol;
-    BoundBlockStatement* m_statements;
+    BoundBlockStatementNode* m_statements;
 public:
-    BoundFunctionDefinitionNode(Symbols::FunctionSymbol* function_symbol, BoundBlockStatement* statements);
+    BoundFunctionDefinitionNode(Symbols::FunctionSymbol* function_symbol, BoundBlockStatementNode* statements);
 
     /*
      * Symbol representing this bound function.
@@ -26,7 +26,7 @@ public:
     /*
      * The statements in the body of the function.
      */
-    BoundBlockStatement* statements() const;
+    BoundBlockStatementNode* statements() const;
 
     /*
      * An enum representing the kind of bound node this is

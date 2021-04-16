@@ -8,14 +8,24 @@
 class DiagnosticsList;
 
 namespace Syntax {
-    class ProgramNode;
+    // Statement Syntax Forward Declarations
     class StatementNode;
     class ExpressionStatementNode;
+    class BlockStatementNode;
+    class ReturnStatementNode;
+    class VariableGroupDeclarationNode;
+    
+    // Expression Syntax Forward Declarations
     class ExpressionNode;
+    class LiteralValExpressionNode;
+    class IndexExpressionNode;
+
+    // Global Syntax Forward Declarations
     class FunctionPrototypeNode;
     class FunctionDefinitionNode;
     class FunctionDeclarationNode;
     class GlobalDeclarationNode;
+    class ProgramNode;
 }
 
 namespace Symbols {
@@ -29,6 +39,7 @@ class BoundStatementNode;
 class BoundExpressionNode;
 class BoundGlobalDeclarationNode;
 class BoundFunctionDefinitionNode;
+class BoundIndexExpressionNode;
 class BoundScope;
 
 class Binder {
@@ -38,25 +49,28 @@ private:
     std::vector<BoundGlobalDeclarationNode*> m_global_decls;
     bool m_err_flag;
     BoundScope* m_scope;
+    Symbols::FunctionSymbol* m_current_function; // set when binding methods in function body
 
     static BoundScope* init_global_scope();
+    void set_current_function_scope(Symbols::FunctionSymbol* function_symbol);
 
     /* global bindings */
-    
     Symbols::FunctionSymbol* bind_function_declaration(Syntax::FunctionDeclarationNode* declaration);
     void bind_function_prototype(Syntax::FunctionPrototypeNode* prototype);
     BoundFunctionDefinitionNode* bind_function_definition(Syntax::FunctionDefinitionNode* function_definition);
-
-
+    
     /* statement bindings */
-
+    BoundStatementNode* bind_error_statement() const;
     BoundStatementNode* bind_statement(Syntax::StatementNode* statement);
-    BoundStatementNode* bind_expression_statement(Syntax::ExpressionStatementNode* expressionStatement);
+    BoundStatementNode* bind_expression_statement(Syntax::ExpressionStatementNode* expression_statement);
+    BoundStatementNode* bind_block_statement(Syntax::BlockStatementNode* block_statement, bool create_new_scope = true);
+    BoundStatementNode* bind_variable_group_declaration(Syntax::VariableGroupDeclarationNode* variable_group);
+    BoundStatementNode* bind_return_statement(Syntax::ReturnStatementNode* return_statement);
 
     /* expression bindings */
-
     BoundExpressionNode* bind_expression(Syntax::ExpressionNode* expression, bool canBeVoid = false);
     BoundExpressionNode* bind_expression_internal(Syntax::ExpressionNode* expression);
+    BoundExpressionNode* bind_literal_val_expression(Syntax::LiteralValExpressionNode* literal_expression);
 
     /* type bindings */
     const Symbols::TypeSymbol* bind_type_clause(std::string type_name);

@@ -49,6 +49,10 @@ public:
     void report_expression_cannot_be_void(Syntax::SyntaxToken* token);
     void report_no_definition_for_type_symbol(Syntax::SyntaxToken* token, std::string symbol_id);
     void report_conflicting_function_declarations(Syntax::SyntaxToken* token, std::string function_name);
+    void report_function_already_defined(Syntax::SyntaxToken* token, std::string function_name);
+    void report_invalid_return_type(Syntax::SyntaxToken* token, std::string actual_type, std::string expected_type);
+    void report_incompatible_conversion(Syntax::SyntaxToken* token, std::string actual_type, std::string expected_type);
+    void report_variable_already_declared(Syntax::SyntaxToken* token, std::string identifier, bool is_global_scope);
 };
 
 #endif

@@ -3,13 +3,20 @@
 namespace Symbols {
 
 std::partial_ordering TypeAttribute::operator<=>(const TypeAttribute& other) const {
-        if (( is_struct && !other.is_struct) || (!is_struct &&  other.is_struct))
+        if ((is_struct && !other.is_struct) || (!is_struct && other.is_struct) ||
+            (is_array && !other.is_array) || (!is_array && other.is_array))
                 return std::partial_ordering::unordered;
         if (is_integer_type && other.is_numeric_type && !other.is_integer_type)
-                return std::partial_ordering::greater;
-        if (other.is_integer_type && is_numeric_type && !is_integer_type)
                 return std::partial_ordering::less;
-        return std::partial_ordering::equivalent;        
+        if (other.is_integer_type && is_numeric_type && !is_integer_type)
+                return std::partial_ordering::greater;
+        if (is_integer_type == other.is_integer_type &&
+            is_numeric_type == other.is_numeric_type &&
+            is_struct == other.is_struct &&
+            is_array == other.is_array)
+        return std::partial_ordering::equivalent;
+
+        return std::partial_ordering::unordered;    
 }
 
 std::partial_ordering TypeSymbol::operator<=>(const TypeSymbol& other) const {
@@ -30,9 +37,28 @@ TypeSymbol::~TypeSymbol() {}
 TypeAttribute TypeSymbol::attributes() const { return m_attributes; }
 
 /*
+ * Returns a copy of the current type symbol
+ * but with the array attribute true.
+ */
+const TypeSymbol* TypeSymbol::as_array_type() const {
+        TypeAttribute attributes = m_attributes;
+        attributes.is_array = true;
+        return new TypeSymbol(name(), attributes);
+}
+
+/*
  * The type of symbol this is.
  */
 SymbolKind TypeSymbol::kind() const { return SymbolKind::TYPE; }
+
+/*
+ * String representing type including attributes.
+ */
+std::string TypeSymbol::str() const {
+        std::string ret = "";
+        if (m_attributes.is_struct) ret += "struct ";
+        return (ret + name());
+}
 
 /*
  * Grabs an instance of TypeSymbol if it matches one of the
@@ -82,13 +108,14 @@ const TypeSymbol* TypeSymbol::get_wider_type(const TypeSymbol* lhs, const TypeSy
 }
 
 bool TypeSymbol::are_types_equivalent(const TypeSymbol* lhs, const TypeSymbol* rhs) {
-        return std::is_eq(*lhs <=> *rhs);
+        return std::is_lteq(*lhs <=> *rhs);
 }
 
 const TypeSymbol TypeSymbol::Void = TypeSymbol("void", {false,false,false});
 const TypeSymbol TypeSymbol::Char = TypeSymbol("char", {false,true,true});
 const TypeSymbol TypeSymbol::Int = TypeSymbol("int", {false,true,true});
 const TypeSymbol TypeSymbol::Float =  TypeSymbol("float", {false,false,true});
+const TypeSymbol TypeSymbol::String = TypeSymbol("char", {false,true,true,true});
 const TypeSymbol TypeSymbol::Error = TypeSymbol("??", {false,false,false});
 
 }

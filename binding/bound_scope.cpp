@@ -48,7 +48,7 @@ bool BoundScope::try_look_up_symbol(std::string identifier, Symbols::Symbol*& sy
 bool BoundScope::try_look_up_variable(std::string identifier, Symbols::VariableSymbol*& symbol) {
     Symbols::Symbol* sy;
     auto exists = try_look_up_symbol(identifier, sy);
-    if (exists && symbol->kind() == Symbols::SymbolKind::VARIABLE) {
+    if (exists && sy->kind() == Symbols::SymbolKind::VARIABLE) {
         symbol = dynamic_cast<Symbols::VariableSymbol*>(sy);
         return true;
     }
@@ -58,7 +58,7 @@ bool BoundScope::try_look_up_variable(std::string identifier, Symbols::VariableS
 bool BoundScope::try_look_up_function(std::string identifier, Symbols::FunctionSymbol*& symbol) {
     Symbols::Symbol* sy;
     auto exists = try_look_up_symbol(identifier, sy);
-    if (exists && symbol->kind() == Symbols::SymbolKind::FUNCTION) {
+    if (exists && sy->kind() == Symbols::SymbolKind::FUNCTION) {
         symbol = dynamic_cast<Symbols::FunctionSymbol*>(sy);
         return true;
     }

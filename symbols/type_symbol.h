@@ -13,6 +13,7 @@ struct TypeAttribute {
     bool is_struct = false;
     bool is_integer_type = false;
     bool is_numeric_type = false;
+    bool is_array = false;
     std::partial_ordering operator<=>(const TypeAttribute& other) const;
 };
 
@@ -34,7 +35,18 @@ public:
      */
     SymbolKind kind() const override;
 
+    /*
+     * Returns a copy of the current type symbol
+     * but with the array attribute true.
+     */
+    const TypeSymbol* as_array_type() const;
+
     std::partial_ordering operator<=>(const TypeSymbol& other) const;
+
+    /*
+     * String representing type including attributes.
+     */
+    std::string str() const;
 
     /*
      * Grabs an instance of TypeSymbol if it matches one of the
@@ -54,6 +66,7 @@ public:
     static const TypeSymbol Char;
     static const TypeSymbol Int;
     static const TypeSymbol Float;
+    static const TypeSymbol String;
     static const TypeSymbol Error;
     static const TypeSymbol* get_wider_type(const TypeSymbol* lhs, const TypeSymbol* rhs);
     static bool are_types_equivalent(const TypeSymbol* lhs, const TypeSymbol* rhs);

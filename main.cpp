@@ -89,6 +89,16 @@ void runSemanticAnalyzer(parsed_args_t* pat) {
 
 }
 
+void runSyntaxTreePrinter(parsed_args_t* pat) {
+    Driver d;
+    auto parsed = runParser(pat, std::move(d));
+    auto root = new Syntax::ProgramNode(nullptr, d.get_translation_units());
+    SyntaxTreePrinter::print_nodes(root->units()[0]);
+    if (!parsed)
+        for (auto diagnostic : d.get_diagnostics())
+            logger->log_err(diagnostic);
+}
+
 void handleArgs(parsed_args_t* pat, char* oFileName) {
     if (pat->useOutputFile) {
         logger = new Logger(std::string(oFileName));
@@ -104,6 +114,7 @@ void handleArgs(parsed_args_t* pat, char* oFileName) {
         case MODE_THREE:runSemanticAnalyzer(pat); break;
         case MODE_FOUR: break;
         case MODE_FIVE: break;
+        case MODE_SIX: runSyntaxTreePrinter(pat); break;
     }
 
     // probably shouldn't close stdout

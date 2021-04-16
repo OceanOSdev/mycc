@@ -4,7 +4,7 @@
 
 namespace Binding {
 
-BoundFunctionDefinitionNode::BoundFunctionDefinitionNode(Symbols::FunctionSymbol* function_symbol, BoundBlockStatement* statements) :
+BoundFunctionDefinitionNode::BoundFunctionDefinitionNode(Symbols::FunctionSymbol* function_symbol, BoundBlockStatementNode* statements) :
     m_function_symbol(function_symbol), m_statements(statements) {}
 
 /*
@@ -17,7 +17,7 @@ Symbols::FunctionSymbol* BoundFunctionDefinitionNode::function_symbol() const {
 /*
  * The statements in the body of the function.
  */
-BoundBlockStatement* BoundFunctionDefinitionNode::statements() const {
+BoundBlockStatementNode* BoundFunctionDefinitionNode::statements() const {
     return m_statements;
 }
 

@@ -61,3 +61,28 @@ void DiagnosticsList::report_conflicting_function_declarations(Syntax::SyntaxTok
     std::string message = "Conflicting types for function " + function_name;
     report(loc,message);
 }
+
+void DiagnosticsList::report_function_already_defined(Syntax::SyntaxToken* token, std::string function_name) {
+    Location loc = from_syntax_token(token);
+    std::string message = "Function " + function_name + " has already been defined";
+    report(loc,message);
+}
+
+void DiagnosticsList::report_invalid_return_type(Syntax::SyntaxToken* token, std::string actual_type, std::string expected_type) {
+    Location loc = from_syntax_token(token);
+    std::string message = "Invalid return of type '" + actual_type + "' in method expecting '" + expected_type + "'";
+    report(loc,message);
+}
+
+void DiagnosticsList::report_incompatible_conversion(Syntax::SyntaxToken* token, std::string actual_type, std::string expected_type) {
+    Location loc = from_syntax_token(token);
+    std::string message = "Incompatiple conversion assigning to '" + expected_type + "' from '" + actual_type + "'";
+    report(loc,message);
+}
+
+void DiagnosticsList::report_variable_already_declared(Syntax::SyntaxToken* token, std::string identifier, bool is_global_scope) {
+    Location loc = from_syntax_token(token);
+    std::string scope_id = is_global_scope ? "Global" : "Local";
+    std::string message = scope_id + " variable " + identifier + " already declared";
+    report(loc,message);
+}

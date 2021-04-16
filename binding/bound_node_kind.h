@@ -9,10 +9,15 @@ enum BoundNodeKind {
     CastExpression,
     BinaryExpression,
     ErrorExpression,
+    LiteralExpression,
+    IndexExpression,
 
     // Statements
     ExpressionStatement,
     BlockStatement,
+    ReturnStatement,
+    VariableDeclaration,
+    VariableGroupDeclaration,
 
     // Globals
     GlobalStatement,

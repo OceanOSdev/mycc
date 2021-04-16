@@ -8,7 +8,8 @@ typedef enum cmode {
     MODE_TWO,
     MODE_THREE,
     MODE_FOUR,
-    MODE_FIVE
+    MODE_FIVE,
+    MODE_SIX
 } mode_e;
 
 typedef struct parsed_args {

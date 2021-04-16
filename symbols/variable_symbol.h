@@ -7,6 +7,7 @@
 
 namespace Symbols {
 class TypeSymbol;
+class ParameterSymbol;
 class VariableSymbol : public Symbol {
 private:
     const TypeSymbol* m_type;
@@ -15,8 +16,9 @@ private:
     bool m_is_const;
 public:
     VariableSymbol(std::string n, const TypeSymbol* t, bool is_arr = false, int arr_size = -1, bool is_const = false);
-    
     ~VariableSymbol();
+
+    static VariableSymbol* from_parameter_symbol(ParameterSymbol* symbol);
 
     /*
      * Returns this variable's type.
