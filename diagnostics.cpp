@@ -92,3 +92,21 @@ void DiagnosticsList::report_struct_already_defined(Syntax::SyntaxToken* token, 
     std::string message = "struct " + identifier + " already defined.";
     report(loc,message);
 }
+
+void DiagnosticsList::report_variable_not_array_type(Syntax::SyntaxToken* token, std::string identifier) {
+    Location loc = from_syntax_token(token);
+    std::string message = "Subscripted value is not an array ('" + identifier + "')";
+    report(loc,message);
+}
+
+void DiagnosticsList::report_undefined_variable(Syntax::SyntaxToken* token, std::string identifier) {
+    Location loc = from_syntax_token(token);
+    std::string message = "Use of undeclared identifier '" + identifier + "'";
+    report(loc,message);
+}
+
+void DiagnosticsList::report_array_index_must_be_integer(Syntax::SyntaxToken* token, std::string identifier) {
+    Location loc = from_syntax_token(token);
+    std::string message = "Array subscript is not an integer type ('" + identifier + "')";
+    report(loc,message);
+}

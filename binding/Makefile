@@ -25,22 +25,19 @@ endef
 #                                                    #
 #  Actual Makefile Suff                              #
 #                                                    #
-#                                                    #
 ######################################################
 
 SRCS = bound_error_expression_node.cpp bound_binary_expression_node.cpp bound_cast_expression_node.cpp
 SRCS += bound_expression_statement_node.cpp bound_scope.cpp bound_block_statement_node.cpp
 SRCS += bound_function_definition_node.cpp bound_global_statement_node.cpp bound_return_statement_node.cpp
-SRCS += bound_variable_group_declaration_node.cpp bound_literal_val_expression_node.cpp bound_index_expression_node.cpp
-SRCS += bound_struct_declaration_node.cpp
+SRCS += bound_variable_group_declaration_node.cpp bound_literal_val_expression_node.cpp bound_struct_declaration_node.cpp 
+SRCS += bound_variable_reference_expression_node.cpp bound_member_access_expression_node.cpp bound_index_expression_node.cpp
 SRCS += binder.cpp
 OBJDIR = ../bin
 
 OBJS = $(patsubst %.cpp,$(OBJDIR)/%.o,$(SRCS))
 DEPS = $(patsubst %.cpp,$(OBJDIR)/%.d,$(SRCS))
 
-
-#all: $(OUTPUTDIR)/$(BIN)
 all: $(OBJS)
 	@:
 

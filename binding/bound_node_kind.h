@@ -11,7 +11,8 @@ enum BoundNodeKind {
     ErrorExpression,
     LiteralExpression,
     IndexExpression,
-    MemberExpression,
+    MemberAccessExpression,
+    VariableReferenceExpression,
 
     // Statements
     ExpressionStatement,

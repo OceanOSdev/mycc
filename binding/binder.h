@@ -20,6 +20,8 @@ namespace Syntax {
     class ExpressionNode;
     class LiteralValExpressionNode;
     class IndexExpressionNode;
+    class MemberExpressionNode;
+    class NameExpressionNode;
 
     // Global Syntax Forward Declarations
     class FunctionPrototypeNode;
@@ -72,6 +74,9 @@ private:
     BoundExpressionNode* bind_expression(Syntax::ExpressionNode* expression, bool canBeVoid = false);
     BoundExpressionNode* bind_expression_internal(Syntax::ExpressionNode* expression);
     BoundExpressionNode* bind_literal_val_expression(Syntax::LiteralValExpressionNode* literal_expression);
+    BoundExpressionNode* bind_name_expression(Syntax::NameExpressionNode* name_expression);
+    BoundExpressionNode* bind_member_expression(Syntax::MemberExpressionNode* member_expression);
+    BoundExpressionNode* bind_index_expression(Syntax::IndexExpressionNode* index_expression);
 
     /* type bindings */
     const Symbols::TypeSymbol* bind_type_clause(std::string type_name);

@@ -3,14 +3,17 @@
 
 namespace Binding {
 
-BoundIndexExpressionNode::BoundIndexExpressionNode(std::string identifier, BoundExpressionNode* expression) :
-    m_identifier(identifier), m_expression(expression) {}
+BoundIndexExpressionNode::BoundIndexExpressionNode(Symbols::VariableSymbol* variable_reference, BoundExpressionNode* expression) :
+    BoundVariableReferenceExpressionNode(variable_reference), m_expression(expression) {}
+
+
 /*
- * The type that this expression evaluates to.
+ * The expression that evaluates to the index of this index expression.
  */
-const Symbols::TypeSymbol* BoundIndexExpressionNode::type() const {
-    return nullptr;
+BoundExpressionNode* BoundIndexExpressionNode::expression() const {
+    return m_expression;
 }
+
 /*
  * An enum representing the kind of bound node this is
  */

@@ -2,21 +2,19 @@
 #ifndef BOUND_INDEX_EXPRESSION_NODE_H
 #define BOUND_INDEX_EXPRESSION_NODE_H
 
-#include "bound_expression_node.h"
-#include <string>
+#include "bound_variable_reference_expression_node.h"
 
 namespace Binding {
-class BoundIndexExpressionNode : public BoundExpressionNode {
+class BoundIndexExpressionNode : public BoundVariableReferenceExpressionNode {
 private:
-    std::string m_identifier;
     BoundExpressionNode* m_expression;
 public:
-    BoundIndexExpressionNode(std::string identifier, BoundExpressionNode* expression);
+    BoundIndexExpressionNode(Symbols::VariableSymbol* variable_reference, BoundExpressionNode* expression);
 
     /*
-     * The type that this expression evaluates to.
+     * The expression that evaluates to the index of this index expression.
      */
-    const Symbols::TypeSymbol* type() const override;
+    BoundExpressionNode* expression() const;
 
     /*
      * An enum representing the kind of bound node this is

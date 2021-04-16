@@ -20,6 +20,8 @@
 #include "bound_literal_val_expression_node.h"
 #include "bound_index_expression_node.h"
 #include "bound_struct_declaration_node.h"
+#include "bound_variable_reference_expression_node.h"
+#include "bound_member_access_expression_node.h"
 
 /* UTILITY INCLUDES */
 #include "../logger.h"
@@ -52,6 +54,8 @@
 #include "../syntax/literal_val_expression_node.h"
 #include "../syntax/index_expression_node.h"
 #include "../syntax/struct_declaration_node.h"
+#include "../syntax/name_expression_node.h"
+#include "../syntax/member_expression_node.h"
 #include "../syntax/program_node.h"
 
 
@@ -440,13 +444,13 @@ BoundExpressionNode* Binder::bind_expression_internal(Syntax::ExpressionNode* ex
         case Syntax::SyntaxKind::IncrementExpression:
             break;
         case Syntax::SyntaxKind::IndexExpression:
-            break;
+            return bind_index_expression(dynamic_cast<Syntax::IndexExpressionNode*>(expression));
         case Syntax::SyntaxKind::LiteralValExpression:
             return bind_literal_val_expression(dynamic_cast<Syntax::LiteralValExpressionNode*>(expression));
         case Syntax::SyntaxKind::MemberExpression:
-            break;
+            return bind_member_expression(dynamic_cast<Syntax::MemberExpressionNode*>(expression));
         case Syntax::SyntaxKind::NameExpression:
-            break;
+            return bind_name_expression(dynamic_cast<Syntax::NameExpressionNode*>(expression));
         case Syntax::SyntaxKind::TernaryExpression:
             break;
         case Syntax::SyntaxKind::UnaryExpression:
@@ -456,6 +460,30 @@ BoundExpressionNode* Binder::bind_expression_internal(Syntax::ExpressionNode* ex
     }
 
     return nullptr;
+}
+
+BoundExpressionNode* Binder::bind_index_expression(Syntax::IndexExpressionNode* index_expression) {
+    Symbols::VariableSymbol* variable;
+    if (!m_scope->try_look_up_variable(index_expression->name(), variable)) {
+        m_diagnostics->report_undefined_variable(index_expression->token(), index_expression->name());
+        m_err_flag = true;
+        return new BoundErrorExpressionNode();
+    }
+
+    if (!variable->is_array()) {
+        m_diagnostics->report_variable_not_array_type(index_expression->token(), index_expression->name());
+        m_err_flag = true;
+        return new BoundErrorExpressionNode();
+    }
+
+    auto bound_index_value_expression = bind_expression(index_expression->expression());
+    if (!bound_index_value_expression->type()->attributes().is_integer_type) {
+        m_diagnostics->report_array_index_must_be_integer(index_expression->token(), variable->name());
+        m_err_flag = true;
+        return new BoundErrorExpressionNode();
+    }
+
+    return new BoundIndexExpressionNode(variable, bound_index_value_expression);
 }
 
 BoundExpressionNode* Binder::bind_literal_val_expression(Syntax::LiteralValExpressionNode* literal_expression) {
@@ -471,6 +499,21 @@ BoundExpressionNode* Binder::bind_literal_val_expression(Syntax::LiteralValExpre
             return new BoundLiteralValExpressionNode(literal_expression->string_value());
     }
     return new BoundErrorExpressionNode();
+}
+
+BoundExpressionNode* Binder::bind_member_expression(__attribute__((unused)) Syntax::MemberExpressionNode* member_expression) {
+return nullptr;
+}
+
+BoundExpressionNode* Binder::bind_name_expression(Syntax::NameExpressionNode* name_expression) {
+    Symbols::VariableSymbol* variable;
+    if (!m_scope->try_look_up_variable(name_expression->name(), variable)) {
+        m_diagnostics->report_undefined_variable(name_expression->token(), name_expression->name());
+        m_err_flag = true;
+        return new BoundErrorExpressionNode();
+    }
+
+    return new BoundVariableReferenceExpressionNode(variable);
 }
 
 
