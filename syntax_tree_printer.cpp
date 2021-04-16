@@ -162,14 +162,14 @@ namespace SyntaxTreePrinter {
 
         } else if (auto me = dynamic_cast<Syntax::MemberExpressionNode*>(e)) {
             std::cout << "[Member Expr]:";
-            std::cout << std::endl << indent + "├──" << "[LHS]: ";
-            auto lhs = me->encapsulator();
-            std::cout << std::endl;
-            std::cout << indent + "│  " + "└──";
-            print_node(lhs, indent + "│  ");
-            std::cout << indent + "└──";
+            std::cout << std::endl << indent + "├──";
             auto node = me->member();
-            print_node(node, indent + "   ");
+            print_node(node, indent + "│  ");
+            auto lhs = me->encapsulator();
+            //std::cout << std::endl;
+            std::cout << indent << "└──";
+            print_node(lhs, indent + "      ");
+            
 
         } else if (auto ue = dynamic_cast<Syntax::UnaryExpressionNode*>(e)) {
             std::cout << "[Unary Expr]:";
