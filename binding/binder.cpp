@@ -501,8 +501,35 @@ BoundExpressionNode* Binder::bind_literal_val_expression(Syntax::LiteralValExpre
     return new BoundErrorExpressionNode();
 }
 
-BoundExpressionNode* Binder::bind_member_expression(__attribute__((unused)) Syntax::MemberExpressionNode* member_expression) {
-return nullptr;
+BoundExpressionNode* Binder::bind_member_expression(Syntax::MemberExpressionNode* member_expression) {
+    auto encapsulating_variable_expression = bind_expression(member_expression->encapsulator());
+    auto encapsulating_var_ref = dynamic_cast<BoundVariableReferenceExpressionNode*>(encapsulating_variable_expression);
+    auto encapsulating_var_ref_type = encapsulating_var_ref->type();
+
+    // check if encapsulating type is a struct
+    const Symbols::TypeSymbol* encap_type;
+    m_scope->try_look_up_type(encapsulating_var_ref_type->name(), encap_type);
+    
+    // don't have to check if type exists since that would be caught when binding
+    // the name expression of of 'encapsulating_variable_expression'
+    if (!encap_type->attributes().is_struct) {
+        m_diagnostics->report_member_base_type_not_struct(member_expression->token(), encap_type->str());
+        m_err_flag = true;
+        return new BoundErrorExpressionNode();
+    }
+
+    return nullptr;
+    
+    // Symbols::StructSymbol* struct_symbol;
+    // m_scope->try_look_up_struct(encap_type->name(), struct_symbol);
+    
+    // auto member_expression = member_expression->member();
+    // if ()
+    // Symbols::VariableSymbol* member_symbol;
+    // for (auto member : struct_symbol->members()) {
+    //     //if (member_expression->)
+    // }
+
 }
 
 BoundExpressionNode* Binder::bind_name_expression(Syntax::NameExpressionNode* name_expression) {

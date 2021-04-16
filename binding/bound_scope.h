@@ -37,6 +37,7 @@ public:
 
     bool try_look_up_variable(std::string identifier, Symbols::VariableSymbol*& symbol);
     bool try_look_up_function(std::string identifier, Symbols::FunctionSymbol*& symbol);
+    bool try_look_up_struct(std::string identifier, Symbols::StructSymbol*& symbol);
     bool try_look_up_type(std::string identifier, const Symbols::TypeSymbol*& symbol);
 };
 }

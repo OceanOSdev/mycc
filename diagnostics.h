@@ -57,6 +57,8 @@ public:
     void report_variable_not_array_type(Syntax::SyntaxToken* token, std::string identifier);
     void report_undefined_variable(Syntax::SyntaxToken* token, std::string identifier);
     void report_array_index_must_be_integer(Syntax::SyntaxToken* token, std::string identifier);
+    void report_member_base_type_not_struct(Syntax::SyntaxToken* token, std::string identifier);
+    void report_no_member_in_type(Syntax::SyntaxToken* token, std::string member_identifier, std::string type_identifier);
 };
 
 #endif

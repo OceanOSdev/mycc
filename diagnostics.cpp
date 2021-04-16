@@ -110,3 +110,15 @@ void DiagnosticsList::report_array_index_must_be_integer(Syntax::SyntaxToken* to
     std::string message = "Array subscript is not an integer type ('" + identifier + "')";
     report(loc,message);
 }
+
+void DiagnosticsList::report_member_base_type_not_struct(Syntax::SyntaxToken* token, std::string identifier) {
+    Location loc = from_syntax_token(token);
+    std::string message = "Member reference base type '" + identifier + "' is not a structure";
+    report(loc,message);
+}
+
+void DiagnosticsList::report_no_member_in_type(Syntax::SyntaxToken* token, std::string member_identifier, std::string type_identifier) {
+    Location loc = from_syntax_token(token);
+    std::string message = "No member named '" + member_identifier + "' in '" + type_identifier + "'";
+    report(loc,message);
+}

@@ -55,6 +55,16 @@ bool BoundScope::try_look_up_variable(std::string identifier, Symbols::VariableS
     return false;
 }
 
+bool BoundScope::try_look_up_struct(std::string identifier, Symbols::StructSymbol*& symbol) {
+    if (m_structs.contains(identifier)) {
+        symbol = m_structs[identifier];
+        return true;
+    }
+
+    if (is_root()) return false;
+    return m_parent->try_look_up_struct(identifier, symbol);
+}
+
 bool BoundScope::try_look_up_function(std::string identifier, Symbols::FunctionSymbol*& symbol) {
     Symbols::Symbol* sy;
     auto exists = try_look_up_symbol(identifier, sy);

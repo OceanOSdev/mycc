@@ -57,7 +57,9 @@ SymbolKind TypeSymbol::kind() const { return SymbolKind::TYPE; }
 std::string TypeSymbol::str() const {
         std::string ret = "";
         if (m_attributes.is_struct) ret += "struct ";
-        return (ret + name());
+        ret = ret + name();
+        if (m_attributes.is_array) ret += "[]";
+        return ret;
 }
 
 /*
