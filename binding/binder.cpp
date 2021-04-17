@@ -469,7 +469,7 @@ BoundExpressionNode* Binder::bind_expression_internal(Syntax::ExpressionNode* ex
 
 BoundExpressionNode* Binder::bind_index_expression(Syntax::IndexExpressionNode* index_expression) {
     Symbols::VariableSymbol* variable = nullptr;
-    if (m_struct_scope.empty()) {
+    if (m_struct_scope.empty() || m_struct_scope.top() == nullptr) {
         if (!m_scope->try_look_up_variable(index_expression->name(), variable)) {
             m_diagnostics->report_undefined_variable(index_expression->token(), index_expression->name());
             m_err_flag = true;
@@ -496,7 +496,9 @@ BoundExpressionNode* Binder::bind_index_expression(Syntax::IndexExpressionNode* 
         return new BoundErrorExpressionNode();
     }
 
+    m_struct_scope.push(nullptr); // probably a terrible way to do this
     auto bound_index_value_expression = bind_expression(index_expression->expression());
+    m_struct_scope.pop();
     if (!bound_index_value_expression->type()->attributes().is_integer_type) {
         m_diagnostics->report_array_index_must_be_integer(index_expression->token(), variable->name());
         m_err_flag = true;
@@ -522,8 +524,8 @@ BoundExpressionNode* Binder::bind_literal_val_expression(Syntax::LiteralValExpre
 }
 
 BoundExpressionNode* Binder::bind_member_expression(Syntax::MemberExpressionNode* member_expression) {
-
     auto encapsulating_variable_expression = bind_expression(member_expression->encapsulator());
+    if (m_err_flag) return new BoundErrorExpressionNode();
     auto encapsulating_var_ref = dynamic_cast<BoundVariableReferenceExpressionNode*>(encapsulating_variable_expression);
     auto encapsulating_var_ref_type = encapsulating_var_ref->type();
 
@@ -555,7 +557,7 @@ BoundExpressionNode* Binder::bind_member_expression(Syntax::MemberExpressionNode
 
 BoundExpressionNode* Binder::bind_name_expression(Syntax::NameExpressionNode* name_expression) {
     Symbols::VariableSymbol* variable = nullptr;
-    if (m_struct_scope.empty()) {
+    if (m_struct_scope.empty() || m_struct_scope.top() == nullptr) {
         if (!m_scope->try_look_up_variable(name_expression->name(), variable)) {
             m_diagnostics->report_undefined_variable(name_expression->token(), name_expression->name());
             m_err_flag = true;
