@@ -24,6 +24,7 @@
 #include "bound_member_access_expression_node.h"
 #include "bound_cast_expression_node.h"
 #include "bound_binary_expression_node.h"
+#include "bound_unary_expression_node.h"
 #include "bound_assignment_expression_node.h"
 
 /* UTILITY INCLUDES */
@@ -60,6 +61,7 @@
 #include "../syntax/name_expression_node.h"
 #include "../syntax/member_expression_node.h"
 #include "../syntax/binary_expression_node.h"
+#include "../syntax/unary_expression_node.h"
 #include "../syntax/assignment_expression_node.h"
 #include "../syntax/program_node.h"
 
@@ -220,7 +222,7 @@ Symbols::FunctionSymbol* Binder::bind_function_declaration(Syntax::FunctionDecla
 
 void Binder::bind_function_prototype(Syntax::FunctionPrototypeNode* prototype) {
     auto symbol = bind_function_declaration(prototype->function_declaration());
-    if (!m_scope->try_declare_function(symbol)) {
+    if (!m_err_flag && !m_scope->try_declare_function(symbol)) {
         m_diagnostics->report_conflicting_function_declarations(prototype->token(), symbol->name());
         m_err_flag = true;
     }
@@ -664,6 +666,7 @@ BoundExpressionNode* Binder::bind_member_expression(Syntax::MemberExpressionNode
     return new BoundMemberAccessExpressionNode(bound_var_ref_expr->variable_reference(), encapsulating_var_ref);
 }
 
+
 BoundExpressionNode* Binder::bind_name_expression(Syntax::NameExpressionNode* name_expression) {
     Symbols::VariableSymbol* variable = nullptr;
     if (m_struct_scope.empty() || m_struct_scope.top() == nullptr) {
@@ -687,6 +690,23 @@ BoundExpressionNode* Binder::bind_name_expression(Syntax::NameExpressionNode* na
 
     return new BoundVariableReferenceExpressionNode(variable);
 }
+
+BoundExpressionNode* Binder::bind_unary_expression(Syntax::UnaryExpressionNode* unary_expression) {
+    auto bound_expression = bind_expression(unary_expression->expression());
+
+    if (Symbols::TypeSymbol::is_error_type(bound_expression->type()))
+        return bind_error_expression();
+
+    auto bound_operator = BoundUnaryOperatorNode::Bind(unary_expression->syntax_token_type(), bound_expression->type());
+
+    if (bound_operator == nullptr) {
+        m_diagnostics->report_invalid_unary_operator(unary_expression->token(), bound_expression->type()->str());
+        return bind_error_expression();
+    }
+
+    return new BoundUnaryExpressionNode(bound_operator, bound_expression);
+}
+
 
 
 const Symbols::TypeSymbol* Binder::bind_type_clause(std::string type_name) {

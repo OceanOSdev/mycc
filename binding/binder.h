@@ -25,6 +25,7 @@ namespace Syntax {
     class NameExpressionNode;
     class CastExpressionNode;
     class BinaryExpressionNode;
+    class UnaryExpressionNode;
     class AssignmentExpressionNode;
 
     // Global Syntax Forward Declarations
@@ -86,6 +87,7 @@ private:
     BoundExpressionNode* bind_index_expression(Syntax::IndexExpressionNode* index_expression);
     BoundExpressionNode* bind_cast_expression(Syntax::CastExpressionNode* cast_expression);
     BoundExpressionNode* bind_binary_expression(Syntax::BinaryExpressionNode* binary_expression);
+    BoundExpressionNode* bind_unary_expression(Syntax::UnaryExpressionNode* unary_expression);
     BoundExpressionNode* bind_assignment_expression(Syntax::AssignmentExpressionNode* assignment_expression);
 
     /* symbol bindings */
