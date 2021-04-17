@@ -120,6 +120,15 @@ bool TypeSymbol::are_types_equivalent(const TypeSymbol* lhs, const TypeSymbol* r
         return std::is_lteq(*lhs <=> *rhs);
 }
 
+bool TypeSymbol::is_error_type(const TypeSymbol* type) {
+        return are_types_equivalent(type, &TypeSymbol::Error);
+}
+
+bool TypeSymbol::can_be_explicitly_casted(const TypeSymbol* from, const TypeSymbol* to) {
+        auto order = (*from <=> *to);
+        return std::is_lteq(order) || std::is_gteq(order);
+}
+
 const TypeSymbol TypeSymbol::Void = TypeSymbol("void", {false,false,false});
 const TypeSymbol TypeSymbol::Char = TypeSymbol("char", {false,true,true});
 const TypeSymbol TypeSymbol::Int = TypeSymbol("int", {false,true,true});

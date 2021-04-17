@@ -22,6 +22,9 @@
 #include "bound_struct_declaration_node.h"
 #include "bound_variable_reference_expression_node.h"
 #include "bound_member_access_expression_node.h"
+#include "bound_cast_expression_node.h"
+#include "bound_binary_expression_node.h"
+#include "bound_assignment_expression_node.h"
 
 /* UTILITY INCLUDES */
 #include "../logger.h"
@@ -56,6 +59,8 @@
 #include "../syntax/struct_declaration_node.h"
 #include "../syntax/name_expression_node.h"
 #include "../syntax/member_expression_node.h"
+#include "../syntax/binary_expression_node.h"
+#include "../syntax/assignment_expression_node.h"
 #include "../syntax/program_node.h"
 
 
@@ -188,7 +193,7 @@ Symbols::FunctionSymbol* Binder::bind_function_declaration(Syntax::FunctionDecla
         }
         std::string type_symbol_id = parameter_syntax->type_identifier();
         auto param_type = bind_type_clause(type_symbol_id);
-        if (Symbols::TypeSymbol::are_types_equivalent(param_type, &Symbols::TypeSymbol::Error)) {
+        if (Symbols::TypeSymbol::is_error_type(param_type)) {
             if (parameter_syntax->is_struct()) type_symbol_id = "struct " + type_symbol_id; // probably not the best way to accomplish this.
             m_diagnostics->report_no_definition_for_type_symbol(parameter_syntax->token(), type_symbol_id);
             m_err_flag = true;
@@ -204,7 +209,7 @@ Symbols::FunctionSymbol* Binder::bind_function_declaration(Syntax::FunctionDecla
 
     std::string func_type_id = declaration->type_identifier();
     auto func_type = bind_type_clause(func_type_id);
-    if (Symbols::TypeSymbol::are_types_equivalent(func_type, &Symbols::TypeSymbol::Error)) {
+    if (Symbols::TypeSymbol::is_error_type(func_type)) {
         m_diagnostics->report_no_definition_for_type_symbol(declaration->token(), func_type->str());
         m_err_flag = true;
         return nullptr;
@@ -264,6 +269,11 @@ BoundFunctionDefinitionNode* Binder::bind_function_definition(Syntax::FunctionDe
 
 BoundStatementNode* Binder::bind_error_statement() const {
     return new BoundExpressionStatementNode(new BoundErrorExpressionNode());
+}
+
+BoundExpressionNode* Binder::bind_error_expression() {
+    m_err_flag = true;
+    return new BoundErrorExpressionNode();
 }
 
 BoundStatementNode* Binder::bind_statement(Syntax::StatementNode* statement) {
@@ -358,7 +368,7 @@ BoundStatementNode* Binder::bind_variable_group_declaration(Syntax::VariableGrou
     std::vector<BoundVariableDeclarationNode*> bound_variables;
     auto type_symbol_id = variable_group->type();
     auto var_type = bind_type_clause(type_symbol_id);
-    if (Symbols::TypeSymbol::are_types_equivalent(var_type, &Symbols::TypeSymbol::Error)) {
+    if (Symbols::TypeSymbol::is_error_type(var_type)) {
         m_diagnostics->report_no_definition_for_type_symbol(variable_group->token(), var_type->str());
         m_err_flag = true;
     }
@@ -426,8 +436,7 @@ BoundExpressionNode* Binder::bind_expression(Syntax::ExpressionNode* expression,
         return new BoundErrorExpressionNode(); // m_err_flag should already be set, in case of bugs though, take a gander here.
     if (!canBeVoid && Symbols::TypeSymbol::are_types_equivalent(result->type(), &Symbols::TypeSymbol::Void)) {
         m_diagnostics->report_expression_cannot_be_void(expression->token());
-        m_err_flag = true;
-        return new BoundErrorExpressionNode();
+        return bind_error_expression();
     }
     return result;
 }
@@ -437,13 +446,13 @@ BoundExpressionNode* Binder::bind_expression_internal(Syntax::ExpressionNode* ex
     auto syntaxKind = expression->kind();
     switch (syntaxKind) {
         case Syntax::SyntaxKind::AssignmentExpression:
-            break;
+            return bind_assignment_expression(dynamic_cast<Syntax::AssignmentExpressionNode*>(expression));
         case Syntax::SyntaxKind::BinaryExpression:
-            break;
+            return bind_binary_expression(dynamic_cast<Syntax::BinaryExpressionNode*>(expression));
         case Syntax::SyntaxKind::CallExpression:
             break;
         case Syntax::SyntaxKind::CastExpression:
-            break;
+            return bind_cast_expression(dynamic_cast<Syntax::CastExpressionNode*>(expression));
         case Syntax::SyntaxKind::DecrementExpression:
             break;
         case Syntax::SyntaxKind::IncrementExpression:
@@ -464,7 +473,112 @@ BoundExpressionNode* Binder::bind_expression_internal(Syntax::ExpressionNode* ex
             throw std::runtime_error("Unexpected syntax while binding expression.");
     }
 
-    return nullptr;
+    return bind_error_expression();
+}
+
+BoundExpressionNode* Binder::bind_assignment_expression(Syntax::AssignmentExpressionNode* assignment_expression) {
+    auto bound_expression = bind_expression(assignment_expression->expression());
+    auto bound_identifier_expression = bind_expression(assignment_expression->identifier_expression());
+
+    if (Symbols::TypeSymbol::is_error_type(bound_identifier_expression->type()))
+        return bind_error_expression();
+
+    auto lvar_ref = dynamic_cast<BoundVariableReferenceExpressionNode*>(bound_identifier_expression);
+
+    // if the assignee is not an lvalue type, return an error type
+    if (lvar_ref == nullptr) 
+        return bind_error_expression(); 
+
+    Symbols::VariableSymbol* variable = lvar_ref->variable_reference();
+
+    if (variable->is_const()) {
+        m_diagnostics->report_cannot_assign_to_constant(assignment_expression->token(), variable->name());
+        return bind_error_expression();
+    }
+
+    if (!Symbols::TypeSymbol::are_types_equivalent(bound_expression->type(), variable->var_type())) {
+        m_diagnostics->report_cannot_assign_type_mismatch(assignment_expression->token(), bound_expression->type()->str(), variable->var_type()->str());
+        return bind_error_expression();
+    }
+
+    if (bound_expression->type()->attributes().is_array && variable->var_type()->attributes().is_array) {
+        m_diagnostics->report_invalid_assignment_operator(assignment_expression->token(), variable->var_type()->str(), bound_expression->type()->str());
+        return bind_error_expression();
+    }
+
+    BoundAssignmentOpKind assignment_op_kind;
+    bool rewrite = true;
+    Syntax::token_type_t rewrite_op_kind;
+    switch (assignment_expression->assignment_type()) {
+        case Syntax::token_type_t::ASSIGN:
+            assignment_op_kind = BoundAssignmentOpKind::ASSIGN;
+            rewrite = false;
+            break;
+        case Syntax::token_type_t::PLUSASSIGN:
+            assignment_op_kind = BoundAssignmentOpKind::PLUS_ASSIGN;
+            rewrite_op_kind = Syntax::token_type_t::PLUS;
+            break;
+        case Syntax::token_type_t::MINUSASSIGN:
+            assignment_op_kind = BoundAssignmentOpKind::MINUS_ASSIGN;
+            rewrite_op_kind = Syntax::token_type_t::MINUS;
+            break;
+        case Syntax::token_type_t::STARASSIGN:
+            assignment_op_kind = BoundAssignmentOpKind::STAR_ASSIGN;
+            rewrite_op_kind = Syntax::token_type_t::STAR;
+            break;
+        case Syntax::token_type_t::SLASHASSIGN:
+            assignment_op_kind = BoundAssignmentOpKind::SLASH_ASSIGN;
+            rewrite_op_kind = Syntax::token_type_t::SLASH;
+            break;
+        default:
+            return bind_error_expression();
+    }
+
+    if (rewrite) {
+        auto bound_bin_op = BoundBinaryOperatorNode::Bind(rewrite_op_kind, variable->var_type(), bound_expression->type());
+        if (bound_bin_op == nullptr) {
+            m_diagnostics->report_invalid_assignment_operator(assignment_expression->token(), variable->var_type()->str(), bound_expression->type()->str());
+            return bind_error_expression();
+        }
+    }
+
+    return new BoundAssignmentExpressionNode(assignment_op_kind, variable, bound_expression);
+}
+
+BoundExpressionNode* Binder::bind_binary_expression(Syntax::BinaryExpressionNode* binary_expression) {
+    auto bound_left = bind_expression(binary_expression->left_expression());
+    auto bound_right = bind_expression(binary_expression->right_expression());
+
+    if (Symbols::TypeSymbol::is_error_type(bound_left->type()) || Symbols::TypeSymbol::is_error_type(bound_right->type()))
+        return bind_error_expression();
+
+    auto bound_operator = BoundBinaryOperatorNode::Bind(binary_expression->syntax_token_type(), bound_left->type(), bound_right->type());
+
+    if (bound_operator == nullptr) {
+        m_diagnostics->report_invalid_binary_operator(binary_expression->token(), bound_left->type()->str(), bound_right->type()->str());
+        return bind_error_expression();
+    }
+
+    return new BoundBinaryExpressionNode(bound_operator, bound_left, bound_right);
+}
+
+BoundExpressionNode* Binder::bind_cast_expression(Syntax::CastExpressionNode* cast_expression) {
+    const Symbols::TypeSymbol* type_symbol = nullptr;
+    if (!m_scope->try_look_up_type(cast_expression->type(), type_symbol)) {
+        m_diagnostics->report_no_definition_for_type_symbol(cast_expression->token(), cast_expression->type());
+        return bind_error_expression();
+    }
+
+    auto bound_expression = bind_expression(cast_expression->expression());
+    if (m_err_flag) return new BoundErrorExpressionNode();
+
+    // can_be_explicitly_casted implicitly requires that both types are numeric types.
+    if (!Symbols::TypeSymbol::can_be_explicitly_casted(bound_expression->type(), type_symbol)) {
+        m_diagnostics->report_cannot_convert_explicitly(cast_expression->token(), bound_expression->type()->str(), type_symbol->str());
+        return bind_error_expression();
+    }
+
+    return new BoundCastExpressionNode(type_symbol, bound_expression);
 }
 
 BoundExpressionNode* Binder::bind_index_expression(Syntax::IndexExpressionNode* index_expression) {
@@ -472,8 +586,7 @@ BoundExpressionNode* Binder::bind_index_expression(Syntax::IndexExpressionNode* 
     if (m_struct_scope.empty() || m_struct_scope.top() == nullptr) {
         if (!m_scope->try_look_up_variable(index_expression->name(), variable)) {
             m_diagnostics->report_undefined_variable(index_expression->token(), index_expression->name());
-            m_err_flag = true;
-            return new BoundErrorExpressionNode();
+            return bind_error_expression();
         }
     } else {
         for (auto member : m_struct_scope.top()->members()) {
@@ -485,15 +598,13 @@ BoundExpressionNode* Binder::bind_index_expression(Syntax::IndexExpressionNode* 
 
         if (variable == nullptr) {
             m_diagnostics->report_no_member_in_type(index_expression->token(), index_expression->name(), m_struct_scope.top()->name());
-            m_err_flag = true;
-            return new BoundErrorExpressionNode();
+            return bind_error_expression();
         }
     }
 
     if (!variable->is_array()) {
         m_diagnostics->report_variable_not_array_type(index_expression->token(), index_expression->name());
-        m_err_flag = true;
-        return new BoundErrorExpressionNode();
+        return bind_error_expression();
     }
 
     m_struct_scope.push(nullptr); // probably a terrible way to do this
@@ -501,8 +612,7 @@ BoundExpressionNode* Binder::bind_index_expression(Syntax::IndexExpressionNode* 
     m_struct_scope.pop();
     if (!bound_index_value_expression->type()->attributes().is_integer_type) {
         m_diagnostics->report_array_index_must_be_integer(index_expression->token(), variable->name());
-        m_err_flag = true;
-        return new BoundErrorExpressionNode();
+        return bind_error_expression();
     }
 
     return new BoundIndexExpressionNode(variable, bound_index_value_expression);
@@ -537,8 +647,7 @@ BoundExpressionNode* Binder::bind_member_expression(Syntax::MemberExpressionNode
     // the name expression of of 'encapsulating_variable_expression'
     if (!encap_type->attributes().is_struct) {
         m_diagnostics->report_member_base_type_not_struct(member_expression->token(), encap_type->str());
-        m_err_flag = true;
-        return new BoundErrorExpressionNode();
+        return bind_error_expression();
     }
 
     
@@ -560,8 +669,7 @@ BoundExpressionNode* Binder::bind_name_expression(Syntax::NameExpressionNode* na
     if (m_struct_scope.empty() || m_struct_scope.top() == nullptr) {
         if (!m_scope->try_look_up_variable(name_expression->name(), variable)) {
             m_diagnostics->report_undefined_variable(name_expression->token(), name_expression->name());
-            m_err_flag = true;
-            return new BoundErrorExpressionNode();
+            return bind_error_expression();
         }
     } else {
         for (auto member : m_struct_scope.top()->members()) {
@@ -573,8 +681,7 @@ BoundExpressionNode* Binder::bind_name_expression(Syntax::NameExpressionNode* na
 
         if (variable == nullptr) {
             m_diagnostics->report_no_member_in_type(name_expression->token(), name_expression->name(), m_struct_scope.top()->name());
-            m_err_flag = true;
-            return new BoundErrorExpressionNode();
+            return bind_error_expression();
         }
     }
 

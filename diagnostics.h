@@ -7,6 +7,7 @@
 
 namespace Syntax {
     class SyntaxToken;
+    enum btokentype : int;
 }
 
 struct Location {
@@ -41,6 +42,7 @@ private:
 
     void report(Location loc, std::string msg);
     Location from_syntax_token(Syntax::SyntaxToken* token);
+    std::string syntax_token_type_to_string(Syntax::btokentype token_type);
 public:
     DiagnosticsList();
 
@@ -59,6 +61,12 @@ public:
     void report_array_index_must_be_integer(Syntax::SyntaxToken* token, std::string identifier);
     void report_member_base_type_not_struct(Syntax::SyntaxToken* token, std::string identifier);
     void report_no_member_in_type(Syntax::SyntaxToken* token, std::string member_identifier, std::string type_identifier);
+    void report_cannot_convert_explicitly(Syntax::SyntaxToken* token, std::string type_from, std::string type_to);
+    void report_invalid_binary_operator(Syntax::SyntaxToken* token, std::string lhs_type, std::string rhs_type);
+    void report_invalid_unary_operator(Syntax::SyntaxToken* token, std::string type);
+    void report_cannot_assign_to_constant(Syntax::SyntaxToken* token, std::string identifier);
+    void report_cannot_assign_type_mismatch(Syntax::SyntaxToken* token, std::string type_from, std::string type_to);
+    void report_invalid_assignment_operator(Syntax::SyntaxToken* token, std::string lhs_type, std::string rhs_type);
 };
 
 #endif

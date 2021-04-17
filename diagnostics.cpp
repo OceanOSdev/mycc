@@ -122,3 +122,120 @@ void DiagnosticsList::report_no_member_in_type(Syntax::SyntaxToken* token, std::
     std::string message = "No member named '" + member_identifier + "' in '" + type_identifier + "'";
     report(loc,message);
 }
+
+void DiagnosticsList::report_cannot_convert_explicitly(Syntax::SyntaxToken* token, std::string type_from, std::string type_to) {
+    Location loc = from_syntax_token(token);
+    std::string message = "Cannot convert from type '" + type_from + "' to type '" + type_to + "'";
+    report(loc,message);
+}
+
+void DiagnosticsList::report_invalid_binary_operator(Syntax::SyntaxToken* token, std::string lhs_type, std::string rhs_type) {
+    Location loc = from_syntax_token(token);
+    std::string message = "Operator '" + syntax_token_type_to_string(token->token()) + "' undefined for types '" + lhs_type + "' and '" + rhs_type + "'";
+    report(loc,message);
+}
+
+void DiagnosticsList::report_invalid_unary_operator(Syntax::SyntaxToken* token, std::string type) {
+    Location loc = from_syntax_token(token);
+    std::string message = "Operator '" + syntax_token_type_to_string(token->token()) + "' undefined for type '" + type + "'";
+    report(loc,message);
+}
+
+void DiagnosticsList::report_cannot_assign_to_constant(Syntax::SyntaxToken* token, std::string identifier) {
+    Location loc = from_syntax_token(token);
+    std::string message = "Cannot assign to read-only variable '" + identifier + "'";
+    report(loc,message);
+}
+
+void DiagnosticsList::report_cannot_assign_type_mismatch(Syntax::SyntaxToken* token, std::string type_from, std::string type_to) {
+    Location loc = from_syntax_token(token);
+    std::string message = "Type mismatch in assignment: expected '" + type_to + "', got '" + type_from + "'";
+    report(loc,message);
+}
+
+void DiagnosticsList::report_invalid_assignment_operator(Syntax::SyntaxToken* token, std::string lhs_type, std::string rhs_type) {
+    Location loc = from_syntax_token(token);
+    std::string message = "Operator '" + syntax_token_type_to_string(token->token()) + "' undefined for types '" + lhs_type + "' and '" + rhs_type + "'";
+    report(loc,message);
+}
+
+
+
+std::string DiagnosticsList::syntax_token_type_to_string(Syntax::token_type_t token_type) {
+        switch(token_type) {
+            case Syntax::token_type_t::PLUS:
+                return "+";
+                break;
+            case Syntax::token_type_t::MINUS:
+                return "-";
+                break;
+            case Syntax::token_type_t::STAR:
+                return "*";
+                break;
+            case Syntax::token_type_t::SLASH:
+                return "/";
+                break;
+            case Syntax::token_type_t::MOD:
+                return "%";
+                break;
+            case Syntax::token_type_t::TILDE:
+                return "~";
+                break;
+            case Syntax::token_type_t::PIPE:
+                return "|";
+                break;
+            case Syntax::token_type_t::AMP:
+                return "&";
+                break;
+            case Syntax::token_type_t::BANG:
+                return "!";
+                break;
+            case Syntax::token_type_t::DPIPE:
+                return "||";
+                break;
+            case Syntax::token_type_t::DAMP:
+                return "&&";
+                break;
+            case Syntax::token_type_t::ASSIGN:
+                return "=";
+                break;
+            case Syntax::token_type_t::PLUSASSIGN:
+                return "+=";
+                break;
+            case Syntax::token_type_t::MINUSASSIGN:
+                return "-=";
+                break;
+            case Syntax::token_type_t::STARASSIGN:
+                return "*=";
+                break;
+            case Syntax::token_type_t::SLASHASSIGN:
+                return "/=";
+                break;
+            case Syntax::token_type_t::INCR:
+                return "++";
+                break;
+            case Syntax::token_type_t::DECR:
+                return "--";
+                break;
+            case Syntax::token_type_t::EQUALS:
+                return "==";
+                break;
+            case Syntax::token_type_t::NEQUAL:
+                return "!=";
+                break;
+            case Syntax::token_type_t::GT:
+                return ">";
+                break;
+            case Syntax::token_type_t::GE:
+                return ">=";
+                break;
+            case Syntax::token_type_t::LT:
+                return "<";
+                break;
+            case Syntax::token_type_t::LE:
+                return "<=";
+                break;
+            default:
+                return "ERROR";
+        }
+    }

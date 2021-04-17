@@ -78,6 +78,8 @@ public:
      * whether the lhs type can be implicitly widened to the rhs type. 
      */
     static bool are_types_equivalent(const TypeSymbol* lhs, const TypeSymbol* rhs);
+    static bool is_error_type(const TypeSymbol* type);
+    static bool can_be_explicitly_casted(const TypeSymbol* from, const TypeSymbol* to);
 };
 
 }

@@ -13,6 +13,9 @@ enum BoundNodeKind {
     IndexExpression,
     MemberAccessExpression,
     VariableReferenceExpression,
+    AssignmentExpression,
+    UnaryExpression,
+    CallExpression,
 
     // Statements
     ExpressionStatement,

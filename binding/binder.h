@@ -23,6 +23,9 @@ namespace Syntax {
     class IndexExpressionNode;
     class MemberExpressionNode;
     class NameExpressionNode;
+    class CastExpressionNode;
+    class BinaryExpressionNode;
+    class AssignmentExpressionNode;
 
     // Global Syntax Forward Declarations
     class FunctionPrototypeNode;
@@ -74,15 +77,20 @@ private:
     BoundStatementNode* bind_struct_declaration(Syntax::StructDeclarationNode* struct_declaration);
 
     /* expression bindings */
+    BoundExpressionNode* bind_error_expression();
     BoundExpressionNode* bind_expression(Syntax::ExpressionNode* expression, bool canBeVoid = false);
     BoundExpressionNode* bind_expression_internal(Syntax::ExpressionNode* expression);
     BoundExpressionNode* bind_literal_val_expression(Syntax::LiteralValExpressionNode* literal_expression);
     BoundExpressionNode* bind_name_expression(Syntax::NameExpressionNode* name_expression);
     BoundExpressionNode* bind_member_expression(Syntax::MemberExpressionNode* member_expression);
     BoundExpressionNode* bind_index_expression(Syntax::IndexExpressionNode* index_expression);
+    BoundExpressionNode* bind_cast_expression(Syntax::CastExpressionNode* cast_expression);
+    BoundExpressionNode* bind_binary_expression(Syntax::BinaryExpressionNode* binary_expression);
+    BoundExpressionNode* bind_assignment_expression(Syntax::AssignmentExpressionNode* assignment_expression);
 
-    /* type bindings */
+    /* symbol bindings */
     const Symbols::TypeSymbol* bind_type_clause(std::string type_name);
+
 public:
     Binder(DiagnosticsList* diagnostics, BoundScope* parent);
 

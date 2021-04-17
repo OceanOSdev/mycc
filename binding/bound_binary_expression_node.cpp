@@ -36,6 +36,12 @@ BoundBinaryOperatorNode* BoundBinaryOperatorNode::BindNTypeCompOperator(BoundBin
 
 BoundBinaryOperatorNode* BoundBinaryOperatorNode::Bind(Syntax::btokentype syntax_token_type, const Symbols::TypeSymbol* left, const Symbols::TypeSymbol* right) {
     BoundBinaryOpKind opKind;
+
+    // array types technically might have the attributes numeric and integer
+    // so we just make sure neither types are arrays here first
+    if (left->attributes().is_array || right->attributes().is_array)
+        return nullptr;
+        
     switch (syntax_token_type) {
         case Syntax::token_type_t::MOD:
             opKind = BoundBinaryOpKind::Modulo;
