@@ -29,6 +29,8 @@ namespace Syntax {
     class AssignmentExpressionNode;
     class CallExpressionNode;
     class TernaryExpressionNode;
+    class IncrementExpressionNode;
+    class DecrementExpressionNode;
 
     // Global Syntax Forward Declarations
     class FunctionPrototypeNode;
@@ -93,6 +95,8 @@ private:
     BoundExpressionNode* bind_assignment_expression(Syntax::AssignmentExpressionNode* assignment_expression);
     BoundExpressionNode* bind_call_expression(Syntax::CallExpressionNode* call_expression);
     BoundExpressionNode* bind_ternary_expression(Syntax::TernaryExpressionNode* ternary_expression);
+    BoundExpressionNode* bind_increment_expression(Syntax::IncrementExpressionNode* increment_expression);
+    BoundExpressionNode* bind_decrement_expression(Syntax::DecrementExpressionNode* decrement_expression);
 
     /* symbol bindings */
     const Symbols::TypeSymbol* bind_type_clause(std::string type_name);

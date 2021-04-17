@@ -28,6 +28,7 @@
 #include "bound_assignment_expression_node.h"
 #include "bound_call_expression_node.h"
 #include "bound_ternary_expression_node.h"
+#include "bound_increment_expression_node.h"
 
 /* UTILITY INCLUDES */
 #include "../logger.h"
@@ -459,9 +460,9 @@ BoundExpressionNode* Binder::bind_expression_internal(Syntax::ExpressionNode* ex
         case Syntax::SyntaxKind::CastExpression:
             return bind_cast_expression(dynamic_cast<Syntax::CastExpressionNode*>(expression));
         case Syntax::SyntaxKind::DecrementExpression:
-            break;
+            return bind_decrement_expression(dynamic_cast<Syntax::DecrementExpressionNode*>(expression));
         case Syntax::SyntaxKind::IncrementExpression:
-            break;
+            return bind_increment_expression(dynamic_cast<Syntax::IncrementExpressionNode*>(expression));
         case Syntax::SyntaxKind::IndexExpression:
             return bind_index_expression(dynamic_cast<Syntax::IndexExpressionNode*>(expression));
         case Syntax::SyntaxKind::LiteralValExpression:
@@ -623,6 +624,18 @@ BoundExpressionNode* Binder::bind_cast_expression(Syntax::CastExpressionNode* ca
     }
 
     return new BoundCastExpressionNode(type_symbol, bound_expression);
+}
+
+BoundExpressionNode* Binder::bind_decrement_expression(Syntax::DecrementExpressionNode* decrement_expression) {
+    auto notation = decrement_expression->is_post() ? IDNotation::POSTFIX : IDNotation::PREFIX;
+    auto bound_expr = bind_expression(decrement_expression->identifier_expression());
+    return new BoundDecrementExpressionNode(notation, bound_expr);
+}
+
+BoundExpressionNode* Binder::bind_increment_expression(Syntax::IncrementExpressionNode* increment_expression) {
+    auto notation = increment_expression->is_post() ? IDNotation::POSTFIX : IDNotation::PREFIX;
+    auto bound_expr = bind_expression(increment_expression->identifier_expression());
+    return new BoundIncrementExpressionNode(notation, bound_expr);
 }
 
 BoundExpressionNode* Binder::bind_index_expression(Syntax::IndexExpressionNode* index_expression) {
