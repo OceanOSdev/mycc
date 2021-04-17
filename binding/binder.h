@@ -4,6 +4,7 @@
 
 #include <vector>
 #include <string>
+#include <stack>
 
 class DiagnosticsList;
 
@@ -34,6 +35,7 @@ namespace Syntax {
 namespace Symbols {
     class TypeSymbol;
     class FunctionSymbol;
+    class StructSymbol;
 }
 
 namespace Binding {
@@ -52,6 +54,7 @@ private:
     bool m_err_flag;
     BoundScope* m_scope;
     Symbols::FunctionSymbol* m_current_function; // set when binding methods in function body
+    std::stack<Symbols::StructSymbol*> m_struct_scope; // for when binding name and index expressions of submembers, will be empty otherwise.
 
     static BoundScope* init_global_scope();
     void set_current_function_scope(Symbols::FunctionSymbol* function_symbol);
