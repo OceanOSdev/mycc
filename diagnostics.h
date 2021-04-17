@@ -71,6 +71,8 @@ public:
     void report_function_not_declared(Syntax::SyntaxToken* token, std::string identifier);
     void report_wrong_argument_count(Syntax::SyntaxToken* token, std::string identifier, bool too_few, int expected, int actual);
     void report_incompatible_argument(Syntax::SyntaxToken* token, std::string identifier, std::string actual_type, std::string expected_type, int argument_number);
+    void report_integer_type_required(Syntax::SyntaxToken* token, std::string actual_type);
+    void report_incompatible_operand_types(Syntax::SyntaxToken* token, std::string left_type, std::string right_type);
 };
 
 #endif

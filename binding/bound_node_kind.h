@@ -16,6 +16,7 @@ enum BoundNodeKind {
     AssignmentExpression,
     UnaryExpression,
     CallExpression,
+    TernaryExpression,
 
     // Statements
     ExpressionStatement,

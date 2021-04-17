@@ -27,6 +27,7 @@
 #include "bound_unary_expression_node.h"
 #include "bound_assignment_expression_node.h"
 #include "bound_call_expression_node.h"
+#include "bound_ternary_expression_node.h"
 
 /* UTILITY INCLUDES */
 #include "../logger.h"
@@ -470,9 +471,9 @@ BoundExpressionNode* Binder::bind_expression_internal(Syntax::ExpressionNode* ex
         case Syntax::SyntaxKind::NameExpression:
             return bind_name_expression(dynamic_cast<Syntax::NameExpressionNode*>(expression));
         case Syntax::SyntaxKind::TernaryExpression:
-            break;
+            return bind_ternary_expression(dynamic_cast<Syntax::TernaryExpressionNode*>(expression));
         case Syntax::SyntaxKind::UnaryExpression:
-            break;
+            return bind_unary_expression(dynamic_cast<Syntax::UnaryExpressionNode*>(expression));
         default:
             throw std::runtime_error("Unexpected syntax while binding expression.");
     }
@@ -729,6 +730,33 @@ BoundExpressionNode* Binder::bind_name_expression(Syntax::NameExpressionNode* na
     }
 
     return new BoundVariableReferenceExpressionNode(variable);
+}
+
+BoundExpressionNode* Binder::bind_ternary_expression(Syntax::TernaryExpressionNode* ternary_expression) {
+    auto bound_conditional = bind_expression(ternary_expression->conditional_expression());
+    if (!bound_conditional->type()->attributes().is_integer_type || bound_conditional->type()->attributes().is_array) {
+        m_diagnostics->report_integer_type_required(ternary_expression->token(), bound_conditional->type()->str());
+        return bind_error_expression();
+    }
+
+    auto bound_left = bind_expression(ternary_expression->true_expression(),true);
+    auto bound_right = bind_expression(ternary_expression->false_expression(),true);
+    auto left_type = bound_left->type();
+    auto right_type = bound_right->type();
+
+    if (Symbols::TypeSymbol::is_error_type(left_type) || Symbols::TypeSymbol::is_error_type(right_type))
+        return bind_error_expression();
+
+    if (!Symbols::TypeSymbol::are_types_equivalent(left_type, right_type) && 
+        !Symbols::TypeSymbol::are_types_equivalent(right_type, left_type)) {
+        
+        m_diagnostics->report_incompatible_operand_types(ternary_expression->token(), left_type->str(), right_type->str());
+        return bind_error_expression();
+    }
+
+    auto ternary_ret_type = Symbols::TypeSymbol::get_wider_type(left_type, right_type);
+
+    return new BoundTernaryExpressionNode(ternary_ret_type, bound_conditional, bound_left, bound_right);
 }
 
 BoundExpressionNode* Binder::bind_unary_expression(Syntax::UnaryExpressionNode* unary_expression) {

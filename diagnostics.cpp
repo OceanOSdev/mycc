@@ -186,6 +186,18 @@ void DiagnosticsList::report_incompatible_argument(Syntax::SyntaxToken* token, s
     report(loc,message);
 }
 
+void DiagnosticsList::report_integer_type_required(Syntax::SyntaxToken* token, std::string actual_type) {
+    Location loc = from_syntax_token(token);
+    std::string message = "Used type '" + actual_type + "' where integer type is required";
+    report(loc,message);
+}
+
+void DiagnosticsList::report_incompatible_operand_types(Syntax::SyntaxToken* token, std::string left_type, std::string right_type) {
+    Location loc = from_syntax_token(token);
+    std::string message = "Incompatible operand types ('" + left_type + "' and '" + right_type + "')";
+    report(loc,message);
+}
+
 
 std::string DiagnosticsList::syntax_token_type_to_string(Syntax::token_type_t token_type) {
         switch(token_type) {
