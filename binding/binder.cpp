@@ -26,6 +26,7 @@
 #include "bound_binary_expression_node.h"
 #include "bound_unary_expression_node.h"
 #include "bound_assignment_expression_node.h"
+#include "bound_call_expression_node.h"
 
 /* UTILITY INCLUDES */
 #include "../logger.h"
@@ -63,6 +64,7 @@
 #include "../syntax/binary_expression_node.h"
 #include "../syntax/unary_expression_node.h"
 #include "../syntax/assignment_expression_node.h"
+#include "../syntax/call_expression_node.h"
 #include "../syntax/program_node.h"
 
 
@@ -452,7 +454,7 @@ BoundExpressionNode* Binder::bind_expression_internal(Syntax::ExpressionNode* ex
         case Syntax::SyntaxKind::BinaryExpression:
             return bind_binary_expression(dynamic_cast<Syntax::BinaryExpressionNode*>(expression));
         case Syntax::SyntaxKind::CallExpression:
-            break;
+            return bind_call_expression(dynamic_cast<Syntax::CallExpressionNode*>(expression));
         case Syntax::SyntaxKind::CastExpression:
             return bind_cast_expression(dynamic_cast<Syntax::CastExpressionNode*>(expression));
         case Syntax::SyntaxKind::DecrementExpression:
@@ -564,6 +566,45 @@ BoundExpressionNode* Binder::bind_binary_expression(Syntax::BinaryExpressionNode
     return new BoundBinaryExpressionNode(bound_operator, bound_left, bound_right);
 }
 
+BoundExpressionNode* Binder::bind_call_expression(Syntax::CallExpressionNode* call_expression) {
+    Symbols::Symbol* symbol;
+    std::string identifier =  call_expression->name();
+    auto exists = m_scope->try_look_up_symbol(identifier, symbol);
+    if (!exists) {
+        m_diagnostics->report_function_not_declared(call_expression->token(), identifier);
+        return bind_error_expression();
+    }
+    if (symbol->kind() != Symbols::SymbolKind::FUNCTION) {
+        m_diagnostics->report_identifier_is_not_a_function(call_expression->token(), identifier);
+        return bind_error_expression();
+    }
+    
+    auto function = dynamic_cast<Symbols::FunctionSymbol*>(symbol);
+
+    if (function->params().size() != call_expression->expressions().size()) {
+        bool too_few = function->params().size() > call_expression->expressions().size();
+        m_diagnostics->report_wrong_argument_count(call_expression->token(), identifier, too_few, function->params().size(), call_expression->expressions().size());
+        return bind_error_expression();
+    }
+    
+    std::vector<BoundExpressionNode*> bound_arguments;
+    for (std::vector<Symbols::ParameterSymbol*>::size_type arg_idx = 0; arg_idx < function->params().size(); arg_idx++) {
+        auto expected_type = function->params()[arg_idx]->type();
+        auto bound_expression = bind_expression(call_expression->expressions()[arg_idx]);
+        auto actual_type = bound_expression->type();
+
+        if (!Symbols::TypeSymbol::are_types_equivalent(actual_type, expected_type)) {
+            auto token = call_expression->expressions()[arg_idx]->token();
+            m_diagnostics->report_incompatible_argument(token, identifier, actual_type->str(), expected_type->str(), int(arg_idx+1));
+            return bind_error_expression();
+        }
+
+        bound_arguments.push_back(bound_expression);
+    }
+
+    return new BoundCallExpressionNode(function, bound_arguments);    
+}
+
 BoundExpressionNode* Binder::bind_cast_expression(Syntax::CastExpressionNode* cast_expression) {
     const Symbols::TypeSymbol* type_symbol = nullptr;
     if (!m_scope->try_look_up_type(cast_expression->type(), type_symbol)) {
@@ -665,7 +706,6 @@ BoundExpressionNode* Binder::bind_member_expression(Syntax::MemberExpressionNode
 
     return new BoundMemberAccessExpressionNode(bound_var_ref_expr->variable_reference(), encapsulating_var_ref);
 }
-
 
 BoundExpressionNode* Binder::bind_name_expression(Syntax::NameExpressionNode* name_expression) {
     Symbols::VariableSymbol* variable = nullptr;

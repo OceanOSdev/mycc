@@ -67,6 +67,10 @@ public:
     void report_cannot_assign_to_constant(Syntax::SyntaxToken* token, std::string identifier);
     void report_cannot_assign_type_mismatch(Syntax::SyntaxToken* token, std::string type_from, std::string type_to);
     void report_invalid_assignment_operator(Syntax::SyntaxToken* token, std::string lhs_type, std::string rhs_type);
+    void report_identifier_is_not_a_function(Syntax::SyntaxToken* token, std::string identifier);
+    void report_function_not_declared(Syntax::SyntaxToken* token, std::string identifier);
+    void report_wrong_argument_count(Syntax::SyntaxToken* token, std::string identifier, bool too_few, int expected, int actual);
+    void report_incompatible_argument(Syntax::SyntaxToken* token, std::string identifier, std::string actual_type, std::string expected_type, int argument_number);
 };
 
 #endif

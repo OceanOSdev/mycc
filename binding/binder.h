@@ -27,6 +27,7 @@ namespace Syntax {
     class BinaryExpressionNode;
     class UnaryExpressionNode;
     class AssignmentExpressionNode;
+    class CallExpressionNode;
 
     // Global Syntax Forward Declarations
     class FunctionPrototypeNode;
@@ -89,6 +90,7 @@ private:
     BoundExpressionNode* bind_binary_expression(Syntax::BinaryExpressionNode* binary_expression);
     BoundExpressionNode* bind_unary_expression(Syntax::UnaryExpressionNode* unary_expression);
     BoundExpressionNode* bind_assignment_expression(Syntax::AssignmentExpressionNode* assignment_expression);
+    BoundExpressionNode* bind_call_expression(Syntax::CallExpressionNode* call_expression);
 
     /* symbol bindings */
     const Symbols::TypeSymbol* bind_type_clause(std::string type_name);

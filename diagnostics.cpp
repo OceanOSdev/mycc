@@ -160,6 +160,32 @@ void DiagnosticsList::report_invalid_assignment_operator(Syntax::SyntaxToken* to
 }
 
 
+void DiagnosticsList::report_identifier_is_not_a_function(Syntax::SyntaxToken* token, std::string identifier) {
+    Location loc = from_syntax_token(token);
+    std::string message = "Called object '" + identifier + "' is not a function";
+    report(loc,message);
+}
+
+void DiagnosticsList::report_function_not_declared(Syntax::SyntaxToken* token, std::string identifier) {
+    Location loc = from_syntax_token(token);
+    std::string message = "Function '" + identifier + "' has not been declared";
+    report(loc,message);
+}
+
+void DiagnosticsList::report_wrong_argument_count(Syntax::SyntaxToken* token, std::string identifier, bool too_few, int expected, int actual) {
+    Location loc = from_syntax_token(token);
+    std::string modifier = too_few ? "few" : "many";
+    std::string message = "Too " + modifier + " arguments to function '" + identifier + "', expected " + std::to_string(expected) + ", have " + std::to_string(actual);
+    report(loc,message);
+}
+
+void DiagnosticsList::report_incompatible_argument(Syntax::SyntaxToken* token, std::string identifier, std::string actual_type, std::string expected_type, int argument_number) {
+    Location loc = from_syntax_token(token);
+    std::string message = "Argument " + std::to_string(argument_number) + " in call to function '" + identifier + "': ";
+    message += " expected type '" + expected_type + "', but got '" + actual_type + "'";
+    report(loc,message);
+}
+
 
 std::string DiagnosticsList::syntax_token_type_to_string(Syntax::token_type_t token_type) {
         switch(token_type) {
