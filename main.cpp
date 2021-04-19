@@ -2,12 +2,12 @@
 #include <vector>
 #include "arg_parser.h"
 #include "lexeme_data.h"
-#include "logger.h"
+#include "logging/logger.h"
 #include "driver.h"
 #include "qsem.h"
 #include "syntax_tree_printer.h"
 #include "part_two_syntax_check.h"
-#include "diagnostics.h"
+#include "logging/diagnostics.h"
 #include "binding/binder.h"
 
 const char* versionInfo =
@@ -16,7 +16,7 @@ const char* versionInfo =
 "\tVersion 0.3\n"
 "\t4 March, 2021\n";
 
-Logger* logger;
+Logging::Logger* logger;
 
 void print_token_list(std::vector<LexemeDataNode> tlist) {
     std::vector<LexemeDataNode>::iterator iter;
@@ -101,9 +101,9 @@ void runSyntaxTreePrinter(parsed_args_t* pat) {
 
 void handleArgs(parsed_args_t* pat, char* oFileName) {
     if (pat->useOutputFile) {
-        logger = new Logger(std::string(oFileName));
+        logger = new Logging::Logger(std::string(oFileName));
     } else {
-        logger = new Logger();
+        logger = new Logging::Logger();
     }
     
     switch (pat->mode) {

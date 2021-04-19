@@ -1,12 +1,11 @@
 #ifndef PART_TWO_SYNTAX_CHECK_H
 #define PART_TWO_SYNTAX_CHECK_H
-#include "logger.h"
 #include <vector>
 #include <string>
 #include <variant>
 
 namespace Syntax {
-    class VariablegroupDeclarationNode;
+    class VariableGroupDeclarationNode;
     class StructDeclarationNode;
     class SyntaxNode;
     class GlobalDeclarationNode;
@@ -15,6 +14,10 @@ namespace Syntax {
     class FunctionDefinitionNode;
     class FormalParameterNode;
     class ProgramNode;
+}
+
+namespace Logging {
+    class Logger;
 }
 
 using func_wrapper = std::variant<Syntax::FunctionPrototypeNode*, Syntax::FunctionDefinitionNode*>;
@@ -29,7 +32,7 @@ using PartTwoSymbolTable = struct part_two_symbol_table {
 class PartTwoSyntaxPrinter {
 private: 
     Syntax::ProgramNode* m_prgm;
-    Logger* m_logger;
+    Logging::Logger* m_logger;
     std::vector<PartTwoSymbolTable> m_symbols;
 
     void visit_node(Syntax::SyntaxNode* n);
@@ -45,7 +48,7 @@ private:
     std::vector<std::string> param_to_string(std::vector<Syntax::FormalParameterNode*> params);
     
 public:
-    PartTwoSyntaxPrinter(Syntax::ProgramNode* prgm, Logger* logger);
+    PartTwoSyntaxPrinter(Syntax::ProgramNode* prgm, Logging::Logger* logger);
     ~PartTwoSyntaxPrinter();
 
     void print_info();

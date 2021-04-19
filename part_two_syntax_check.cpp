@@ -1,4 +1,5 @@
 #include "part_two_syntax_check.h"
+#include "logging/logger.h"
 #include "syntax/syntax_kind.h"
 #include "syntax/formal_parameter_node.h"
 #include "syntax/expression_node.h"
@@ -37,7 +38,7 @@
 #include "syntax/translation_unit_node.h"
 #include "syntax/program_node.h"
 
-PartTwoSyntaxPrinter::PartTwoSyntaxPrinter(Syntax::ProgramNode* prgm, Logger* logger) :
+PartTwoSyntaxPrinter::PartTwoSyntaxPrinter(Syntax::ProgramNode* prgm, Logging::Logger* logger) :
     m_prgm(prgm), m_logger(logger) {}
 
 

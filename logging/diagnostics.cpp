@@ -1,7 +1,9 @@
 #include "diagnostics.h"
-#include "syntax/syntax_token.h"
+#include "../syntax/syntax_token.h"
 #include <new>
 #include <iostream>
+
+namespace Logging {
 
 Location::Location(int lineno, std::string file) :
     line_number(lineno), file_name(file) {}
@@ -304,3 +306,5 @@ std::string DiagnosticsList::syntax_token_type_to_string(Syntax::token_type_t to
                 return "ERROR";
         }
     }
+
+}

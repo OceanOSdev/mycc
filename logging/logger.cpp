@@ -2,6 +2,8 @@
 #include "diagnostics.h"
 #include <sstream>
 
+namespace Logging {
+
 Logger::~Logger() {
     if (!m_is_stdio) {
         delete m_outstream;
@@ -176,4 +178,6 @@ std::string token_to_string(token_type token) {
         default:
             return "UNKNOWN"; //shouldn't ever reach here
     }
+}
+
 }

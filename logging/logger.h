@@ -1,13 +1,14 @@
 #ifndef LOGGER_H
 #define LOGGER_H
-#include "mycc.tab.hpp"
-#include "lexeme_data.h"
+#include "../mycc.tab.hpp"
+#include "../lexeme_data.h"
 #include <fstream>
 #include <iostream>
 #include <ostream>
 #include <string>
 
 typedef enum yy::parser::token::yytokentype token_type;
+namespace Logging {
 class DiagnosticsList;
 class Diagnostic;
 
@@ -97,5 +98,5 @@ public:
     */
     void log_string_list(char* argv[]);
 };
-
+}
 #endif

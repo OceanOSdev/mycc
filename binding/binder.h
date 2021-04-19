@@ -7,7 +7,9 @@
 #include <stack>
 #include <tuple>
 
-class DiagnosticsList;
+namespace Logging {
+    class DiagnosticsList;
+}
 
 namespace Syntax {
     // Statement Syntax Forward Declarations
@@ -62,10 +64,16 @@ class BoundFunctionDefinitionNode;
 class BoundScope;
 class BoundLabel;
 
+/*
+ * structured way to record type info for part three.
+ */
+struct PartThreeInfoList;
+
 class Binder {
 private:
-    DiagnosticsList* m_diagnostics;
-    std::vector<std::string> m_part_three_info_list;
+    Logging::DiagnosticsList* m_diagnostics;
+    PartThreeInfoList* m_part_three_info_list;
+    //std::vector<std::string> m_part_three_info_list;
     std::vector<BoundGlobalDeclarationNode*> m_global_decls;
     bool m_err_flag;
     int m_label_idx; // label counter for loops and stuff
@@ -119,7 +127,7 @@ private:
     const Symbols::TypeSymbol* bind_type_clause(std::string type_name);
 
 public:
-    Binder(DiagnosticsList* diagnostics, BoundScope* parent);
+    Binder(Logging::DiagnosticsList* diagnostics, BoundScope* parent);
 
     /*
      * For right now, don't return anything since I'm not sure
@@ -138,7 +146,7 @@ public:
      * List of diagnostics describing any errors that may
      * have occured during binding.
      */
-    DiagnosticsList* diagnostics() const;
+    Logging::DiagnosticsList* diagnostics() const;
 
     /*
      * List of strings containing the info to output

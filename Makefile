@@ -61,7 +61,7 @@ endef
 ######################################################
 
 
-SRCS = diagnostics.cpp driver.cpp arg_parser.cpp logger.cpp part_two_syntax_check.cpp qsem.cpp syntax_tree_printer.cpp main.cpp
+SRCS = driver.cpp arg_parser.cpp part_two_syntax_check.cpp syntax_tree_printer.cpp main.cpp
 OBJDIR = bin
 TARG = mycc
 
@@ -73,36 +73,84 @@ LDFLAGS =
 #LDFLAGS = -L ./lib -lSyntax
 BFLAGS = -d
 
-SUBDIRS = symbols syntax binding  
+SUBDIRS = 
 
 OBJS = $(OBJDIR)/mycc.tab.o $(OBJDIR)/lexer.o
-OBJS += $(patsubst %.cpp,$(OBJDIR)/%.o,$(SRCS))
-DEPS = $(patsubst %.cpp,$(OBJDIR)/%.d,$(SRCS))
+DEPS = $(OBJDIR)/mycc.tab.d $(OBJDIR)/lexer.d
+LOGGING_DIR = logging
+LOGGING_SRC_NO_PATH = diagnostics.cpp logger.cpp 
+LOGGING_SRCS = $(addprefix $(LOGGING_DIR)/, $(LOGGING_SRC_NO_PATH))
+LOGGING_OBJS = $(patsubst %.cpp,$(OBJDIR)/%.o,$(LOGGING_SRC_NO_PATH))
 
 SYNTAX_DIR = syntax
-SYNTAX_IGNORE = 
-SYNTAX_SRC_ALL = $(wildcard $(SYNTAX_DIR)/*.cpp)
-SYNTAX_SRCS = $(filter-out $(SYNTAX_IGNORE),$(SYNTAX_SRC_ALL))
-SYNTAX_OBJS = $(patsubst $(SYNTAX_DIR)/%.cpp,$(OBJDIR)/%.o,$(SYNTAX_SRCS))
+SYNTAX_SRC_NO_PATH = syntax_node.cpp syntax_token.cpp expression_node.cpp variable_group_declaration_node.cpp while_statement_node.cpp unary_expression_node.cpp translation_unit_node.cpp ternary_expression_node.cpp struct_declaration_node.cpp return_statement_node.cpp partial_variable_declaration_node.cpp
+SYNTAX_SRC_NO_PATH += name_expression_node.cpp member_expression_node.cpp literal_val_expression_node.cpp index_expression_node.cpp increment_expression_node.cpp if_statement_node.cpp global_variable_group_declaration_node.cpp
+SYNTAX_SRC_NO_PATH += global_struct_declaration_node.cpp function_prototype_node.cpp function_definition_node.cpp function_declaration_node.cpp formal_parameter_node.cpp for_statement_node.cpp expression_statement_node.cpp do_while_statement_node.cpp
+SYNTAX_SRC_NO_PATH += decrement_expression_node.cpp continue_statement_node.cpp cast_expression_node.cpp call_expression_node.cpp break_statement_node.cpp block_statement_node.cpp binary_expression_node.cpp assignment_expression_node.cpp program_node.cpp
+SYNTAX_SRCS = $(addprefix $(SYNTAX_DIR)/, $(SYNTAX_SRC_NO_PATH))
+SYNTAX_OBJS = $(patsubst %.cpp,$(OBJDIR)/%.o,$(SYNTAX_SRC_NO_PATH))
 
 SYMBOLS_DIR = symbols
-SYMBOLS_IGNORE = $(SYMBOLS_DIR)/scoped_symbol_table.cpp
-SYMBOLS_SRC_ALL = $(wildcard $(SYMBOLS_DIR)/*.cpp)
-SYMBOLS_SRCS = $(filter-out $(SYMBOLS_IGNORE),$(SYMBOLS_SRC_ALL))
-SYMBOLS_OBJS = $(patsubst $(SYMBOLS_DIR)/%.cpp,$(OBJDIR)/%.o,$(SYMBOLS_SRCS))
+SYMBOLS_SRC_NO_PATH = symbol.cpp type_symbol.cpp variable_symbol.cpp parameter_symbol.cpp struct_symbol.cpp function_symbol.cpp
+SYMBOLS_SRCS = $(addprefix $(SYMBOLS_DIR)/, $(SYMBOLS_SRC_NO_PATH))
+SYMBOLS_OBJS = $(patsubst %.cpp,$(OBJDIR)/%.o,$(SYMBOLS_SRC_NO_PATH))
 
 BINDING_DIR = binding
-BINDING_IGNORE = $(BINDING_DIR)/bound_program.cpp
-BINDING_SRC_ALL = $(wildcard $(BINDING_DIR)/*.cpp)
-BINDING_SRCS = $(filter-out $(BINDING_IGNORE),$(BINDING_SRC_ALL))
-BINDING_OBJS = $(patsubst $(BINDING_DIR)/%.cpp,$(OBJDIR)/%.o,$(BINDING_SRCS))
+BINDING_SRC_NO_PATH = bound_error_expression_node.cpp bound_binary_expression_node.cpp bound_cast_expression_node.cpp
+BINDING_SRC_NO_PATH += bound_expression_statement_node.cpp bound_scope.cpp bound_block_statement_node.cpp
+BINDING_SRC_NO_PATH += bound_function_definition_node.cpp bound_global_statement_node.cpp bound_return_statement_node.cpp
+BINDING_SRC_NO_PATH += bound_variable_group_declaration_node.cpp bound_literal_val_expression_node.cpp bound_struct_declaration_node.cpp 
+BINDING_SRC_NO_PATH += bound_variable_reference_expression_node.cpp bound_member_access_expression_node.cpp bound_index_expression_node.cpp
+BINDING_SRC_NO_PATH += bound_assignment_expression_node.cpp bound_unary_expression_node.cpp bound_call_expression_node.cpp
+BINDING_SRC_NO_PATH += bound_ternary_expression_node.cpp bound_increment_expression_node.cpp bound_empty_statement_node.cpp
+BINDING_SRC_NO_PATH += bound_label_statement_node.cpp bound_if_statement_node.cpp bound_goto_statement_node.cpp bound_for_statement_node.cpp
+BINDING_SRC_NO_PATH += bound_do_while_statement_node.cpp bound_while_statement_node.cpp
+BINDING_SRC_NO_PATH += binder.cpp 
+BINDING_SRCS = $(addprefix  $(BINDING_DIR)/, $(BINDING_SRC_NO_PATH))
+BINDING_OBJS = $(patsubst %.cpp,$(OBJDIR)/%.o,$(BINDING_SRC_NO_PATH))
 
-CORE_PCH_FILE = pch.h
-CORE_PCH = $(CORE_PCH_FILE).gch
+ALL_SRC_FILES = $(SRCS) $(SYNTAX_SRCS) $(SYMBOLS_SRCS) $(BINDING_SRCS)
+
+OBJS += $(LOGGING_OBJS)
+DEPS += $(patsubst %.cpp,$(OBJDIR)/%.d,$(LOGGING_SRC_NO_PATH))
+OBJS += $(SYMBOLS_OBJS)
+DEPS += $(patsubst %.cpp,$(OBJDIR)/%.d,$(SYMBOLS_SRC_NO_PATH))
+OBJS += $(SYNTAX_OBJS)
+DEPS += $(patsubst %.cpp,$(OBJDIR)/%.d,$(SYNTAX_SRC_NO_PATH))
+OBJS += $(BINDING_OBJS)
+DEPS += $(patsubst %.cpp,$(OBJDIR)/%.d,$(BINDING_SRC_NO_PATH))
+OBJS += $(patsubst %.cpp,$(OBJDIR)/%.o,$(SRCS))
+DEPS += $(patsubst %.cpp,$(OBJDIR)/%.d,$(SRCS))
+
+
+###############################
+# DEPENDENCY LIST FOR CPP FILES
+###############################
+PART_TWO_SYNT_CHECK_DEPS_SRCS = program_node.cpp global_variable_group_declaration_node.cpp global_struct_declaration_node.cpp function_prototype_node.cpp
+PART_TWO_SYNT_CHECK_DEPS_SRCS += function_definition_node.cpp translation_unit_node.cpp syntax_node.cpp variable_group_declaration_node.cpp formal_parameter_node.cpp struct_declaration_node.cpp
+
+#PART_TWO_SYNT_CHECK_DEPS = $(patsubst %.cpp, $(OBJDIR)/%.o,$(PART_TWO_SYNT_CHECK_DEPS_SRCS))
+PART_TWO_SYNT_CHECK_DEPS = $(addprefix $(SYNTAX_DIR)/, $(PART_TWO_SYNT_CHECK_DEPS_SRCS))
+
+BINDER_DEPS_BIND_SRCS = bound_expression_statement_node.cpp bound_error_expression_node.cpp bound_scope.cpp bound_global_statement_node.cpp bound_function_definition_node.cpp bound_block_statement_node.cpp bound_return_statement_node.cpp bound_empty_statement_node.cpp
+BINDER_DEPS_BIND_SRCS += bound_label_statement_node.cpp bound_if_statement_node.cpp bound_goto_statement_node.cpp bound_for_statement_node.cpp bound_do_while_statement_node.cpp bound_while_statement_node.cpp bound_variable_group_declaration_node.cpp bound_literal_val_expression_node.cpp bound_index_expression_node.cpp
+BINDER_DEPS_BIND_SRCS += bound_struct_declaration_node.cpp bound_variable_reference_expression_node.cpp bound_member_access_expression_node.cpp bound_cast_expression_node.cpp bound_binary_expression_node.cpp bound_unary_expression_node.cpp bound_assignment_expression_node.cpp bound_call_expression_node.cpp bound_ternary_expression_node.cpp 
+BINDER_DEPS_BIND_SRCS += bound_increment_expression_node.cpp
+BINDER_DEPS_SRCS = $(addprefix $(BINDING_DIR)/, $(BINDER_DEPS_BIND_SRCS))
+BINDER_DEPS_SRCS_SYNT = expression_node.cpp expression_statement_node.cpp global_variable_group_declaration_node.cpp global_struct_declaration_node.cpp function_prototype_node.cpp function_definition_node.cpp formal_parameter_node.cpp cast_expression_node.cpp increment_expression_node.cpp decrement_expression_node.cpp
+BINDER_DEPS_SRCS_SYNT += block_statement_node.cpp return_statement_node.cpp break_statement_node.cpp continue_statement_node.cpp if_statement_node.cpp for_statement_node.cpp do_while_statement_node.cpp while_statement_node.cpp variable_group_declaration_node.cpp partial_variable_declaration_node.cpp
+BINDER_DEPS_SRCS_SYNT += literal_val_expression_node.cpp index_expression_node.cpp struct_declaration_node.cpp name_expression_node.cpp member_expression_node.cpp binary_expression_node.cpp unary_expression_node.cpp assignment_expression_node.cpp call_expression_node.cpp program_node.cpp ternary_expression_node.cpp
+BINDER_DEPS_SRCS += $(addprefix $(SYNTAX_DIR)/, $(BINDER_DEPS_SRCS_SYNT))
+BINDER_DEPS_SRCS_LOG += logger.cpp diagnostics.cpp
+BINDER_DEPS_SRCS += $(addprefix $(LOGGING_DIR)/, $(BINDER_DEPS_SRCS_LOG))
+
+#BINDER_DEPS = $(patsubst %.cpp, $(OBJDIR)/%.o, $(BINDER_DEPS_SRCS))
+
+
 
 all: nodoc docs
 
-nodoc: $(TARG) | $(SUBDIRS)
+nodoc: $(TARG)
 
 debug: export FLAGS += -g
 debug: BFLAGS += --debug
@@ -115,23 +163,30 @@ verbose: FLAGS += -v
 verbose: $(TARG)
 
 
-$(TARG): $(OBJS) $(SYMBOLS_OBJS) $(SYNTAX_OBJS) $(BINDING_OBJS)
+# $(TARG): $(OBJS) $(SYMBOLS_OBJS) $(SYNTAX_OBJS) $(BINDING_OBJS)
+# 	@$(call link_and_test,$(CXX) -fuse-ld=gold $^ -o $@ $(LDFLAGS))
+
+$(TARG): $(OBJS)
 	@$(call link_and_test,$(CXX) -fuse-ld=gold $^ -o $@ $(LDFLAGS))
 
-$(OBJS): | $(SUBDIRS)
 
+# $(SUBDIRS): 
+# 	@$(MAKE) -C $@ --no-print-directory
 
-$(SUBDIRS): 
-	@$(MAKE) -C $@ --no-print-directory
+# $(SYNTAX_DIR): | $(SYMBOLS_DIR) 
+# $(BINDING_DIR): | $(SYNTAX_DIR) logger.cpp diagnostics.cpp
 
-$(SYNTAX_DIR): | $(SYMBOLS_DIR) 
-$(BINDING_DIR): | $(SYNTAX_DIR) logger.cpp diagnostics.cpp
+$(OBJDIR)/%.o: $(LOGGING_DIR)/%.cpp 
+	@$(call run_and_test,$(CXX) $(FLAGS) -MMD -MF $(OBJDIR)/$*.d -c $< -o $@)
 
-diagnostics.cpp: | $(SYNTAX_DIR)
+$(OBJDIR)/%.o: $(SYMBOLS_DIR)/%.cpp 
+	@$(call run_and_test,$(CXX) $(FLAGS) -MMD -MF $(OBJDIR)/$*.d -c $< -o $@)
 
-# $(CORE_PCH): $(CORE_PCH_FILE)
-# 	@$(ECHOF) "${MODULE_STR_COLOR}Building precompiled header.${NO_COLOR}"
-# 	@$(call run_and_test,$(CXX) $(FLAGS) -o $@ $<)
+$(OBJDIR)/%.o: $(SYNTAX_DIR)/%.cpp 
+	@$(call run_and_test,$(CXX) $(FLAGS) -MMD -MF $(OBJDIR)/$*.d -c $< -o $@)
+
+$(OBJDIR)/%.o: $(BINDING_DIR)/%.cpp 
+	@$(call run_and_test,$(CXX) $(FLAGS) -MMD -MF $(OBJDIR)/$*.d -c $< -o $@)
 
 $(OBJDIR)/%.o: %.cpp 
 	@$(call run_and_test,$(CXX) $(FLAGS) -MMD -MF $(OBJDIR)/$*.d -c $< -o $@)
@@ -152,15 +207,9 @@ clean:
 	@rm -f location.hh
 	@rm -f vgcore.*
 
-cclean: clean
-	$(MAKE) -C syntax clean
-	$(MAKE) -C symbols clean
-	$(MAKE) -C binding clean
-
-destroy: cclean
-	@$(ECHO) Removing pdfs and pch
+destroy: clean
+	@$(ECHO) Removing pdf
 	@rm -f *.pdf
-	@rm -f $(CORE_PCH)
 
 # have to run pdflatex twice to get refs to work
 docs:
@@ -168,10 +217,13 @@ docs:
 	pdflatex developers.tex 
 
 #dependencies
-lexer.o: mycc.tab.hpp lexer.cpp
-mycc.tab.o: mycc.tab.hpp
+$(OBJDIR)/lexer.o: mycc.tab.hpp lexer.cpp
+$(OBJDIR)/mycc.tab.o: mycc.tab.hpp $(SYNTAX_SRCS)
+$(OBJDIR)/binder.o: $(BINDER_DEPS_SRCS) 
+$(OBJDIR)/diagnostics.o: $(SYNTAX_DIR)/syntax_token.cpp
+$(OBJDIR)/part_two_syntax_check.o: $(PART_TWO_SYNT_CHECK_DEPS)
 
 
-.PHONY: all $(SYMBOLS_OBJS) $(SYNTAX_OBJS) $(BINDING_OBJS) nodoc $(SUBDIRS) debug benchmark verbose clean cclean destroy docs
+.PHONY: all nodoc debug benchmark verbose clean cclean destroy docs
 
 -include $(DEPS)

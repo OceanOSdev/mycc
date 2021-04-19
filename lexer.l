@@ -4,7 +4,7 @@
 #include <string>
 #include "lexer.h"
 #include "driver.h"
-#include "logger.h"
+#include "logging/logger.h"
 #include "syntax/syntax_token.h"
 #include "mycc.tab.hpp" // bison generated tokens
 

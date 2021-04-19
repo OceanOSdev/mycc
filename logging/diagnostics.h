@@ -10,6 +10,7 @@ namespace Syntax {
     enum btokentype : int;
 }
 
+namespace Logging {
 struct Location {
     const int line_number;
     const std::string file_name;
@@ -80,5 +81,5 @@ public:
     void report_invalid_condition_for(Syntax::SyntaxToken* token, std::string type_id);
     void report_invalid_break_or_continue(Syntax::SyntaxToken* token, std::string text);
 };
-
+}
 #endif

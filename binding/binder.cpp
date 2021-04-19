@@ -38,8 +38,7 @@
 #include "bound_increment_expression_node.h"
 
 /* UTILITY INCLUDES */
-#include "../logger.h"
-#include "../diagnostics.h"
+#include "../logging/diagnostics.h"
 
 /* SYMBOL INCLUDES */
 #include "../symbols/type_symbol.h"
@@ -52,6 +51,7 @@
 /* SYNTAX TREE NODE INCLUDES */
 #include "../syntax/statement_node.h"
 #include "../syntax/syntax_kind.h"
+#include "../syntax/cast_expression_node.h"
 #include "../syntax/statement_node.h"
 #include "../syntax/expression_node.h"
 #include "../syntax/expression_statement_node.h"
@@ -78,6 +78,9 @@
 #include "../syntax/member_expression_node.h"
 #include "../syntax/binary_expression_node.h"
 #include "../syntax/unary_expression_node.h"
+#include "../syntax/ternary_expression_node.h"
+#include "../syntax/increment_expression_node.h"
+#include "../syntax/decrement_expression_node.h"
 #include "../syntax/assignment_expression_node.h"
 #include "../syntax/call_expression_node.h"
 #include "../syntax/program_node.h"
@@ -87,8 +90,125 @@
 
 namespace Binding {
 
-Binder::Binder(DiagnosticsList* diagnostics, BoundScope* parent) : 
-    m_diagnostics(diagnostics), m_err_flag(false), m_label_idx(0), m_scope(new BoundScope(parent)) {
+/*******************************************
+ *                                         *
+ *    PART THREE LOGGING STRUCTURES        *
+ *                                         *
+ *******************************************/
+
+// NOTE: This is pretty hacky, and slightly inconsistent 
+
+struct PartThreeVariableInfo {
+    PartThreeVariableInfo() {}
+    PartThreeVariableInfo(std::string _type, std::string _name, bool _init) :
+        var_type(_type), var_name(_name), initialized(_init) {}
+    std::string var_type;
+    std::string var_name;
+    bool initialized;
+};
+
+struct PartThreeStructInfo {
+    std::string struct_name;
+    std::vector<PartThreeVariableInfo*> struct_members;
+};
+
+struct PartThreeStatementInfo {
+    PartThreeStatementInfo() {}
+    PartThreeStatementInfo(int lineno, std::string _type) :
+    line_no(lineno), stmt_type(_type) {}
+    int line_no;
+    std::string stmt_type;
+};
+
+struct PartThreeFunctionInfo {
+    std::string func_name;
+    std::string func_type;
+
+    std::vector<PartThreeVariableInfo*> param_info;
+    std::vector<PartThreeStructInfo*> local_struct_info;
+    std::vector<PartThreeVariableInfo*> local_var_info;
+    std::vector<PartThreeStatementInfo*> stmt_info;
+};
+
+struct PartThreeInfoList {
+private:
+PartThreeFunctionInfo* m_func_builder;
+PartThreeStructInfo* m_struct_builder;
+void reset_func_builder() { m_func_builder = new PartThreeFunctionInfo();}
+void reset_struct_builder() { m_struct_builder = new PartThreeStructInfo();}
+public:
+    PartThreeInfoList() :
+    m_func_builder(new PartThreeFunctionInfo()),
+    m_struct_builder(new PartThreeStructInfo()) {}
+
+    std::vector<PartThreeVariableInfo*> global_var_info; 
+    std::vector<PartThreeStructInfo*> global_struct_info;
+    std::vector<PartThreeFunctionInfo*> func_info;
+
+    void add_var_info(std::string _type, std::string _name, bool init, bool global) {
+        PartThreeVariableInfo* var_info = new PartThreeVariableInfo(_type, _name, init);
+        if (global) {
+            global_var_info.push_back(var_info);
+        } else {
+            m_func_builder->local_var_info.push_back(var_info);
+        }
+    }
+
+    void struct_builder_add_name(std::string name) {
+        m_struct_builder->struct_name = name;
+    }
+
+    void struct_builder_add_member(std::string _type, std::string _name) {
+        PartThreeVariableInfo* var_info = new PartThreeVariableInfo(_type, _name, false);
+        m_struct_builder->struct_members.push_back(var_info);
+    }
+
+    void struct_builder_build(bool global) {
+        if (global)
+            global_struct_info.push_back(m_struct_builder);
+        else
+            m_func_builder->local_struct_info.push_back(m_struct_builder);
+        reset_struct_builder();
+    }
+
+    void func_builder_add_name(std::string name) {
+        m_func_builder->func_name = name;
+    }
+
+    void func_builder_add_type(std::string type) {
+        m_func_builder->func_type = type;
+    }
+
+    void func_builder_add_param(std::string _type, std::string _name) {
+        PartThreeVariableInfo* var_info = new PartThreeVariableInfo(_type, _name, false);
+        m_func_builder->param_info.push_back(var_info);
+    }
+
+    void func_builder_add_statement(int lineno, std::string stmt_type) {
+        PartThreeStatementInfo* stmt = new PartThreeStatementInfo(lineno, stmt_type);
+        m_func_builder->stmt_info.push_back(stmt);
+    }
+
+    void func_builder_build() {
+        func_info.push_back(m_func_builder);
+        reset_func_builder();
+    }
+};
+
+
+/*******************************************
+ *                                         *
+ *    CODE BINDING STRUCTURE/LOGIC         *
+ *                                         *
+ *******************************************/
+
+
+Binder::Binder(Logging::DiagnosticsList* diagnostics, BoundScope* parent) : 
+    m_diagnostics(diagnostics),
+    m_part_three_info_list(new PartThreeInfoList()), 
+    m_err_flag(false), 
+    m_label_idx(0), 
+    m_scope(new BoundScope(parent)) {
 
 }
 
@@ -115,7 +235,7 @@ Binder* Binder::bind_program(Syntax::ProgramNode* program) {
     // Create root scope directly since we aren't
     // *actually* supporting multiple input files
     BoundScope* scope = init_global_scope();
-    DiagnosticsList* diag = new DiagnosticsList();
+    Logging::DiagnosticsList* diag = new Logging::DiagnosticsList();
     auto binder = new Binder(diag, scope);
 
     // Again, since we only really support one input
@@ -141,7 +261,7 @@ std::vector<BoundGlobalDeclarationNode*> Binder::global_decls() const {
  * List of diagnostics describing any errors that may
  * have occured during binding.
  */
-DiagnosticsList* Binder::diagnostics() const {
+Logging::DiagnosticsList* Binder::diagnostics() const {
     return m_diagnostics;
 }
 
@@ -150,7 +270,7 @@ DiagnosticsList* Binder::diagnostics() const {
  * for part 3.
  */
 std::vector<std::string> Binder::part_three_info_list() const {
-    return m_part_three_info_list;
+    return std::vector<std::string>({"a"});//m_part_three_info_list;
 }
 
 /*
