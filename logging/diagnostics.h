@@ -80,6 +80,8 @@ public:
     void report_invalid_condition_do_while(Syntax::SyntaxToken* token, std::string type_id);
     void report_invalid_condition_for(Syntax::SyntaxToken* token, std::string type_id);
     void report_invalid_break_or_continue(Syntax::SyntaxToken* token, std::string text);
+    void report_cannot_increment_lval(Syntax::SyntaxToken* token, std::string type);
+    void report_cannot_decrement_lval(Syntax::SyntaxToken* token, std::string type);
 };
 }
 #endif

@@ -228,6 +228,19 @@ void DiagnosticsList::report_invalid_break_or_continue(Syntax::SyntaxToken* toke
     report(loc,message);
 }
 
+void DiagnosticsList::report_cannot_increment_lval(Syntax::SyntaxToken* token, std::string type) {
+    Location loc = from_syntax_token(token);
+    std::string message = "Cannot increment lvalue of type " + type;
+    report (loc,message);
+}
+
+void DiagnosticsList::report_cannot_decrement_lval(Syntax::SyntaxToken* token, std::string type) {
+    Location loc = from_syntax_token(token);
+    std::string message = "Cannot decrement lvalue of type " + type;
+    report (loc,message);
+}
+
+
 std::string DiagnosticsList::syntax_token_type_to_string(Syntax::token_type_t token_type) {
         switch(token_type) {
             case Syntax::token_type_t::PLUS:

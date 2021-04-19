@@ -1,19 +1,19 @@
 #include "bound_assignment_expression_node.h"
+#include "bound_variable_reference_expression_node.h"
 #include "../symbols/type_symbol.h"
-#include "../symbols/variable_symbol.h"
 
 namespace Binding {
 
-BoundAssignmentExpressionNode::BoundAssignmentExpressionNode(BoundAssignmentOpKind assignment_op_kind, Symbols::VariableSymbol* variable, BoundExpressionNode* expression) :
-    m_assignment_op_kind(assignment_op_kind), m_variable(variable), m_expression(expression) {}
+BoundAssignmentExpressionNode::BoundAssignmentExpressionNode(BoundAssignmentOpKind assignment_op_kind, BoundVariableReferenceExpressionNode* variable, BoundExpressionNode* expression) :
+    m_assignment_op_kind(assignment_op_kind), m_variable_reference(variable), m_expression(expression) {}
 
 
 BoundAssignmentOpKind BoundAssignmentExpressionNode::assignment_op_kind() const {
     return m_assignment_op_kind;
 }
 
-Symbols::VariableSymbol* BoundAssignmentExpressionNode::variable() const {
-    return m_variable;
+BoundVariableReferenceExpressionNode* BoundAssignmentExpressionNode::variable_reference() const {
+    return m_variable_reference;
 }
 
 BoundExpressionNode* BoundAssignmentExpressionNode::expression() const {
@@ -24,7 +24,7 @@ BoundExpressionNode* BoundAssignmentExpressionNode::expression() const {
  * The type that this expression evaluates to.
  */
 const Symbols::TypeSymbol* BoundAssignmentExpressionNode::type() const {
-    return m_expression->type();
+    return m_variable_reference->type();
 } 
 
 /*

@@ -28,6 +28,7 @@ private:
     const Symbols::TypeSymbol* m_type;
     static BoundUnaryOperatorNode* BindITypeOperator(BoundUnaryOpKind opKind, const Symbols::TypeSymbol* right);
     static BoundUnaryOperatorNode* BindNTypeOperator(BoundUnaryOpKind opKind, const Symbols::TypeSymbol* right);
+    static BoundUnaryOperatorNode* BindNTypeCompOperator(BoundUnaryOpKind opKind, const Symbols::TypeSymbol* right);
     BoundUnaryOperatorNode(BoundUnaryOpKind op, const Symbols::TypeSymbol* right_type, const Symbols::TypeSymbol* type);
 public:
     static BoundUnaryOperatorNode* Bind(Syntax::btokentype syntax_token_type, const Symbols::TypeSymbol* right);

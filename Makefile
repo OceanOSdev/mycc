@@ -61,7 +61,7 @@ endef
 ######################################################
 
 
-SRCS = driver.cpp arg_parser.cpp part_two_syntax_check.cpp syntax_tree_printer.cpp main.cpp
+SRCS = driver.cpp arg_parser.cpp qsem.cpp part_two_syntax_check.cpp syntax_tree_printer.cpp main.cpp
 OBJDIR = bin
 TARG = mycc
 
@@ -78,7 +78,7 @@ SUBDIRS =
 OBJS = $(OBJDIR)/mycc.tab.o $(OBJDIR)/lexer.o
 DEPS = $(OBJDIR)/mycc.tab.d $(OBJDIR)/lexer.d
 LOGGING_DIR = logging
-LOGGING_SRC_NO_PATH = diagnostics.cpp logger.cpp 
+LOGGING_SRC_NO_PATH = diagnostics.cpp logger.cpp part_three_info.cpp
 LOGGING_SRCS = $(addprefix $(LOGGING_DIR)/, $(LOGGING_SRC_NO_PATH))
 LOGGING_OBJS = $(patsubst %.cpp,$(OBJDIR)/%.o,$(LOGGING_SRC_NO_PATH))
 
@@ -141,7 +141,7 @@ BINDER_DEPS_SRCS_SYNT = expression_node.cpp expression_statement_node.cpp global
 BINDER_DEPS_SRCS_SYNT += block_statement_node.cpp return_statement_node.cpp break_statement_node.cpp continue_statement_node.cpp if_statement_node.cpp for_statement_node.cpp do_while_statement_node.cpp while_statement_node.cpp variable_group_declaration_node.cpp partial_variable_declaration_node.cpp
 BINDER_DEPS_SRCS_SYNT += literal_val_expression_node.cpp index_expression_node.cpp struct_declaration_node.cpp name_expression_node.cpp member_expression_node.cpp binary_expression_node.cpp unary_expression_node.cpp assignment_expression_node.cpp call_expression_node.cpp program_node.cpp ternary_expression_node.cpp
 BINDER_DEPS_SRCS += $(addprefix $(SYNTAX_DIR)/, $(BINDER_DEPS_SRCS_SYNT))
-BINDER_DEPS_SRCS_LOG += logger.cpp diagnostics.cpp
+BINDER_DEPS_SRCS_LOG += diagnostics.cpp part_three_info.cpp
 BINDER_DEPS_SRCS += $(addprefix $(LOGGING_DIR)/, $(BINDER_DEPS_SRCS_LOG))
 
 #BINDER_DEPS = $(patsubst %.cpp, $(OBJDIR)/%.o, $(BINDER_DEPS_SRCS))
@@ -222,6 +222,7 @@ $(OBJDIR)/mycc.tab.o: mycc.tab.hpp $(SYNTAX_SRCS)
 $(OBJDIR)/binder.o: $(BINDER_DEPS_SRCS) 
 $(OBJDIR)/diagnostics.o: $(SYNTAX_DIR)/syntax_token.cpp
 $(OBJDIR)/part_two_syntax_check.o: $(PART_TWO_SYNT_CHECK_DEPS)
+$(OBJDIR)/qsem.o: $(LOGGING_DIR)/part_three_info.cpp
 
 
 .PHONY: all nodoc debug benchmark verbose clean cclean destroy docs

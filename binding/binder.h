@@ -9,6 +9,7 @@
 
 namespace Logging {
     class DiagnosticsList;
+    struct PartThreeInfoList;
 }
 
 namespace Syntax {
@@ -72,7 +73,7 @@ struct PartThreeInfoList;
 class Binder {
 private:
     Logging::DiagnosticsList* m_diagnostics;
-    PartThreeInfoList* m_part_three_info_list;
+    Logging::PartThreeInfoList* m_part_three_info_list;
     //std::vector<std::string> m_part_three_info_list;
     std::vector<BoundGlobalDeclarationNode*> m_global_decls;
     bool m_err_flag;
@@ -149,10 +150,10 @@ public:
     Logging::DiagnosticsList* diagnostics() const;
 
     /*
-     * List of strings containing the info to output
+     * Custom containing the info to output
      * for part 3.
      */
-    std::vector<std::string> part_three_info_list() const;
+    Logging::PartThreeInfoList* part_three_info_list() const;
 
     /*
      * Bool flag which returns true if there was an error

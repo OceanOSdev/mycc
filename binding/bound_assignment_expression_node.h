@@ -4,10 +4,6 @@
 
 #include "bound_expression_node.h"
 
-namespace Symbols {
-    class VariableSymbol;
-}
-
 namespace Binding {
 
 enum BoundAssignmentOpKind : int {
@@ -18,17 +14,19 @@ enum BoundAssignmentOpKind : int {
     SLASH_ASSIGN
 };
 
+class BoundVariableReferenceExpressionNode;
+
 class BoundAssignmentExpressionNode : public BoundExpressionNode {
 private:
     BoundAssignmentOpKind m_assignment_op_kind;
-    Symbols::VariableSymbol* m_variable;
+    BoundVariableReferenceExpressionNode* m_variable_reference;
     BoundExpressionNode* m_expression;
 public:
-    BoundAssignmentExpressionNode(BoundAssignmentOpKind assignment_op_kind, Symbols::VariableSymbol* variable, BoundExpressionNode* expression);
+    BoundAssignmentExpressionNode(BoundAssignmentOpKind assignment_op_kind, BoundVariableReferenceExpressionNode* variable, BoundExpressionNode* expression);
 
     BoundAssignmentOpKind assignment_op_kind() const;
 
-    Symbols::VariableSymbol* variable() const;
+    BoundVariableReferenceExpressionNode* variable_reference() const;
 
     BoundExpressionNode* expression() const;
 

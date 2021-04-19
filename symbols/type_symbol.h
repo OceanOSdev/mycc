@@ -14,6 +14,7 @@ struct TypeAttribute {
     bool is_integer_type = false;
     bool is_numeric_type = false;
     bool is_array = false;
+    bool is_const = false;
     std::partial_ordering operator<=>(const TypeAttribute& other) const;
 };
 
@@ -40,6 +41,27 @@ public:
      * but with the array attribute true.
      */
     const TypeSymbol* as_array_type() const;
+
+    /*
+     * Returns a copy of the current type symbol
+     * but with the array attribute false.
+     * 
+     * Used mostly just for grabbing the type of an array
+     * item in a bound index expression
+     */
+    const TypeSymbol* as_array_element_type() const;
+
+    /*
+     * Returns a copy of the current type symbol
+     * but with the const attribute true.
+     */
+    const TypeSymbol* as_const_type() const;
+
+    /*
+     * Returns a copy of the current type symbol
+     * but with the const attribute false.
+     */
+    const TypeSymbol* as_mutable_type() const;
 
     std::partial_ordering operator<=>(const TypeSymbol& other) const;
 

@@ -16,13 +16,22 @@ BoundUnaryOperatorNode* BoundUnaryOperatorNode::BindNTypeOperator(BoundUnaryOpKi
         return nullptr;
     
     return new BoundUnaryOperatorNode(opKind,right,right);
+
+}
+BoundUnaryOperatorNode* BoundUnaryOperatorNode::BindNTypeCompOperator(BoundUnaryOpKind opKind, const Symbols::TypeSymbol* right) {
+    if (!right->attributes().is_numeric_type)
+        return nullptr;
+
+    const Symbols::TypeSymbol* ret_type = &Symbols::TypeSymbol::Char;
+
+    if (right->attributes().is_const) ret_type = ret_type->as_const_type();
+    return new BoundUnaryOperatorNode(opKind,right,ret_type);
 }
 
 BoundUnaryOperatorNode::BoundUnaryOperatorNode(BoundUnaryOpKind op, const Symbols::TypeSymbol* right_type, const Symbols::TypeSymbol* type) :
     m_op_kind(op), m_right_type(right_type), m_type(type) {}
 
 BoundUnaryOperatorNode* BoundUnaryOperatorNode::Bind(Syntax::btokentype syntax_token_type, const Symbols::TypeSymbol* right) {
-    BoundUnaryOpKind opKind;
 
     // array types technically might have the attributes numeric and integer
     // so we just make sure neither types are arrays here first
@@ -31,21 +40,16 @@ BoundUnaryOperatorNode* BoundUnaryOperatorNode::Bind(Syntax::btokentype syntax_t
     
     switch (syntax_token_type) {
         case Syntax::token_type_t::TILDE:
-            opKind = BoundUnaryOpKind::OnesComplement;
-            break;
+            return BindITypeOperator(BoundUnaryOpKind::OnesComplement, right);
         case Syntax::token_type_t::MINUS:
-            opKind = BoundUnaryOpKind::Negation;
-            break;
+            return BindNTypeOperator(BoundUnaryOpKind::Negation, right);
         case Syntax::token_type_t::BANG:
-            opKind = BoundUnaryOpKind::LogicalNegation;
-            break;
+            return BindNTypeCompOperator(BoundUnaryOpKind::LogicalNegation, right);
         default:
             return nullptr;
     }
 
-    if (opKind == BoundUnaryOpKind::OnesComplement)
-        return BindITypeOperator(opKind, right);
-    return BindNTypeOperator(opKind, right);
+    return nullptr;
 }
     
 /*

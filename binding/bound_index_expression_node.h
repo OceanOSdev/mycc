@@ -17,6 +17,11 @@ public:
     BoundExpressionNode* expression() const;
 
     /*
+     * The type that this expression evaluates to.
+     */
+    const Symbols::TypeSymbol* type() const override;
+
+    /*
      * An enum representing the kind of bound node this is
      */
     BoundNodeKind kind() const override;

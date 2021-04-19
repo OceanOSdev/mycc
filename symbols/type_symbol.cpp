@@ -47,6 +47,39 @@ const TypeSymbol* TypeSymbol::as_array_type() const {
 }
 
 /*
+ * Returns a copy of the current type symbol
+ * but with the array attribute false.
+ * 
+ * Used mostly just for grabbing the type of an array
+ * item in a bound index expression
+ */
+const TypeSymbol* TypeSymbol::as_array_element_type() const {
+        TypeAttribute attributes = m_attributes;
+        attributes.is_array = false;
+        return new TypeSymbol(name(), attributes);
+}
+
+/*
+ * Returns a copy of the current type symbol
+ * but with the const attribute true.
+ */
+const TypeSymbol* TypeSymbol::as_const_type() const {
+        TypeAttribute attributes = m_attributes;
+        attributes.is_const = true;
+        return new TypeSymbol(name(), attributes);
+}
+
+/*
+ * Returns a copy of the current type symbol
+ * but with the const attribute false.
+ */
+const TypeSymbol* TypeSymbol::as_mutable_type() const {
+        TypeAttribute attributes = m_attributes;
+        attributes.is_const = false;
+        return new TypeSymbol(name(), attributes);
+}
+
+/*
  * The type of symbol this is.
  */
 SymbolKind TypeSymbol::kind() const { return SymbolKind::TYPE; }
@@ -56,6 +89,7 @@ SymbolKind TypeSymbol::kind() const { return SymbolKind::TYPE; }
  */
 std::string TypeSymbol::str() const {
         std::string ret = "";
+        if (m_attributes.is_const) ret += "const ";
         if (m_attributes.is_struct) ret += "struct ";
         ret = ret + name();
         if (m_attributes.is_array) ret += "[]";
@@ -127,6 +161,9 @@ bool TypeSymbol::is_conditional_type(const TypeSymbol* type) {
  * whether the lhs type can be implicitly widened to the rhs type. 
  */
 bool TypeSymbol::are_types_equivalent(const TypeSymbol* lhs, const TypeSymbol* rhs) {
+        if (lhs->attributes().is_array && rhs->attributes().is_array) {
+                return lhs->name() == rhs->name();
+        }
         return std::is_lteq(*lhs <=> *rhs);
 }
 

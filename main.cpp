@@ -77,11 +77,11 @@ void runSemanticAnalyzer(parsed_args_t* pat) {
     if (runParser(pat, std::move(d))) {
         auto root = new Syntax::ProgramNode(nullptr, d.get_translation_units());
         auto binder = Binding::Binder::bind_program(root);
+        QuickSemanticAnalyzer::log_analysis(logger, binder->part_three_info_list());
         if (binder->err_flag())
             logger->log_diagnostics_list(binder->diagnostics());
         //auto root = new Syntax::ProgramNode(d.get_translation_units());
         //SyntaxTreePrinter::print_nodes(d.get_translation_units()[0]);
-        //QuickSemanticAnalyzer::analyze(root);
     } else {
         for (auto diagnostic : d.get_diagnostics())
             logger->log_err(diagnostic);

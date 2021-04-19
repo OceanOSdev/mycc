@@ -4,16 +4,16 @@
 namespace Binding {
 
 BoundLiteralValExpressionNode::BoundLiteralValExpressionNode(int value) :
-    m_value(value), m_type(&Symbols::TypeSymbol::Int) {}
+    m_value(value), m_type((&Symbols::TypeSymbol::Int)->as_const_type()) {}
 
 BoundLiteralValExpressionNode::BoundLiteralValExpressionNode(float value) :
-    m_value(value), m_type(&Symbols::TypeSymbol::Float) {}
+    m_value(value), m_type((&Symbols::TypeSymbol::Float)->as_const_type()) {}
 
 BoundLiteralValExpressionNode::BoundLiteralValExpressionNode(char value) :
-    m_value(value), m_type(&Symbols::TypeSymbol::Char) {}
+    m_value(value), m_type((&Symbols::TypeSymbol::Char)->as_const_type()) {}
 
 BoundLiteralValExpressionNode::BoundLiteralValExpressionNode(std::string value) :
-    m_value(value), m_type(&Symbols::TypeSymbol::String) {}
+    m_value(value), m_type((&Symbols::TypeSymbol::String)->as_const_type()) {}
 
 /*
  * The int value (if the type stored is an int).

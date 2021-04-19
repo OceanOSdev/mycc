@@ -31,7 +31,10 @@ BoundBinaryOperatorNode* BoundBinaryOperatorNode::BindNTypeCompOperator(BoundBin
     if (!left->attributes().is_numeric_type || !right->attributes().is_numeric_type)
         return nullptr;
     
-    return new BoundBinaryOperatorNode(opKind, left, right, &Symbols::TypeSymbol::Char);
+    const Symbols::TypeSymbol* type = &Symbols::TypeSymbol::Char;
+    if (left->attributes().is_const && right->attributes().is_const)
+        type = type->as_const_type();
+    return new BoundBinaryOperatorNode(opKind, left, right, type);
 }
 
 BoundBinaryOperatorNode* BoundBinaryOperatorNode::Bind(Syntax::btokentype syntax_token_type, const Symbols::TypeSymbol* left, const Symbols::TypeSymbol* right) {
@@ -41,6 +44,14 @@ BoundBinaryOperatorNode* BoundBinaryOperatorNode::Bind(Syntax::btokentype syntax
     // so we just make sure neither types are arrays here first
     if (left->attributes().is_array || right->attributes().is_array)
         return nullptr;
+
+    const Symbols::TypeSymbol* left_type = left;
+    const Symbols::TypeSymbol* right_type = right;
+
+    if (left->attributes().is_const ^ right->attributes().is_const) {
+        left_type = left->as_mutable_type();
+        right_type = right->as_mutable_type();
+    }
         
     switch (syntax_token_type) {
         case Syntax::token_type_t::MOD:
@@ -95,15 +106,15 @@ BoundBinaryOperatorNode* BoundBinaryOperatorNode::Bind(Syntax::btokentype syntax
     if (opKind == BoundBinaryOpKind::Modulo ||
         opKind == BoundBinaryOpKind::BitwiseAnd ||
         opKind == BoundBinaryOpKind::BitwiseOr)
-            return BindITypeOperator(opKind, left, right);
+            return BindITypeOperator(opKind, left_type, right_type);
     
     if (opKind == BoundBinaryOpKind::Addition ||
         opKind == BoundBinaryOpKind::Subtraction ||
         opKind == BoundBinaryOpKind::Multiplication ||
         opKind == BoundBinaryOpKind::Division) 
-            return BindNTypeOperator(opKind, left, right);
+            return BindNTypeOperator(opKind, left_type, right_type);
     
-    return BindNTypeCompOperator(opKind, left, right);
+    return BindNTypeCompOperator(opKind, left_type, right_type);
     
 }
     

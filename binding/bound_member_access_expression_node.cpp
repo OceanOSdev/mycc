@@ -3,14 +3,28 @@
 
 namespace Binding {
 
-BoundMemberAccessExpressionNode::BoundMemberAccessExpressionNode(Symbols::VariableSymbol* variable_reference, BoundVariableReferenceExpressionNode* encapsulating_variable_reference) :
-    BoundVariableReferenceExpressionNode(variable_reference), m_encapsulating_variable_reference(encapsulating_variable_reference) {}
+BoundMemberAccessExpressionNode::BoundMemberAccessExpressionNode(BoundVariableReferenceExpressionNode* encapsulated_variable_reference, BoundVariableReferenceExpressionNode* encapsulating_variable_reference) :
+    BoundVariableReferenceExpressionNode(encapsulated_variable_reference->variable_reference()),
+    m_encapsulated_variable_reference(encapsulated_variable_reference), 
+    m_encapsulating_variable_reference(encapsulating_variable_reference) {}
+
+
+BoundVariableReferenceExpressionNode* BoundMemberAccessExpressionNode::encapsulated_variable_reference() const {
+    return m_encapsulated_variable_reference;
+}
 
 /*
  * A pointer to a variable of the type that encapsulates this member.
  */
 BoundVariableReferenceExpressionNode* BoundMemberAccessExpressionNode::encapsulating_variable_reference() const {
     return m_encapsulating_variable_reference;
+}
+
+/*
+ * The type that this expression evaluates to.
+ */
+const Symbols::TypeSymbol* BoundMemberAccessExpressionNode::type() const {
+    return m_encapsulated_variable_reference->type();
 }
 
 /*

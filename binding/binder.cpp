@@ -39,6 +39,7 @@
 
 /* UTILITY INCLUDES */
 #include "../logging/diagnostics.h"
+#include "../logging/part_three_info.h"
 
 /* SYMBOL INCLUDES */
 #include "../symbols/type_symbol.h"
@@ -90,125 +91,13 @@
 
 namespace Binding {
 
-/*******************************************
- *                                         *
- *    PART THREE LOGGING STRUCTURES        *
- *                                         *
- *******************************************/
-
-// NOTE: This is pretty hacky, and slightly inconsistent 
-
-struct PartThreeVariableInfo {
-    PartThreeVariableInfo() {}
-    PartThreeVariableInfo(std::string _type, std::string _name, bool _init) :
-        var_type(_type), var_name(_name), initialized(_init) {}
-    std::string var_type;
-    std::string var_name;
-    bool initialized;
-};
-
-struct PartThreeStructInfo {
-    std::string struct_name;
-    std::vector<PartThreeVariableInfo*> struct_members;
-};
-
-struct PartThreeStatementInfo {
-    PartThreeStatementInfo() {}
-    PartThreeStatementInfo(int lineno, std::string _type) :
-    line_no(lineno), stmt_type(_type) {}
-    int line_no;
-    std::string stmt_type;
-};
-
-struct PartThreeFunctionInfo {
-    std::string func_name;
-    std::string func_type;
-
-    std::vector<PartThreeVariableInfo*> param_info;
-    std::vector<PartThreeStructInfo*> local_struct_info;
-    std::vector<PartThreeVariableInfo*> local_var_info;
-    std::vector<PartThreeStatementInfo*> stmt_info;
-};
-
-struct PartThreeInfoList {
-private:
-PartThreeFunctionInfo* m_func_builder;
-PartThreeStructInfo* m_struct_builder;
-void reset_func_builder() { m_func_builder = new PartThreeFunctionInfo();}
-void reset_struct_builder() { m_struct_builder = new PartThreeStructInfo();}
-public:
-    PartThreeInfoList() :
-    m_func_builder(new PartThreeFunctionInfo()),
-    m_struct_builder(new PartThreeStructInfo()) {}
-
-    std::vector<PartThreeVariableInfo*> global_var_info; 
-    std::vector<PartThreeStructInfo*> global_struct_info;
-    std::vector<PartThreeFunctionInfo*> func_info;
-
-    void add_var_info(std::string _type, std::string _name, bool init, bool global) {
-        PartThreeVariableInfo* var_info = new PartThreeVariableInfo(_type, _name, init);
-        if (global) {
-            global_var_info.push_back(var_info);
-        } else {
-            m_func_builder->local_var_info.push_back(var_info);
-        }
-    }
-
-    void struct_builder_add_name(std::string name) {
-        m_struct_builder->struct_name = name;
-    }
-
-    void struct_builder_add_member(std::string _type, std::string _name) {
-        PartThreeVariableInfo* var_info = new PartThreeVariableInfo(_type, _name, false);
-        m_struct_builder->struct_members.push_back(var_info);
-    }
-
-    void struct_builder_build(bool global) {
-        if (global)
-            global_struct_info.push_back(m_struct_builder);
-        else
-            m_func_builder->local_struct_info.push_back(m_struct_builder);
-        reset_struct_builder();
-    }
-
-    void func_builder_add_name(std::string name) {
-        m_func_builder->func_name = name;
-    }
-
-    void func_builder_add_type(std::string type) {
-        m_func_builder->func_type = type;
-    }
-
-    void func_builder_add_param(std::string _type, std::string _name) {
-        PartThreeVariableInfo* var_info = new PartThreeVariableInfo(_type, _name, false);
-        m_func_builder->param_info.push_back(var_info);
-    }
-
-    void func_builder_add_statement(int lineno, std::string stmt_type) {
-        PartThreeStatementInfo* stmt = new PartThreeStatementInfo(lineno, stmt_type);
-        m_func_builder->stmt_info.push_back(stmt);
-    }
-
-    void func_builder_build() {
-        func_info.push_back(m_func_builder);
-        reset_func_builder();
-    }
-};
-
-
-/*******************************************
- *                                         *
- *    CODE BINDING STRUCTURE/LOGIC         *
- *                                         *
- *******************************************/
-
-
 Binder::Binder(Logging::DiagnosticsList* diagnostics, BoundScope* parent) : 
     m_diagnostics(diagnostics),
-    m_part_three_info_list(new PartThreeInfoList()), 
+    m_part_three_info_list(new Logging::PartThreeInfoList()), 
     m_err_flag(false), 
     m_label_idx(0), 
-    m_scope(new BoundScope(parent)) {
+    m_scope(new BoundScope(parent)),
+    m_current_function(nullptr) {
 
 }
 
@@ -244,6 +133,7 @@ Binder* Binder::bind_program(Syntax::ProgramNode* program) {
     auto translationUnit = program->units()[0];
     for (auto dec : translationUnit->global_declarations()) {
         binder->bind_global_declaration(dec);
+        if (binder->err_flag()) break;
     }
 
 
@@ -266,11 +156,11 @@ Logging::DiagnosticsList* Binder::diagnostics() const {
 }
 
 /*
- * List of strings containing the info to output
+ * Custom struct containing the info to output
  * for part 3.
  */
-std::vector<std::string> Binder::part_three_info_list() const {
-    return std::vector<std::string>({"a"});//m_part_three_info_list;
+Logging::PartThreeInfoList* Binder::part_three_info_list() const {
+    return m_part_three_info_list;
 }
 
 /*
@@ -341,11 +231,17 @@ Symbols::FunctionSymbol* Binder::bind_function_declaration(Syntax::FunctionDecla
             return nullptr;
         }
 
+        const Symbols::TypeSymbol* parameter_type = param_type;
         bool is_array = parameter_syntax->is_array();
+        bool is_const = parameter_syntax->is_const();
+        if (is_array) parameter_type = parameter_type->as_array_type();
+        if (is_const) parameter_type = parameter_type->as_const_type();
         params.push_back(new Symbols::ParameterSymbol(parameter_syntax->param_name(), 
-                                                      is_array ? param_type->as_array_type() : param_type, 
+                                                      parameter_type, 
                                                       is_array, 
-                                                      parameter_syntax->is_const()));
+                                                      is_const));
+        
+        m_part_three_info_list->func_builder_add_param(params.back()->type()->str(), params.back()->name());
     }
 
     std::string func_type_id = declaration->type_identifier();
@@ -356,11 +252,16 @@ Symbols::FunctionSymbol* Binder::bind_function_declaration(Syntax::FunctionDecla
         return nullptr;
     }
 
+    m_part_three_info_list->func_builder_add_type(func_type->str());
+    m_part_three_info_list->func_builder_add_name(declaration->function_name());
+
     return new Symbols::FunctionSymbol(declaration->function_name(), func_type, params);
 }
 
 void Binder::bind_function_prototype(Syntax::FunctionPrototypeNode* prototype) {
+    m_part_three_info_list->ignore = true;
     auto symbol = bind_function_declaration(prototype->function_declaration());
+    m_part_three_info_list->ignore = false;
     if (!m_err_flag && !m_scope->try_declare_function(symbol)) {
         m_diagnostics->report_conflicting_function_declarations(prototype->token(), symbol->name());
         m_err_flag = true;
@@ -369,6 +270,7 @@ void Binder::bind_function_prototype(Syntax::FunctionPrototypeNode* prototype) {
 
 BoundFunctionDefinitionNode* Binder::bind_function_definition(Syntax::FunctionDefinitionNode* function_definition) {
     auto symbol = bind_function_declaration(function_definition->function_declaration());
+    if (m_err_flag) return nullptr;
     if (!m_scope->try_declare_function(symbol)) {
         m_diagnostics->report_conflicting_function_declarations(function_definition->token(), symbol->name());
         m_err_flag = true;
@@ -403,8 +305,9 @@ BoundFunctionDefinitionNode* Binder::bind_function_definition(Syntax::FunctionDe
     
     auto body_block_syntax = new Syntax::BlockStatementNode(nullptr, body_syntax);
     set_current_function_scope(symbol);
-    auto bound_body = bind_statement(body_block_syntax);
+    auto bound_body = bind_block_statement(body_block_syntax,false);
     set_current_function_scope(nullptr);
+    m_part_three_info_list->func_builder_build();
     return new BoundFunctionDefinitionNode(symbol, dynamic_cast<BoundBlockStatementNode*>(bound_body));
 }
 
@@ -507,6 +410,7 @@ BoundStatementNode* Binder::bind_do_while_statement(Syntax::DoWhileStatementNode
 BoundStatementNode* Binder::bind_expression_statement(Syntax::ExpressionStatementNode* expression_statement) {
     if (expression_statement->expression() == nullptr) return new BoundEmptyStatementNode();
     auto expression = bind_expression(expression_statement->expression(), true);
+    m_part_three_info_list->func_builder_add_statement(expression_statement->token()->begin_line(), expression->type()->str());
     return new BoundExpressionStatementNode(expression);
 }
 
@@ -548,12 +452,15 @@ BoundStatementNode* Binder::bind_for_statement(Syntax::ForStatementNode* for_sta
 
 BoundStatementNode* Binder::bind_struct_declaration(Syntax::StructDeclarationNode* struct_declaration) {
     std::string identifier = struct_declaration->struct_name();
+    m_part_three_info_list->struct_builder_add_name(identifier);
     // create new scope so that struct member names don't have conflicts with
     // current scope variable names
     m_scope = new BoundScope(m_scope);
     std::vector<BoundVariableGroupDeclarationNode*> bound_member_groups;
     for (auto var_group : struct_declaration->struct_members()) {
+        m_part_three_info_list->ignore = true;
         auto bound_group = bind_statement(var_group);
+        m_part_three_info_list->ignore = false;
         bound_member_groups.push_back(dynamic_cast<BoundVariableGroupDeclarationNode*>(bound_group));
     }
 
@@ -562,6 +469,7 @@ BoundStatementNode* Binder::bind_struct_declaration(Syntax::StructDeclarationNod
     std::vector<Symbols::VariableSymbol*> bound_members;
     for (auto member_group : bound_member_groups) {
         for (auto member_decl : member_group->variable_declarations()) {
+            m_part_three_info_list->struct_builder_add_member(member_decl->variable_symbol()->var_type()->str(), member_decl->variable_symbol()->name());
             bound_members.push_back(member_decl->variable_symbol());
         }
     }
@@ -573,8 +481,11 @@ BoundStatementNode* Binder::bind_struct_declaration(Syntax::StructDeclarationNod
     if (!decl_results) {
         m_diagnostics->report_struct_already_defined(struct_declaration->token(), identifier);
         m_err_flag = true;
+        m_part_three_info_list->struct_builder_build(true, true);
         return bind_error_statement();
     }
+    
+    m_part_three_info_list->struct_builder_build(m_current_function == nullptr);
     return new BoundStructDeclarationNode(struct_symbol);
 }
 
@@ -600,17 +511,26 @@ BoundStatementNode* Binder::bind_variable_group_declaration(Syntax::VariableGrou
         }
 
         bool is_array = partial_dec->is_array();
+        bool is_const = variable_group->is_const();
+        const Symbols::TypeSymbol* type = var_type;
+        if (is_array)
+            type = type->as_array_type();
+        if (is_const)
+            type = type->as_const_type();
+        
         auto variable_symbol = new Symbols::VariableSymbol(ident, 
-                                                            is_array ? var_type->as_array_type() : var_type,
+                                                            type,
                                                             is_array,
                                                             partial_dec->array_length(),
-                                                            variable_group->is_const());
+                                                            is_const);
         
         auto added_to_scope = m_scope->try_declare_variable(variable_symbol);
         if (!added_to_scope) {
             m_diagnostics->report_variable_already_declared(partial_dec->token(), variable_symbol->name(), m_current_function == nullptr);
             m_err_flag = true;
         }
+
+        m_part_three_info_list->add_var_info(variable_symbol->var_type()->str(), ident, partial_dec->is_assigned(), m_current_function == nullptr);
 
         bound_variables.push_back(new BoundVariableDeclarationNode(variable_symbol, initial_val));
     }
@@ -632,7 +552,7 @@ BoundStatementNode* Binder::bind_if_statement(Syntax::IfStatementNode* if_statem
 }
 
 BoundStatementNode* Binder::bind_return_statement(Syntax::ReturnStatementNode* return_statement) {
-    auto bound_expression = return_statement->is_empty_return() ? nullptr : bind_expression(return_statement->expression());
+    auto bound_expression = return_statement->is_empty_return() ? nullptr : bind_expression(return_statement->expression(), true);
 
     auto f_return_type = m_current_function->type();
 
@@ -758,13 +678,13 @@ BoundExpressionNode* Binder::bind_assignment_expression(Syntax::AssignmentExpres
         return bind_error_expression();
     }
 
-    if (!Symbols::TypeSymbol::are_types_equivalent(bound_expression->type(), variable->var_type())) {
+    if (!Symbols::TypeSymbol::are_types_equivalent(bound_expression->type(), lvar_ref->type())) {
         m_diagnostics->report_cannot_assign_type_mismatch(assignment_expression->token(), bound_expression->type()->str(), variable->var_type()->str());
         return bind_error_expression();
     }
 
-    if (bound_expression->type()->attributes().is_array && variable->var_type()->attributes().is_array) {
-        m_diagnostics->report_invalid_assignment_operator(assignment_expression->token(), variable->var_type()->str(), bound_expression->type()->str());
+    if (bound_expression->type()->attributes().is_array && lvar_ref->type()->attributes().is_array) {
+        m_diagnostics->report_invalid_assignment_operator(assignment_expression->token(), lvar_ref->type()->str(), bound_expression->type()->str());
         return bind_error_expression();
     }
 
@@ -797,14 +717,14 @@ BoundExpressionNode* Binder::bind_assignment_expression(Syntax::AssignmentExpres
     }
 
     if (rewrite) {
-        auto bound_bin_op = BoundBinaryOperatorNode::Bind(rewrite_op_kind, variable->var_type(), bound_expression->type());
+        auto bound_bin_op = BoundBinaryOperatorNode::Bind(rewrite_op_kind, lvar_ref->type(), bound_expression->type());
         if (bound_bin_op == nullptr) {
             m_diagnostics->report_invalid_assignment_operator(assignment_expression->token(), variable->var_type()->str(), bound_expression->type()->str());
             return bind_error_expression();
         }
     }
 
-    return new BoundAssignmentExpressionNode(assignment_op_kind, variable, bound_expression);
+    return new BoundAssignmentExpressionNode(assignment_op_kind, lvar_ref, bound_expression);
 }
 
 BoundExpressionNode* Binder::bind_binary_expression(Syntax::BinaryExpressionNode* binary_expression) {
@@ -825,17 +745,17 @@ BoundExpressionNode* Binder::bind_binary_expression(Syntax::BinaryExpressionNode
 }
 
 BoundExpressionNode* Binder::bind_call_expression(Syntax::CallExpressionNode* call_expression) {
-    Symbols::Symbol* symbol;
+    Symbols::FunctionSymbol* symbol;
     std::string identifier =  call_expression->name();
-    auto exists = m_scope->try_look_up_symbol(identifier, symbol);
+    auto exists = m_scope->try_look_up_function(identifier, symbol);
     if (!exists) {
         m_diagnostics->report_function_not_declared(call_expression->token(), identifier);
         return bind_error_expression();
     }
-    if (symbol->kind() != Symbols::SymbolKind::FUNCTION) {
-        m_diagnostics->report_identifier_is_not_a_function(call_expression->token(), identifier);
-        return bind_error_expression();
-    }
+    // if (symbol->kind() != Symbols::SymbolKind::FUNCTION) {
+    //     m_diagnostics->report_identifier_is_not_a_function(call_expression->token(), identifier);
+    //     return bind_error_expression();
+    // }
     
     auto function = dynamic_cast<Symbols::FunctionSymbol*>(symbol);
 
@@ -879,18 +799,30 @@ BoundExpressionNode* Binder::bind_cast_expression(Syntax::CastExpressionNode* ca
         return bind_error_expression();
     }
 
+    if (bound_expression->type()->attributes().is_const) {
+        type_symbol = type_symbol->as_const_type();
+    }
+
     return new BoundCastExpressionNode(type_symbol, bound_expression);
 }
 
 BoundExpressionNode* Binder::bind_decrement_expression(Syntax::DecrementExpressionNode* decrement_expression) {
     auto notation = decrement_expression->is_post() ? IDNotation::POSTFIX : IDNotation::PREFIX;
     auto bound_expr = bind_expression(decrement_expression->identifier_expression());
+    if (bound_expr->type()->attributes().is_const || bound_expr->type()->attributes().is_array) {
+        m_diagnostics->report_cannot_decrement_lval(decrement_expression->token(), bound_expr->type()->str());
+        return bind_error_expression();
+    }
     return new BoundDecrementExpressionNode(notation, bound_expr);
 }
 
 BoundExpressionNode* Binder::bind_increment_expression(Syntax::IncrementExpressionNode* increment_expression) {
     auto notation = increment_expression->is_post() ? IDNotation::POSTFIX : IDNotation::PREFIX;
     auto bound_expr = bind_expression(increment_expression->identifier_expression());
+    if (bound_expr->type()->attributes().is_const || bound_expr->type()->attributes().is_array) {
+        m_diagnostics->report_cannot_increment_lval(increment_expression->token(), bound_expr->type()->str());
+        return bind_error_expression();
+    }
     return new BoundIncrementExpressionNode(notation, bound_expr);
 }
 
@@ -950,15 +882,16 @@ BoundExpressionNode* Binder::bind_member_expression(Syntax::MemberExpressionNode
     auto encapsulating_variable_expression = bind_expression(member_expression->encapsulator());
     if (m_err_flag) return new BoundErrorExpressionNode();
     auto encapsulating_var_ref = dynamic_cast<BoundVariableReferenceExpressionNode*>(encapsulating_variable_expression);
-    auto encapsulating_var_ref_type = encapsulating_var_ref->type();
+    auto encap_type = encapsulating_var_ref->type();
+    //auto encapsulating_var_ref_type = encapsulating_var_ref->type();
 
     // check if encapsulating type is a struct
-    const Symbols::TypeSymbol* encap_type;
-    m_scope->try_look_up_type(encapsulating_var_ref_type->name(), encap_type);
+    //const Symbols::TypeSymbol* encap_type;
+    //m_scope->try_look_up_type(encapsulating_var_ref_type->name(), encap_type);
     
     // don't have to check if type exists since that would be caught when binding
     // the name expression of of 'encapsulating_variable_expression'
-    if (!encap_type->attributes().is_struct) {
+    if (!encap_type->attributes().is_struct || encap_type->attributes().is_array) {
         m_diagnostics->report_member_base_type_not_struct(member_expression->token(), encap_type->str());
         return bind_error_expression();
     }
@@ -974,7 +907,7 @@ BoundExpressionNode* Binder::bind_member_expression(Syntax::MemberExpressionNode
 
     auto bound_var_ref_expr = dynamic_cast<BoundVariableReferenceExpressionNode*>(bound_expression);
 
-    return new BoundMemberAccessExpressionNode(bound_var_ref_expr->variable_reference(), encapsulating_var_ref);
+    return new BoundMemberAccessExpressionNode(bound_var_ref_expr, encapsulating_var_ref);
 }
 
 BoundExpressionNode* Binder::bind_name_expression(Syntax::NameExpressionNode* name_expression) {

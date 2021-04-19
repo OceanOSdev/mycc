@@ -48,10 +48,12 @@ SymbolKind FunctionSymbol::kind() const { return SymbolKind::FUNCTION; }
 bool FunctionSymbol::operator==(const FunctionSymbol& other) {
     if (std::is_neq(*m_type <=> *other.m_type)) return false;
     if (m_name != other.m_name) return false;
-    if (m_params.size() != other.m_name.size()) return false;
+    if (m_params.size() != other.m_params.size()) return false;
     using vector_size_t = std::vector<Symbols::ParameterSymbol*>::size_type;
     for (vector_size_t i = 0; i < m_params.size(); i ++) {
-        if (std::is_neq(*m_params[i]->type() <=> *other.m_params[i]->type()))
+        auto type_one = *m_params[i]->type();
+        auto type_two = *other.m_params[i]->type();
+        if (std::is_neq(type_one <=> type_two))
             return false;
     }
     return true;
