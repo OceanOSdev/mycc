@@ -5,6 +5,7 @@
 #include <vector>
 #include <string>
 #include <stack>
+#include <tuple>
 
 class DiagnosticsList;
 
@@ -16,6 +17,12 @@ namespace Syntax {
     class ReturnStatementNode;
     class VariableGroupDeclarationNode;
     class StructDeclarationNode;
+    class BreakStatementNode;
+    class ContinueStatementNode;
+    class DoWhileStatementNode;
+    class ForStatementNode;
+    class IfStatementNode;
+    class WhileStatementNode;
     
     // Expression Syntax Forward Declarations
     class ExpressionNode;
@@ -53,6 +60,7 @@ class BoundExpressionNode;
 class BoundGlobalDeclarationNode;
 class BoundFunctionDefinitionNode;
 class BoundScope;
+class BoundLabel;
 
 class Binder {
 private:
@@ -60,9 +68,11 @@ private:
     std::vector<std::string> m_part_three_info_list;
     std::vector<BoundGlobalDeclarationNode*> m_global_decls;
     bool m_err_flag;
+    int m_label_idx; // label counter for loops and stuff
     BoundScope* m_scope;
     Symbols::FunctionSymbol* m_current_function; // set when binding methods in function body
     std::stack<Symbols::StructSymbol*> m_struct_scope; // for when binding name and index expressions of submembers, will be empty otherwise.
+    std::stack<std::tuple<BoundLabel*, BoundLabel*>> m_loop_stack; // for binding break and continue statements, we check if they are in a loop first
 
     static BoundScope* init_global_scope();
     void set_current_function_scope(Symbols::FunctionSymbol* function_symbol);
@@ -73,13 +83,20 @@ private:
     BoundFunctionDefinitionNode* bind_function_definition(Syntax::FunctionDefinitionNode* function_definition);
     
     /* statement bindings */
-    BoundStatementNode* bind_error_statement() const;
+    BoundStatementNode* bind_error_statement();
     BoundStatementNode* bind_statement(Syntax::StatementNode* statement);
     BoundStatementNode* bind_expression_statement(Syntax::ExpressionStatementNode* expression_statement);
     BoundStatementNode* bind_block_statement(Syntax::BlockStatementNode* block_statement, bool create_new_scope = true);
     BoundStatementNode* bind_variable_group_declaration(Syntax::VariableGroupDeclarationNode* variable_group);
     BoundStatementNode* bind_return_statement(Syntax::ReturnStatementNode* return_statement);
     BoundStatementNode* bind_struct_declaration(Syntax::StructDeclarationNode* struct_declaration);
+    BoundStatementNode* bind_break_statement(Syntax::BreakStatementNode* break_statement);
+    BoundStatementNode* bind_continue_statement(Syntax::ContinueStatementNode* continue_statement);
+    BoundStatementNode* bind_do_while_statement(Syntax::DoWhileStatementNode* do_while_statement);
+    BoundStatementNode* bind_for_statement(Syntax::ForStatementNode* for_statement);
+    BoundStatementNode* bind_if_statement(Syntax::IfStatementNode* if_statement);
+    BoundStatementNode* bind_while_statement(Syntax::WhileStatementNode* while_statement);
+    BoundStatementNode* bind_loop_body(Syntax::StatementNode* body, BoundLabel*& break_label, BoundLabel*& continue_label);
 
     /* expression bindings */
     BoundExpressionNode* bind_error_expression();

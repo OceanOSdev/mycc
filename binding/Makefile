@@ -33,7 +33,10 @@ SRCS += bound_function_definition_node.cpp bound_global_statement_node.cpp bound
 SRCS += bound_variable_group_declaration_node.cpp bound_literal_val_expression_node.cpp bound_struct_declaration_node.cpp 
 SRCS += bound_variable_reference_expression_node.cpp bound_member_access_expression_node.cpp bound_index_expression_node.cpp
 SRCS += bound_assignment_expression_node.cpp bound_unary_expression_node.cpp bound_call_expression_node.cpp
-SRCS += binder.cpp bound_ternary_expression_node.cpp bound_increment_expression_node.cpp
+SRCS += bound_ternary_expression_node.cpp bound_increment_expression_node.cpp bound_empty_statement_node.cpp
+SRCS += bound_label_statement_node.cpp bound_if_statement_node.cpp bound_goto_statement_node.cpp bound_for_statement_node.cpp
+SRCS += bound_do_while_statement_node.cpp bound_while_statement_node.cpp
+SRCS += binder.cpp
 OBJDIR = ../bin
 
 OBJS = $(patsubst %.cpp,$(OBJDIR)/%.o,$(SRCS))

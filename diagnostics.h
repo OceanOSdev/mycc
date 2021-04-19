@@ -43,6 +43,7 @@ private:
     void report(Location loc, std::string msg);
     Location from_syntax_token(Syntax::SyntaxToken* token);
     std::string syntax_token_type_to_string(Syntax::btokentype token_type);
+    void report_invalid_condition_type(Syntax::SyntaxToken* token, std::string statement_kind, std::string type_id);
 public:
     DiagnosticsList();
 
@@ -73,6 +74,11 @@ public:
     void report_incompatible_argument(Syntax::SyntaxToken* token, std::string identifier, std::string actual_type, std::string expected_type, int argument_number);
     void report_integer_type_required(Syntax::SyntaxToken* token, std::string actual_type);
     void report_incompatible_operand_types(Syntax::SyntaxToken* token, std::string left_type, std::string right_type);
+    void report_invalid_condition_if(Syntax::SyntaxToken* token, std::string type_id);
+    void report_invalid_condition_while(Syntax::SyntaxToken* token, std::string type_id);
+    void report_invalid_condition_do_while(Syntax::SyntaxToken* token, std::string type_id);
+    void report_invalid_condition_for(Syntax::SyntaxToken* token, std::string type_id);
+    void report_invalid_break_or_continue(Syntax::SyntaxToken* token, std::string text);
 };
 
 #endif

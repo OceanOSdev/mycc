@@ -198,6 +198,33 @@ void DiagnosticsList::report_incompatible_operand_types(Syntax::SyntaxToken* tok
     report(loc,message);
 }
 
+void DiagnosticsList::report_invalid_condition_if(Syntax::SyntaxToken* token, std::string type_id) {
+    report_invalid_condition_type(token, "if statement", type_id);
+}
+
+void DiagnosticsList::report_invalid_condition_while(Syntax::SyntaxToken* token, std::string type_id) {
+    report_invalid_condition_type(token, "while loop", type_id);
+}
+
+void DiagnosticsList::report_invalid_condition_do_while(Syntax::SyntaxToken* token, std::string type_id) {
+    report_invalid_condition_type(token, "do while loop", type_id);
+}
+
+void DiagnosticsList::report_invalid_condition_for(Syntax::SyntaxToken* token, std::string type_id) {
+    report_invalid_condition_type(token, "for loop", type_id);
+}
+
+void DiagnosticsList::report_invalid_condition_type(Syntax::SyntaxToken* token, std::string statement_kind, std::string type_id) {
+    Location loc = from_syntax_token(token);
+    std::string message = "Condition of " + statement_kind + " has invalid type: " + type_id;
+    report(loc,message);
+}
+
+void DiagnosticsList::report_invalid_break_or_continue(Syntax::SyntaxToken* token, std::string text) {
+    Location loc = from_syntax_token(token);
+    std::string message = "Can only use '" + text + "' inside of a loop";
+    report(loc,message);
+}
 
 std::string DiagnosticsList::syntax_token_type_to_string(Syntax::token_type_t token_type) {
         switch(token_type) {

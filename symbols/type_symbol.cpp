@@ -110,6 +110,16 @@ const TypeSymbol* TypeSymbol::get_wider_type(const TypeSymbol* lhs, const TypeSy
 }
 
 /*
+ * Whether the given type can be used as a conditional type in
+ * an if statement, for loop, while loop, do while, or ternary
+ * expression.
+ */
+bool TypeSymbol::is_conditional_type(const TypeSymbol* type) {
+        if (type == nullptr) return false;
+        return type->attributes().is_numeric_type && !type->attributes().is_array;
+}
+
+/*
  * Determines whether the lhs type is the same as the rhs type
  * 
  * OR

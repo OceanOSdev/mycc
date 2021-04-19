@@ -79,6 +79,12 @@ public:
      */
     static bool are_types_equivalent(const TypeSymbol* lhs, const TypeSymbol* rhs);
     static bool is_error_type(const TypeSymbol* type);
+    /*
+     * Whether the given type can be used as a conditional type in
+     * an if statement, for loop, while loop, do while, or ternary
+     * expression.
+     */
+    static bool is_conditional_type(const TypeSymbol* type);
     static bool can_be_explicitly_casted(const TypeSymbol* from, const TypeSymbol* to);
 };
 

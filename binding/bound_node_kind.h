@@ -27,6 +27,13 @@ enum BoundNodeKind {
     VariableDeclaration,
     VariableGroupDeclaration,
     StructDeclaration,
+    EmptyStatement,
+    LabelStatement,
+    IfStatement,
+    GotoStatement,
+    ForStatement,
+    WhileStatement,
+    DoWhileStatement,
 
     // Globals
     GlobalStatement,

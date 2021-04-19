@@ -16,6 +16,13 @@
 #include "bound_function_definition_node.h"
 #include "bound_block_statement_node.h"
 #include "bound_return_statement_node.h"
+#include "bound_empty_statement_node.h"
+#include "bound_label_statement_node.h"
+#include "bound_if_statement_node.h"
+#include "bound_goto_statement_node.h"
+#include "bound_for_statement_node.h"
+#include "bound_do_while_statement_node.h"
+#include "bound_while_statement_node.h"
 #include "bound_variable_group_declaration_node.h"
 #include "bound_literal_val_expression_node.h"
 #include "bound_index_expression_node.h"
@@ -56,6 +63,12 @@
 #include "../syntax/formal_parameter_node.h"
 #include "../syntax/block_statement_node.h"
 #include "../syntax/return_statement_node.h"
+#include "../syntax/break_statement_node.h"
+#include "../syntax/continue_statement_node.h"
+#include "../syntax/if_statement_node.h"
+#include "../syntax/for_statement_node.h"
+#include "../syntax/do_while_statement_node.h"
+#include "../syntax/while_statement_node.h"
 #include "../syntax/variable_group_declaration_node.h"
 #include "../syntax/partial_variable_declaration_node.h"
 #include "../syntax/literal_val_expression_node.h"
@@ -69,11 +82,13 @@
 #include "../syntax/call_expression_node.h"
 #include "../syntax/program_node.h"
 
+#define BREAK_LABEL 0
+#define CONTINUE_LABEL 1
 
 namespace Binding {
 
 Binder::Binder(DiagnosticsList* diagnostics, BoundScope* parent) : 
-    m_diagnostics(diagnostics), m_err_flag(false), m_scope(new BoundScope(parent)) {
+    m_diagnostics(diagnostics), m_err_flag(false), m_label_idx(0), m_scope(new BoundScope(parent)) {
 
 }
 
@@ -273,8 +288,8 @@ BoundFunctionDefinitionNode* Binder::bind_function_definition(Syntax::FunctionDe
     return new BoundFunctionDefinitionNode(symbol, dynamic_cast<BoundBlockStatementNode*>(bound_body));
 }
 
-BoundStatementNode* Binder::bind_error_statement() const {
-    return new BoundExpressionStatementNode(new BoundErrorExpressionNode());
+BoundStatementNode* Binder::bind_error_statement() {
+    return new BoundExpressionStatementNode(bind_error_expression());
 }
 
 BoundExpressionNode* Binder::bind_error_expression() {
@@ -289,15 +304,15 @@ BoundStatementNode* Binder::bind_statement(Syntax::StatementNode* statement) {
         case Syntax::SyntaxKind::BlockStatement: 
             return bind_block_statement(dynamic_cast<Syntax::BlockStatementNode*>(statement));
         case Syntax::SyntaxKind::BreakStatement: 
-            break;
+            return bind_break_statement(dynamic_cast<Syntax::BreakStatementNode*>(statement));
         case Syntax::SyntaxKind::ContinueStatement: 
-            break;
+            return bind_continue_statement(dynamic_cast<Syntax::ContinueStatementNode*>(statement));
         case Syntax::SyntaxKind::DoWhileStatement: 
-            break;
+            return bind_do_while_statement(dynamic_cast<Syntax::DoWhileStatementNode*>(statement));
         case Syntax::SyntaxKind::ExpressionStatement:
             return bind_expression_statement(dynamic_cast<Syntax::ExpressionStatementNode*>(statement)); 
         case Syntax::SyntaxKind::ForStatement: 
-            break;
+            return bind_for_statement(dynamic_cast<Syntax::ForStatementNode*>(statement));
         case Syntax::SyntaxKind::StructDeclaration: 
             return bind_struct_declaration(dynamic_cast<Syntax::StructDeclarationNode*>(statement));
         case Syntax::SyntaxKind::VariableDeclaration: 
@@ -305,11 +320,11 @@ BoundStatementNode* Binder::bind_statement(Syntax::StatementNode* statement) {
                 dynamic_cast<Syntax::VariableGroupDeclarationNode*>(statement)
             );
         case Syntax::SyntaxKind::IfStatement: 
-            break;
+            return bind_if_statement(dynamic_cast<Syntax::IfStatementNode*>(statement));
         case Syntax::SyntaxKind::ReturnStatement: 
             return bind_return_statement(dynamic_cast<Syntax::ReturnStatementNode*>(statement));
         case Syntax::SyntaxKind::WhileStatement: 
-            break;
+            return bind_while_statement(dynamic_cast<Syntax::WhileStatementNode*>(statement));
         default:
             throw std::runtime_error("Unexpected syntax while binding statement.");
     }
@@ -333,9 +348,82 @@ BoundStatementNode* Binder::bind_block_statement(Syntax::BlockStatementNode* blo
     return new BoundBlockStatementNode(bound_statements);
 }
 
+BoundStatementNode* Binder::bind_break_statement(Syntax::BreakStatementNode* break_statement) {
+    if (m_loop_stack.empty()) {
+        m_diagnostics->report_invalid_break_or_continue(break_statement->token(), "break");
+        return bind_error_statement();
+    }
+
+    auto label = std::get<BREAK_LABEL>(m_loop_stack.top());
+    return new BoundGotoStatementNode(label);
+}
+
+BoundStatementNode* Binder::bind_continue_statement(Syntax::ContinueStatementNode* continue_statement) {
+    if (m_loop_stack.empty()) {
+        m_diagnostics->report_invalid_break_or_continue(continue_statement->token(), "continue");
+        return bind_error_statement();
+    }
+
+    auto label = std::get<CONTINUE_LABEL>(m_loop_stack.top());
+    return new BoundGotoStatementNode(label);
+}
+
+BoundStatementNode* Binder::bind_do_while_statement(Syntax::DoWhileStatementNode* do_while_statement) {
+    BoundExpressionNode* bound_condition_expression = bind_expression(do_while_statement->conditional_expression());
+    if (Symbols::TypeSymbol::is_error_type(bound_condition_expression->type()))
+        return bind_error_statement();
+    
+    if (!Symbols::TypeSymbol::is_conditional_type(bound_condition_expression->type())) {
+        m_diagnostics->report_invalid_condition_do_while(do_while_statement->token(), bound_condition_expression->type()->str());
+        return bind_error_statement();
+    }
+
+    BoundLabel* break_lbl;
+    BoundLabel* continue_lbl;
+    auto bound_body = bind_loop_body(do_while_statement->body_statement(), break_lbl, continue_lbl);
+    return new BoundDoWhileStatementNode(bound_condition_expression, bound_body, break_lbl, continue_lbl);
+}
+
 BoundStatementNode* Binder::bind_expression_statement(Syntax::ExpressionStatementNode* expression_statement) {
+    if (expression_statement->expression() == nullptr) return new BoundEmptyStatementNode();
     auto expression = bind_expression(expression_statement->expression(), true);
     return new BoundExpressionStatementNode(expression);
+}
+
+BoundStatementNode* Binder::bind_for_statement(Syntax::ForStatementNode* for_statement) {
+    BoundExpressionNode* bound_initial_expression = nullptr;
+    BoundExpressionNode* bound_condition_expression = nullptr;
+    BoundExpressionNode* bound_third_expression = nullptr;
+
+    bool err_type_flag = false;
+
+    if (for_statement->has_initial_expression()) {
+        bound_initial_expression = bind_expression(for_statement->initial_expression());
+        err_type_flag |= Symbols::TypeSymbol::is_error_type(bound_initial_expression->type());
+    }
+    
+    if (for_statement->has_conditional_expression()) {
+        bound_condition_expression = bind_expression(for_statement->conditional_expression());
+        err_type_flag |= Symbols::TypeSymbol::is_error_type(bound_condition_expression->type());
+    }
+    
+    if (for_statement->has_third_expression()) {
+        bound_third_expression = bind_expression(for_statement->third_expression());
+        err_type_flag |= Symbols::TypeSymbol::is_error_type(bound_third_expression->type());
+    }
+    
+    if (bound_condition_expression != nullptr && !Symbols::TypeSymbol::is_conditional_type(bound_condition_expression->type())) {
+        m_diagnostics->report_invalid_condition_for(for_statement->token(), bound_condition_expression->type()->str());
+        err_type_flag = true;
+    }
+
+    if (err_type_flag)
+        return bind_error_statement();
+
+    BoundLabel* break_lbl;
+    BoundLabel* continue_lbl;
+    auto bound_body = bind_loop_body(for_statement->body_statement(), break_lbl, continue_lbl);
+    return new BoundForStatementNode(bound_initial_expression, bound_condition_expression, bound_third_expression, bound_body, break_lbl, continue_lbl);
 }
 
 BoundStatementNode* Binder::bind_struct_declaration(Syntax::StructDeclarationNode* struct_declaration) {
@@ -410,6 +498,19 @@ BoundStatementNode* Binder::bind_variable_group_declaration(Syntax::VariableGrou
     return new BoundVariableGroupDeclarationNode(bound_variables);
 }
 
+BoundStatementNode* Binder::bind_if_statement(Syntax::IfStatementNode* if_statement) {
+    auto bound_condition = bind_expression(if_statement->condition());
+    if (!Symbols::TypeSymbol::is_conditional_type(bound_condition->type())) {
+        m_diagnostics->report_invalid_condition_if(if_statement->token(), bound_condition->type()->str());
+        return bind_error_statement();
+    }
+
+    auto bound_statement = bind_statement(if_statement->then_statement());
+    auto bound_else_stmt = if_statement->has_else_statement() ? bind_statement(if_statement->else_statement()) : nullptr;
+
+    return new BoundIfStatementNode(bound_condition, bound_statement, bound_else_stmt);
+}
+
 BoundStatementNode* Binder::bind_return_statement(Syntax::ReturnStatementNode* return_statement) {
     auto bound_expression = return_statement->is_empty_return() ? nullptr : bind_expression(return_statement->expression());
 
@@ -434,6 +535,41 @@ BoundStatementNode* Binder::bind_return_statement(Syntax::ReturnStatementNode* r
 
     return new BoundReturnStatementNode(bound_expression);
 }
+
+BoundStatementNode* Binder::bind_while_statement(Syntax::WhileStatementNode* while_statement) {
+    BoundExpressionNode* bound_condition_expression = bind_expression(while_statement->conditional_expression());
+    if (Symbols::TypeSymbol::is_error_type(bound_condition_expression->type()))
+        return bind_error_statement();
+    
+    if (!Symbols::TypeSymbol::is_conditional_type(bound_condition_expression->type())) {
+        m_diagnostics->report_invalid_condition_while(while_statement->token(), bound_condition_expression->type()->str());
+        return bind_error_statement();
+    }
+
+    BoundLabel* break_lbl;
+    BoundLabel* continue_lbl;
+    auto bound_body = bind_loop_body(while_statement->body_statement(), break_lbl, continue_lbl);
+    return new BoundWhileStatementNode(bound_condition_expression, bound_body, break_lbl, continue_lbl);
+}
+
+BoundStatementNode* Binder::bind_loop_body(Syntax::StatementNode* body, BoundLabel*& break_label, BoundLabel*& continue_label) {
+    m_label_idx++;
+    std::string label_idx_str = std::to_string(m_label_idx);
+    // label text is prefixed with "b_" to signal that the label was
+    // generated by the binder. The only purpose that serves at the 
+    // moment is to potentially help me debug during codegen.
+    std::string break_label_text = "b_break_label_" + label_idx_str;
+    std::string continue_label_text = "b_continue_label_" + label_idx_str;
+    break_label = new BoundLabel(break_label_text);
+    continue_label = new BoundLabel(continue_label_text);
+    
+    m_loop_stack.push(std::make_tuple(break_label, continue_label));
+    auto bound_statement = bind_statement(body);
+    m_loop_stack.pop();
+
+    return bound_statement;
+}
+
 
 BoundExpressionNode* Binder::bind_expression(Syntax::ExpressionNode* expression, bool canBeVoid) {
     if (m_err_flag) return new BoundErrorExpressionNode();
@@ -747,7 +883,7 @@ BoundExpressionNode* Binder::bind_name_expression(Syntax::NameExpressionNode* na
 
 BoundExpressionNode* Binder::bind_ternary_expression(Syntax::TernaryExpressionNode* ternary_expression) {
     auto bound_conditional = bind_expression(ternary_expression->conditional_expression());
-    if (!bound_conditional->type()->attributes().is_integer_type || bound_conditional->type()->attributes().is_array) {
+    if (!Symbols::TypeSymbol::is_conditional_type(bound_conditional->type())) {
         m_diagnostics->report_integer_type_required(ternary_expression->token(), bound_conditional->type()->str());
         return bind_error_expression();
     }
