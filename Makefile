@@ -70,7 +70,6 @@ export ECHO = echo
 export CXX = g++
 export FLAGS = -std=c++20 -Werror -Wall -Wextra -Wstrict-aliasing -pedantic -Wunreachable-code
 LDFLAGS = 
-#LDFLAGS = -L ./lib -lSyntax
 BFLAGS = -d
 
 SUBDIRS = 
@@ -83,10 +82,15 @@ LOGGING_SRCS = $(addprefix $(LOGGING_DIR)/, $(LOGGING_SRC_NO_PATH))
 LOGGING_OBJS = $(patsubst %.cpp,$(OBJDIR)/%.o,$(LOGGING_SRC_NO_PATH))
 
 SYNTAX_DIR = syntax
-SYNTAX_SRC_NO_PATH = syntax_node.cpp syntax_token.cpp expression_node.cpp variable_group_declaration_node.cpp while_statement_node.cpp unary_expression_node.cpp translation_unit_node.cpp ternary_expression_node.cpp struct_declaration_node.cpp return_statement_node.cpp partial_variable_declaration_node.cpp
-SYNTAX_SRC_NO_PATH += name_expression_node.cpp member_expression_node.cpp literal_val_expression_node.cpp index_expression_node.cpp increment_expression_node.cpp if_statement_node.cpp global_variable_group_declaration_node.cpp
-SYNTAX_SRC_NO_PATH += global_struct_declaration_node.cpp function_prototype_node.cpp function_definition_node.cpp function_declaration_node.cpp formal_parameter_node.cpp for_statement_node.cpp expression_statement_node.cpp do_while_statement_node.cpp
-SYNTAX_SRC_NO_PATH += decrement_expression_node.cpp continue_statement_node.cpp cast_expression_node.cpp call_expression_node.cpp break_statement_node.cpp block_statement_node.cpp binary_expression_node.cpp assignment_expression_node.cpp program_node.cpp
+SYNTAX_SRC_NO_PATH = syntax_node.cpp syntax_token.cpp expression_node.cpp variable_group_declaration_node.cpp while_statement_node.cpp 
+SYNTAX_SRC_NO_PATH += unary_expression_node.cpp translation_unit_node.cpp ternary_expression_node.cpp struct_declaration_node.cpp
+SYNTAX_SRC_NO_PATH += return_statement_node.cpp partial_variable_declaration_node.cpp name_expression_node.cpp member_expression_node.cpp 
+SYNTAX_SRC_NO_PATH += literal_val_expression_node.cpp index_expression_node.cpp increment_expression_node.cpp if_statement_node.cpp 
+SYNTAX_SRC_NO_PATH += global_variable_group_declaration_node.cpp global_struct_declaration_node.cpp function_prototype_node.cpp 
+SYNTAX_SRC_NO_PATH += function_definition_node.cpp function_declaration_node.cpp formal_parameter_node.cpp for_statement_node.cpp
+SYNTAX_SRC_NO_PATH += expression_statement_node.cpp do_while_statement_node.cpp decrement_expression_node.cpp continue_statement_node.cpp
+SYNTAX_SRC_NO_PATH += cast_expression_node.cpp call_expression_node.cpp break_statement_node.cpp block_statement_node.cpp 
+SYNTAX_SRC_NO_PATH += binary_expression_node.cpp assignment_expression_node.cpp program_node.cpp
 SYNTAX_SRCS = $(addprefix $(SYNTAX_DIR)/, $(SYNTAX_SRC_NO_PATH))
 SYNTAX_OBJS = $(patsubst %.cpp,$(OBJDIR)/%.o,$(SYNTAX_SRC_NO_PATH))
 
@@ -126,25 +130,34 @@ DEPS += $(patsubst %.cpp,$(OBJDIR)/%.d,$(SRCS))
 ###############################
 # DEPENDENCY LIST FOR CPP FILES
 ###############################
-PART_TWO_SYNT_CHECK_DEPS_SRCS = program_node.cpp global_variable_group_declaration_node.cpp global_struct_declaration_node.cpp function_prototype_node.cpp
-PART_TWO_SYNT_CHECK_DEPS_SRCS += function_definition_node.cpp translation_unit_node.cpp syntax_node.cpp variable_group_declaration_node.cpp formal_parameter_node.cpp struct_declaration_node.cpp
+PART_TWO_SYNT_CHECK_DEPS_SRCS = program_node.cpp global_variable_group_declaration_node.cpp global_struct_declaration_node.cpp 
+PART_TWO_SYNT_CHECK_DEPS_SRCS += function_prototype_node.cpp function_definition_node.cpp translation_unit_node.cpp syntax_node.cpp
+PART_TWO_SYNT_CHECK_DEPS_SRCS += variable_group_declaration_node.cpp formal_parameter_node.cpp struct_declaration_node.cpp
 
-#PART_TWO_SYNT_CHECK_DEPS = $(patsubst %.cpp, $(OBJDIR)/%.o,$(PART_TWO_SYNT_CHECK_DEPS_SRCS))
 PART_TWO_SYNT_CHECK_DEPS = $(addprefix $(SYNTAX_DIR)/, $(PART_TWO_SYNT_CHECK_DEPS_SRCS))
 
-BINDER_DEPS_BIND_SRCS = bound_expression_statement_node.cpp bound_error_expression_node.cpp bound_scope.cpp bound_global_statement_node.cpp bound_function_definition_node.cpp bound_block_statement_node.cpp bound_return_statement_node.cpp bound_empty_statement_node.cpp
-BINDER_DEPS_BIND_SRCS += bound_label_statement_node.cpp bound_if_statement_node.cpp bound_goto_statement_node.cpp bound_for_statement_node.cpp bound_do_while_statement_node.cpp bound_while_statement_node.cpp bound_variable_group_declaration_node.cpp bound_literal_val_expression_node.cpp bound_index_expression_node.cpp
-BINDER_DEPS_BIND_SRCS += bound_struct_declaration_node.cpp bound_variable_reference_expression_node.cpp bound_member_access_expression_node.cpp bound_cast_expression_node.cpp bound_binary_expression_node.cpp bound_unary_expression_node.cpp bound_assignment_expression_node.cpp bound_call_expression_node.cpp bound_ternary_expression_node.cpp 
-BINDER_DEPS_BIND_SRCS += bound_increment_expression_node.cpp
+BINDER_DEPS_BIND_SRCS = bound_expression_statement_node.cpp bound_error_expression_node.cpp bound_scope.cpp bound_global_statement_node.cpp 
+BINDER_DEPS_BIND_SRCS += bound_function_definition_node.cpp bound_block_statement_node.cpp bound_return_statement_node.cpp bound_empty_statement_node.cpp
+BINDER_DEPS_BIND_SRCS += bound_label_statement_node.cpp bound_if_statement_node.cpp bound_goto_statement_node.cpp bound_for_statement_node.cpp 
+BINDER_DEPS_BIND_SRCS += bound_do_while_statement_node.cpp bound_while_statement_node.cpp bound_variable_group_declaration_node.cpp 
+BINDER_DEPS_BIND_SRCS += bound_literal_val_expression_node.cpp bound_index_expression_node.cpp bound_struct_declaration_node.cpp 
+BINDER_DEPS_BIND_SRCS += bound_variable_reference_expression_node.cpp bound_member_access_expression_node.cpp bound_cast_expression_node.cpp
+BINDER_DEPS_BIND_SRCS += bound_binary_expression_node.cpp bound_unary_expression_node.cpp bound_assignment_expression_node.cpp bound_call_expression_node.cpp
+BINDER_DEPS_BIND_SRCS += bound_ternary_expression_node.cpp bound_increment_expression_node.cpp
 BINDER_DEPS_SRCS = $(addprefix $(BINDING_DIR)/, $(BINDER_DEPS_BIND_SRCS))
-BINDER_DEPS_SRCS_SYNT = expression_node.cpp expression_statement_node.cpp global_variable_group_declaration_node.cpp global_struct_declaration_node.cpp function_prototype_node.cpp function_definition_node.cpp formal_parameter_node.cpp cast_expression_node.cpp increment_expression_node.cpp decrement_expression_node.cpp
-BINDER_DEPS_SRCS_SYNT += block_statement_node.cpp return_statement_node.cpp break_statement_node.cpp continue_statement_node.cpp if_statement_node.cpp for_statement_node.cpp do_while_statement_node.cpp while_statement_node.cpp variable_group_declaration_node.cpp partial_variable_declaration_node.cpp
-BINDER_DEPS_SRCS_SYNT += literal_val_expression_node.cpp index_expression_node.cpp struct_declaration_node.cpp name_expression_node.cpp member_expression_node.cpp binary_expression_node.cpp unary_expression_node.cpp assignment_expression_node.cpp call_expression_node.cpp program_node.cpp ternary_expression_node.cpp
+
+BINDER_DEPS_SRCS_SYNT = expression_node.cpp expression_statement_node.cpp global_variable_group_declaration_node.cpp global_struct_declaration_node.cpp
+BINDER_DEPS_SRCS_SYNT += function_prototype_node.cpp function_definition_node.cpp formal_parameter_node.cpp cast_expression_node.cpp
+BINDER_DEPS_SRCS_SYNT += increment_expression_node.cpp decrement_expression_node.cpp block_statement_node.cpp return_statement_node.cpp
+BINDER_DEPS_SRCS_SYNT += break_statement_node.cpp continue_statement_node.cpp if_statement_node.cpp for_statement_node.cpp do_while_statement_node.cpp
+BINDER_DEPS_SRCS_SYNT += while_statement_node.cpp variable_group_declaration_node.cpp partial_variable_declaration_node.cpp literal_val_expression_node.cpp
+BINDER_DEPS_SRCS_SYNT += index_expression_node.cpp struct_declaration_node.cpp name_expression_node.cpp member_expression_node.cpp binary_expression_node.cpp
+BINDER_DEPS_SRCS_SYNT += unary_expression_node.cpp assignment_expression_node.cpp call_expression_node.cpp program_node.cpp ternary_expression_node.cpp
 BINDER_DEPS_SRCS += $(addprefix $(SYNTAX_DIR)/, $(BINDER_DEPS_SRCS_SYNT))
+
 BINDER_DEPS_SRCS_LOG += diagnostics.cpp part_three_info.cpp
 BINDER_DEPS_SRCS += $(addprefix $(LOGGING_DIR)/, $(BINDER_DEPS_SRCS_LOG))
 
-#BINDER_DEPS = $(patsubst %.cpp, $(OBJDIR)/%.o, $(BINDER_DEPS_SRCS))
 
 
 
@@ -163,18 +176,9 @@ verbose: FLAGS += -v
 verbose: $(TARG)
 
 
-# $(TARG): $(OBJS) $(SYMBOLS_OBJS) $(SYNTAX_OBJS) $(BINDING_OBJS)
-# 	@$(call link_and_test,$(CXX) -fuse-ld=gold $^ -o $@ $(LDFLAGS))
-
 $(TARG): $(OBJS)
 	@$(call link_and_test,$(CXX) -fuse-ld=gold $^ -o $@ $(LDFLAGS))
 
-
-# $(SUBDIRS): 
-# 	@$(MAKE) -C $@ --no-print-directory
-
-# $(SYNTAX_DIR): | $(SYMBOLS_DIR) 
-# $(BINDING_DIR): | $(SYNTAX_DIR) logger.cpp diagnostics.cpp
 
 $(OBJDIR)/%.o: $(LOGGING_DIR)/%.cpp 
 	@$(call run_and_test,$(CXX) $(FLAGS) -MMD -MF $(OBJDIR)/$*.d -c $< -o $@)
@@ -216,6 +220,10 @@ docs:
 	pdflatex developers.tex
 	pdflatex developers.tex 
 
+old-doc:
+	pdflatex developers-old.tex
+	pdflatex developers-old.tex 
+
 #dependencies
 $(OBJDIR)/lexer.o: mycc.tab.hpp lexer.cpp
 $(OBJDIR)/mycc.tab.o: mycc.tab.hpp $(SYNTAX_SRCS)
@@ -225,6 +233,6 @@ $(OBJDIR)/part_two_syntax_check.o: $(PART_TWO_SYNT_CHECK_DEPS)
 $(OBJDIR)/qsem.o: $(LOGGING_DIR)/part_three_info.cpp
 
 
-.PHONY: all nodoc debug benchmark verbose clean cclean destroy docs
+.PHONY: all nodoc debug benchmark verbose clean cclean destroy docs old-doc
 
 -include $(DEPS)
