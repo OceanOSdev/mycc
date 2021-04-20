@@ -106,17 +106,17 @@ Note that it only prints to standard out.
 \section{The Logging Namespace}
 \label{logging:namespace}
 
-\subsection{logger}
+\subsection{Logger}
 \label{logging:logger}
 A generic logging class that takes in an output stream on construction so to direct the output of the log calls.
 
-\subsection{diagnostics}
+\subsection{Diagnostics}
 \label{logging:diagnostics}
 A class that essentially acts as a wrapper around a list of strings.
 The interface for this class is just a list of functions that report semantic errors to a private vector of strings.
 This way, if I want/need to change the message that gets reported, I just need to change a string in one method as opposed to searching for it throughout the codebase.
 
-\subsection{part\_three\_info}
+\subsection{Part Three Info}
 \label{logging:seminfo}
 Contains the structs: \code{PartThreeVariableInfo}, \code{PartThreeStructInfo}, \code{PartThreeStatementInfo}, \code{PartThreeFunctionInfo}, and \code{PartThreeInfoList}.
 These essentially act as the "part 3" equivalent of the \code{PartTwoSyntaxPrinter} class (see section \ref{default:syntaxcheck}).
@@ -132,25 +132,25 @@ This is done since I don't attach \code{SyntaxToken} information to every \code{
 \section{The Symbols Namespace}
 \label{symbols:namespace}
 
-\subsection{symbol}
+\subsection{Symbol}
 \label{symbol:symbol}
 Abstract class that resembles some symbol type that would be stored in a symbol table.
 Contains a protected field to store the name of the symbol (e.g. a function name, type name, variable name, etc.) and an abstract method for getting what kind of symbol it is.
 
-\subsection{parameter\_symbol}
+\subsection{Parameter Symbol}
 \label{symbol:parametersymbol}
 Represents a parameter to a function.
 Contains a \code{TypeSymbol} (see section \ref{symbol:typesymbol}) instance that records what C type the parameter is (e.g. int, const float, char[], struct somedata, etc).
 Also records whether the parameter is a constant and if it is an array type.
 
-\subsection{function\_symbol}
+\subsection{Function Symbol}
 \label{symbol:functionsymbol}
 Represents a function in code.
 Like the \code{ParameterSymbol}, this also contains a \code{TypeSymbol} instance to keep track of the type of value the function returns.
 It also contains a list of \code{ParameterSymbol}s that keep track of the function's parameter info.
 Since there can exist multiple function prototypes for a single function, I keep track of the line that the function is defined on so when looking defining the function, I can check whether it already has been defined or if it was just declared.
 
-\subsection{type\_symbol}
+\subsection{Type Symbol}
 \label{symbol:typesymbol}
 The \code{TypeSymbol} class sort of ended up as the "mac daddy" of the other symbol types.
 It contains an instance of a struct \code{TypeAttribute}s which keep track of whether the type is a struct, an integer type, a numeric type, an array, and/or a constant.
@@ -184,12 +184,12 @@ Types that are "unordered" are unable to be cast to eachother, both implicitly a
 
 One of the convinient parts about this is that it makes it relatively easy to determine the wider type of two types in a binary expression (which also makes it easy to determine if the operator is valid on two types).
 
-\subsection{struct\_symbol}
+\subsection{Struct Symbol}
 \label{symbol:structsymbol}
 The \code{StructSymbol} class represents information about a user defined struct.
 It contains a list of \code{VariableSymbol}s which are used to keep track of the type information about the struct's members.
 
-\subsection{variable\_symbol}
+\subsection{Variable Symbol}
 \label{symbol:variablesymbol}
 The \code{VariableSymbol} class represents information about a variable, be it global or local (or in the case described in section \ref{symbol:structsymbol}, represents members of a user defined type).
 It contains information the type of the variable, whether or not it is an array type (and if so, what its size is), and whether or not it is a constant.
@@ -206,12 +206,17 @@ It contains information the type of the variable, whether or not it is an array 
 
 \subsection{Overview}
 \label{syntax:overview}
+While there are a metric ton of files and classes in the \code{Syntax} namespace, they are all relatively light.
+Each class essentially just represents a production on the parse tree, with some information added or discarded as needed.
+The \code{Syntax} namespace and corresponding classes were added to provide a more typesafe way to interact with the syntax tree.
+One of the exceptions to this is the \code{SyntaxToken} class, as it isn't really a node on the syntax tree, but rather an attribute of the non-terminals, containing info like the token type, the line number, and the text.
 
-\subsection{Syntax Expressions}
-\label{syntax:expressions}
+% \subsection{Syntax Expressions}
+% \label{syntax:expressions}
 
-\subsection{Syntax Statements}
-\label{syntax:statements}
+
+% \subsection{Syntax Statements}
+% \label{syntax:statements}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -225,11 +230,19 @@ It contains information the type of the variable, whether or not it is an array 
 
 \subsection{Overview}
 \label{binding:overview}
+Like the \code{Syntax} namespace (see section \ref{syntax:namespace}), the \code{Binding} namespace \emph{also} has a metric ton of files and classes.
+Fortunately, they are also relatively light.
+The bound nodes contain similar info to the syntax nodes, however, they don't keep track of the \code{SyntaxToken}s like the syntax nodes do, and instead of storing the evaluated type as just a string, they store bound \code{TypeSymbol} references.
 
-\subsection{Bound Expressions}
-\label{binding:expressions}
+\subsection{Binder}
+\label{binding:binder}
+The \code{Binder} class acts as the driver of the semantic analysis and binding process and is (unlike the other classes in the namespace) a pretty heavy class.
+The \code{Binder} class essentially performs a recursive descent on the syntax tree built from the parser and then synthesizes the attributes of each \code{BoundNode} from the bottom up (save for some inherited things like scope).
 
-\subsection{Bound Statements}
-\label{binding:statements}
+% \subsection{Bound Expressions}
+% \label{binding:expressions}
+
+% \subsection{Bound Statements}
+% \label{binding:statements}
 
 \end{document}
