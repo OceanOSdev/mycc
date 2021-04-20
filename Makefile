@@ -210,6 +210,7 @@ clean:
 	@rm -f lexer.cpp lexer.o lexer.d mycc.tab.hpp mycc.tab.cpp mycc.tab.o mycc.tab.d
 	@rm -f location.hh
 	@rm -f vgcore.*
+	@rm -f *.idx
 
 destroy: clean
 	@$(ECHO) Removing pdf
