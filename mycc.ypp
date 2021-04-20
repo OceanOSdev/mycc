@@ -1,0 +1,458 @@
+%skeleton "lalr1.cc" /* -*- C++ -*- */
+%defines
+
+%define api.token.constructor
+%define api.value.type variant
+%define parse.assert
+%require "3.2"
+%code requires
+{
+    #include <iostream>
+    #include <string>
+    #include <vector>
+    #include <stdint.h>
+    #include "syntax/syntax_token.h"
+#include "syntax/formal_parameter_node.h"
+#include "syntax/expression_node.h"
+#include "syntax/cast_expression_node.h"
+#include "syntax/ternary_expression_node.h"
+#include "syntax/binary_expression_node.h"
+#include "syntax/unary_expression_node.h"
+#include "syntax/call_expression_node.h"
+#include "syntax/name_expression_node.h"
+#include "syntax/index_expression_node.h"
+#include "syntax/member_expression_node.h"
+#include "syntax/assignment_expression_node.h"
+#include "syntax/decrement_expression_node.h"
+#include "syntax/increment_expression_node.h"
+#include "syntax/partial_variable_declaration_node.h"
+#include "syntax/variable_group_declaration_node.h"
+#include "syntax/literal_val_expression_node.h"
+#include "syntax/statement_node.h"
+#include "syntax/expression_statement_node.h"
+#include "syntax/continue_statement_node.h"
+#include "syntax/break_statement_node.h"
+#include "syntax/return_statement_node.h"
+#include "syntax/if_statement_node.h"
+#include "syntax/block_statement_node.h"
+#include "syntax/for_statement_node.h"
+#include "syntax/while_statement_node.h"
+#include "syntax/do_while_statement_node.h"
+#include "syntax/struct_declaration_node.h"
+#include "syntax/function_declaration_node.h"
+#include "syntax/function_prototype_node.h"
+#include "syntax/function_definition_node.h"
+#include "syntax/global_declaration_node.h"
+#include "syntax/local_declaration_node.h"
+#include "syntax/global_struct_declaration_node.h"
+#include "syntax/global_variable_group_declaration_node.h"
+#include "syntax/translation_unit_node.h"
+#include "syntax/program_node.h"
+
+
+
+    //namespace Syntax { class BinaryExpressionNode; }
+    
+     class Lexer;
+     class Driver;
+     //void print_formal_param_list(std::vector<Syntax::ParameterSymbol> list);
+}
+
+
+%code top
+{
+    #include <iostream>
+    #include <stdio.h>
+    #include <string>
+    #include <sstream>
+    #include "lexer.h"
+    #include "mycc.tab.hpp"
+    #include "driver.h"
+    #include "location.hh"
+
+    std::vector<Syntax::GlobalDeclarationNode*> temporary_glob_decl_list;
+
+    void add_to_temp_list(Syntax::GlobalDeclarationNode* gdn);
+    
+    // yylex() arguments are defined in parser.y
+    static yy::parser::symbol_type yylex(Lexer &lexer, __attribute__((unused)) Driver &driver) {
+        return lexer.get_next_token();
+    }
+    
+    // you can accomplish the same thing by inlining the code using preprocessor
+    // x and y are same as in above static function
+    // #define yylex(x, y) lexer.get_next_token()
+    
+}
+
+%initial-action
+{
+    // initialize the initial location object
+    @$.begin.filename = @$.end.filename = &driver.curr_file;
+};
+
+%lex-param { Lexer &lexer }
+%lex-param { Driver &driver }
+%parse-param { Lexer &lexer }
+%parse-param { Driver &driver }
+%locations
+
+%token END 0
+%token <Syntax::SyntaxToken*> IDENT
+%token <Syntax::SyntaxToken*> TYPE
+%token <Syntax::SyntaxToken*> CONST 
+%token <Syntax::SyntaxToken*> STRUCT 
+%token <Syntax::SyntaxToken*> INTCONST 
+%token <Syntax::SyntaxToken*> REALCONST 
+%token <Syntax::SyntaxToken*> STRCONST 
+%token <Syntax::SyntaxToken*> CHARCONST
+%token <Syntax::SyntaxToken*> FOR 
+%token <Syntax::SyntaxToken*> WHILE 
+%token <Syntax::SyntaxToken*> DO 
+%token <Syntax::SyntaxToken*> IF 
+%token <Syntax::SyntaxToken*> ELSE 
+%token <Syntax::SyntaxToken*> BREAK 
+%token <Syntax::SyntaxToken*> CONTINUE 
+%token <Syntax::SyntaxToken*> RETURN
+
+%token <Syntax::SyntaxToken*> LPAR 
+%token <Syntax::SyntaxToken*> RPAR 
+%token <Syntax::SyntaxToken*> LBRACKET 
+%token <Syntax::SyntaxToken*> RBRACKET 
+%token <Syntax::SyntaxToken*> LBRACE 
+%token <Syntax::SyntaxToken*> RBRACE
+%token <Syntax::SyntaxToken*> COMMA 
+%token <Syntax::SyntaxToken*> SEMI 
+%token <Syntax::SyntaxToken*> COLON
+
+%token <Syntax::SyntaxToken*> QUEST
+
+%token <Syntax::SyntaxToken*> PLUS
+%token <Syntax::SyntaxToken*> MINUS
+%token <Syntax::SyntaxToken*> STAR
+%token <Syntax::SyntaxToken*> SLASH
+%token <Syntax::SyntaxToken*> MOD
+%token <Syntax::SyntaxToken*> TILDE
+%token <Syntax::SyntaxToken*> PIPE
+%token <Syntax::SyntaxToken*> AMP
+%token <Syntax::SyntaxToken*> BANG
+%token <Syntax::SyntaxToken*> DPIPE
+%token <Syntax::SyntaxToken*> DAMP
+
+%token <Syntax::SyntaxToken*> ASSIGN
+%token <Syntax::SyntaxToken*> PLUSASSIGN
+%token <Syntax::SyntaxToken*> MINUSASSIGN
+%token <Syntax::SyntaxToken*> STARASSIGN
+%token <Syntax::SyntaxToken*> SLASHASSIGN
+%token <Syntax::SyntaxToken*> INCR
+%token <Syntax::SyntaxToken*> DECR
+
+%token <Syntax::SyntaxToken*> EQUALS
+%token <Syntax::SyntaxToken*> NEQUAL
+%token <Syntax::SyntaxToken*> GT
+%token <Syntax::SyntaxToken*> GE
+%token <Syntax::SyntaxToken*> LT
+%token <Syntax::SyntaxToken*> LE
+
+%token <Syntax::SyntaxToken*> DOT
+
+%type <Syntax::FormalParameterNode*> formal_param
+%type <std::vector<Syntax::FormalParameterNode*>> formal_param_list
+%type <Syntax::ExpressionNode*> expr
+%type <Syntax::BinaryExpressionNode*> bin_expr
+%type <Syntax::UnaryExpressionNode*> un_expr
+%type <std::vector<Syntax::ExpressionNode*>> nonzero_expr_list
+%type <std::vector<Syntax::ExpressionNode*>> expr_list
+%type <Syntax::ExpressionNode*> l_val
+%type <Syntax::SyntaxToken*> assign_op
+%type <Syntax::PartialVariableDeclarationNode*> ident_ca
+%type <std::vector<Syntax::PartialVariableDeclarationNode*>> ident_list
+%type <std::vector<Syntax::PartialVariableDeclarationNode*>> ident_list_na
+%type <Syntax::VariableGroupDeclarationNode*> var_decl
+%type <Syntax::VariableGroupDeclarationNode*> st_var_decl_na
+%type <Syntax::LiteralValExpressionNode*> literal_val
+%type <Syntax::ExpressionNode*> opt_expr
+
+%type <Syntax::StatementNode*> stmt
+%type <Syntax::StatementNode*> stmts
+%type <Syntax::BlockStatementNode*> stmt_block
+%type <std::vector<Syntax::StatementNode*>> stmt_list
+%type <std::vector<Syntax::StatementNode*>> nonzero_stmt_list
+
+%type <Syntax::PartialVariableDeclarationNode*> ident_c
+
+%type <std::vector<Syntax::VariableGroupDeclarationNode*>> nonzero_st_var_decl_list_na
+%type <std::vector<Syntax::VariableGroupDeclarationNode*>> st_var_decl_list_na
+
+%type <Syntax::LocalDeclarationNode*> l_declar
+%type <std::vector<Syntax::LocalDeclarationNode*>> var_struct_decl_list
+%type <std::vector<Syntax::LocalDeclarationNode*>> nonzero_var_struct_decl_list
+
+%type <Syntax::StructDeclarationNode*> struct_def
+%type <Syntax::FunctionDeclarationNode*> func_decl
+%type <Syntax::FunctionPrototypeNode*> func_proto
+%type <Syntax::FunctionDefinitionNode*> func_def
+
+%type <Syntax::GlobalVariableGroupDeclarationNode*> glob_var_decl
+%type <Syntax::GlobalStructDeclarationNode*> glob_struct_def
+
+%type <Syntax::GlobalDeclarationNode*> glob_decl
+%type <std::vector<Syntax::GlobalDeclarationNode*>> glob_decl_list
+
+//%type <Syntax::TranslationUnitNode*> translation_unit
+
+%nonassoc WITHOUT_ELSE
+%nonassoc ELSE
+
+%left COMMA
+%left DOT
+%right ASSIGN PLUSASSIGN MINUSASSIGN STARASSIGN SLASHASSIGN
+%right QUEST COLON
+%left DPIPE
+%left DAMP
+%left PIPE
+%left AMP
+%left EQUALS NEQUAL
+%left LT LE GT GE
+%left PLUS MINUS
+%left STAR SLASH MOD
+%right BANG TILDE UMINUS DECR INCR TYPE
+%left LPAR RPAR LBRACKET RBRACKET
+
+%%
+
+translation_unit :                              { std::vector<Syntax::GlobalDeclarationNode*> g; driver.m_translation_units.push_back(new Syntax::TranslationUnitNode(nullptr, g)); }
+                 | glob_decl_list               { driver.m_translation_units.push_back(new Syntax::TranslationUnitNode(nullptr, $1)); }
+                 ;
+
+glob_decl_list : glob_decl                      { Syntax::GlobalDeclarationNode* p = $1; $$ = std::vector<Syntax::GlobalDeclarationNode*>(); $$.push_back(p); }
+               | glob_decl_list glob_decl       { Syntax::GlobalDeclarationNode* p = $2; std::vector<Syntax::GlobalDeclarationNode*> &args = $1; args.push_back(p); $$ = args;}
+               ;
+
+glob_decl : glob_var_decl       { add_to_temp_list($1); $$ = $1; }                                      
+          | glob_struct_def     { add_to_temp_list($1); $$ = $1; }                            
+          | func_proto          { add_to_temp_list($1); $$ = $1; }                                
+          | func_def            { add_to_temp_list($1); $$ = $1; }                                  
+          ;
+
+glob_var_decl : var_decl                                             { $$ = new Syntax::GlobalVariableGroupDeclarationNode($1->token(), $1); }
+              ;
+
+glob_struct_def : struct_def                                         { $$ = new Syntax::GlobalStructDeclarationNode($1->token(), $1); }
+                ;
+
+func_proto : func_decl SEMI                                           { $$ = new Syntax::FunctionPrototypeNode($1->token(), $1); }
+           ;
+
+func_decl : TYPE IDENT LPAR formal_param_list RPAR                    { $$ = new Syntax::FunctionDeclarationNode($1, $1->text(), $2->text(), $4); }
+          | TYPE IDENT LPAR RPAR                                      { std::vector<Syntax::FormalParameterNode*> fps; $$ = new Syntax::FunctionDeclarationNode($1, $1->text(), $2->text(), fps); }
+          | CONST TYPE IDENT LPAR formal_param_list RPAR              { $$ = new Syntax::FunctionDeclarationNode($2, $2->text(), $3->text(), $5, false, true); }
+          | CONST TYPE IDENT LPAR RPAR                                { std::vector<Syntax::FormalParameterNode*> fps; $$ = new Syntax::FunctionDeclarationNode($2, $2->text(), $3->text(), fps, false, true); }
+          | TYPE CONST IDENT LPAR formal_param_list RPAR              { $$ = new Syntax::FunctionDeclarationNode($1, $1->text(), $3->text(), $5, false, true); }
+          | TYPE CONST IDENT LPAR RPAR                                { std::vector<Syntax::FormalParameterNode*> fps; $$ = new Syntax::FunctionDeclarationNode($1, $1->text(), $3->text(), fps, false, true); }
+          | STRUCT IDENT IDENT LPAR formal_param_list RPAR            { $$ = new Syntax::FunctionDeclarationNode($2, $2->text(), $3->text(), $5, true); }
+          | STRUCT IDENT IDENT LPAR RPAR                              { std::vector<Syntax::FormalParameterNode*> fps; $$ = new Syntax::FunctionDeclarationNode($2, $2->text(), $3->text(), fps, true); }
+          | CONST STRUCT IDENT IDENT LPAR formal_param_list RPAR      { $$ = new Syntax::FunctionDeclarationNode($3, $3->text(), $4->text(), $6, true, true); }
+          | CONST STRUCT IDENT IDENT LPAR RPAR                        { std::vector<Syntax::FormalParameterNode*> fps; $$ = new Syntax::FunctionDeclarationNode($3, $3->text(), $4->text(), fps, true, true); }
+          | STRUCT IDENT CONST IDENT LPAR formal_param_list RPAR      { $$ = new Syntax::FunctionDeclarationNode($2, $2->text(), $4->text(), $6, true, true); }
+          | STRUCT IDENT CONST IDENT LPAR RPAR                        { std::vector<Syntax::FormalParameterNode*> fps; $$ = new Syntax::FunctionDeclarationNode($2, $2->text(), $4->text(), fps, true, true); }
+          ;
+
+formal_param_list : formal_param                                      { Syntax::FormalParameterNode* p = $1; $$ = std::vector<Syntax::FormalParameterNode*>(); $$.push_back(p); }
+                  | formal_param_list COMMA formal_param              { Syntax::FormalParameterNode* p = $3; std::vector<Syntax::FormalParameterNode*> &args = $1; args.push_back(p); $$ = args;}
+                  ;
+
+formal_param : TYPE IDENT                                             {$$ = new Syntax::FormalParameterNode($2, $1->text(), $2->text());}
+             | TYPE IDENT LBRACKET RBRACKET                           {$$ = new Syntax::FormalParameterNode($2, $1->text(), $2->text(), false, false, true);}
+             | CONST TYPE IDENT                                       {$$ = new Syntax::FormalParameterNode($3, $2->text(), $3->text(), false, true, false);}
+             | CONST TYPE IDENT LBRACKET RBRACKET                     {$$ = new Syntax::FormalParameterNode($3, $2->text(), $3->text(), false, true, true);}
+             | TYPE CONST IDENT                                       {$$ = new Syntax::FormalParameterNode($3, $1->text(), $3->text(), false, true, false);}
+             | TYPE CONST IDENT LBRACKET RBRACKET                     {$$ = new Syntax::FormalParameterNode($3, $1->text(), $3->text(), false, true, true);}
+             | STRUCT IDENT IDENT                                     {$$ = new Syntax::FormalParameterNode($3, $2->text(), $3->text(), true);}
+             | STRUCT IDENT IDENT LBRACKET RBRACKET                   {$$ = new Syntax::FormalParameterNode($3, $2->text(), $3->text(), true, false, true);}
+             | CONST STRUCT IDENT IDENT                               {$$ = new Syntax::FormalParameterNode($4, $3->text(), $4->text(), true, true);}
+             | CONST STRUCT IDENT IDENT LBRACKET RBRACKET             {$$ = new Syntax::FormalParameterNode($4, $3->text(), $4->text(), true, true, true);}
+             | STRUCT IDENT CONST IDENT                               {$$ = new Syntax::FormalParameterNode($4, $2->text(), $4->text(), true, true);}
+             | STRUCT IDENT CONST IDENT LBRACKET RBRACKET             {$$ = new Syntax::FormalParameterNode($4, $2->text(), $4->text(), true, true, true);}
+             ;
+
+func_def : func_decl LBRACE var_struct_decl_list stmt_list RBRACE      { $$ = new Syntax::FunctionDefinitionNode($1->token(), $1, $3, $4); }        
+         ;
+
+struct_def : STRUCT IDENT LBRACE st_var_decl_list_na RBRACE SEMI      {$$ = new Syntax::StructDeclarationNode($2, $2->text(), $4);}
+           ;
+
+stmts : stmt                                                           { $$ = $1; }
+      | stmt_block                                                     { $$ = $1; }
+      ;
+
+stmt_block : LBRACE stmt_list RBRACE                                   { $$ = new Syntax::BlockStatementNode($1, $2); }
+           ;
+
+var_struct_decl_list :                                                      { std::vector<Syntax::LocalDeclarationNode*> l; $$ = l; }
+                     | nonzero_var_struct_decl_list                         { $$ = $1; }
+                     ;
+
+nonzero_var_struct_decl_list : l_declar                                     { Syntax::LocalDeclarationNode* e = $1; $$ = std::vector<Syntax::LocalDeclarationNode*>(); $$.push_back(e); }
+                             | nonzero_var_struct_decl_list l_declar        { Syntax::LocalDeclarationNode* e = $2; std::vector<Syntax::LocalDeclarationNode*> &args = $1; args.push_back(e); $$ = args; }          
+                             ;
+
+l_declar : var_decl                                                         { $$ = $1; }
+         | struct_def                                                       { $$ = $1; }
+         ;
+
+st_var_decl_list_na :                                                       { std::vector<Syntax::VariableGroupDeclarationNode*> l; $$ = l; }
+                    | nonzero_st_var_decl_list_na                           { $$ = $1; }
+                    ;
+
+nonzero_st_var_decl_list_na : st_var_decl_na                                { Syntax::VariableGroupDeclarationNode* e = $1; $$ = std::vector<Syntax::VariableGroupDeclarationNode*>(); $$.push_back(e); }
+                            | nonzero_st_var_decl_list_na st_var_decl_na    { Syntax::VariableGroupDeclarationNode* e = $2; std::vector<Syntax::VariableGroupDeclarationNode*> &args = $1; args.push_back(e); $$ = args; }    
+                            ;
+
+st_var_decl_na : TYPE ident_list_na SEMI                                { $$ = new Syntax::VariableGroupDeclarationNode($1, $1->text(), $2, false, false); }                                 
+               | CONST TYPE ident_list_na SEMI                          { $$ = new Syntax::VariableGroupDeclarationNode($2, $2->text(), $3, true, false); }
+               | TYPE CONST ident_list_na SEMI                          { $$ = new Syntax::VariableGroupDeclarationNode($1, $1->text(), $3, true, false); }
+               | STRUCT IDENT ident_list_na SEMI                        { $$ = new Syntax::VariableGroupDeclarationNode($2, $2->text(), $3, false, true); }
+               | CONST STRUCT IDENT ident_list_na SEMI                  { $$ = new Syntax::VariableGroupDeclarationNode($3, $3->text(), $4, true, true); }
+               | STRUCT IDENT CONST ident_list_na SEMI                  { $$ = new Syntax::VariableGroupDeclarationNode($2, $2->text(), $4, true, true); }
+               ; 
+
+ident_list_na : ident_c                                                 { Syntax::PartialVariableDeclarationNode* e = $1; $$ = std::vector<Syntax::PartialVariableDeclarationNode*>(); $$.push_back(e); }
+              | ident_list_na COMMA ident_c                             { Syntax::PartialVariableDeclarationNode* e = $3; std::vector<Syntax::PartialVariableDeclarationNode*> &args = $1; args.push_back(e); $$ = args; }    
+              ;
+
+ident_c : IDENT                                                         { $$ = new Syntax::PartialVariableDeclarationNode($1, $1->text()); }
+        | IDENT LBRACKET INTCONST RBRACKET                              { $$ = new Syntax::PartialVariableDeclarationNode($1, $1->text(), false, true, $3->get_int_value()); }
+        ;
+
+stmt_list :                                                             { std::vector<Syntax::StatementNode*> l; $$ = l; }
+          | nonzero_stmt_list                                           { $$ = $1; }
+          ;
+
+nonzero_stmt_list : stmt                                                { Syntax::StatementNode* e = $1; $$ = std::vector<Syntax::StatementNode*>(); $$.push_back(e); }
+                  | nonzero_stmt_list stmt                              { Syntax::StatementNode* e = $2; std::vector<Syntax::StatementNode*> &args = $1; args.push_back(e); $$ = args; }
+                  ;
+
+stmt : DO stmts WHILE LPAR expr RPAR SEMI                               { $$ = new Syntax::DoWhileStatementNode($1, $2, $5); }
+     | WHILE LPAR expr RPAR stmts                                       { $$ = new Syntax::WhileStatementNode($1, $3, $5); }
+     | FOR LPAR opt_expr SEMI opt_expr SEMI opt_expr RPAR stmts         { $$ = new Syntax::ForStatementNode($1, $3, $5, $7, $9); }
+     | IF LPAR expr RPAR stmts %prec WITHOUT_ELSE                       { $$ = new Syntax::IfStatementNode($1, $3, $5, nullptr); }
+     | IF LPAR expr RPAR stmts ELSE stmts                               { $$ = new Syntax::IfStatementNode($1, $3, $5, $7); }
+     | RETURN opt_expr SEMI                                             { $$ = new Syntax::ReturnStatementNode($1, $2); }
+     | BREAK SEMI                                                       { $$ = new Syntax::BreakStatementNode($1); }
+     | CONTINUE SEMI                                                    { $$ = new Syntax::ContinueStatementNode($1); }
+     | expr SEMI                                                        { $$ = new Syntax::ExpressionStatementNode($1->token(), $1); }
+     | SEMI                                                             { $$ = new Syntax::ExpressionStatementNode($1, nullptr); }
+     ;
+
+opt_expr :                                                              { $$ = nullptr; }
+         | expr                                                         { $$ = $1; }
+         ;
+
+expr_list :                                                             { std::vector<Syntax::ExpressionNode*> l; $$ = l; }
+          | nonzero_expr_list                                           { $$ = $1; }
+          ;
+
+nonzero_expr_list : expr                                                { Syntax::ExpressionNode* e = $1; $$ = std::vector<Syntax::ExpressionNode*>(); $$.push_back(e); }
+                  | nonzero_expr_list COMMA expr                        { Syntax::ExpressionNode* e = $3; std::vector<Syntax::ExpressionNode*> &args = $1; args.push_back(e); $$ = args; }
+                  ;
+
+expr : LPAR expr RPAR                                                   { $$ = $2; }
+     | LPAR TYPE RPAR expr                                              { $$ = new Syntax::CastExpressionNode($2, $2->text(), $4); }
+     | expr QUEST expr COLON expr                                       { $$ = new Syntax::TernaryExpressionNode($2, $1, $3, $5); }
+     | bin_expr                                                         { $$ = $1; }
+     | un_expr                                                          { $$ = $1; }
+     | INCR l_val                                                       { $$ = new Syntax::IncrementExpressionNode($1, $2, false); }
+     | DECR l_val                                                       { $$ = new Syntax::DecrementExpressionNode($1, $2, false); }
+     | l_val INCR                                                       { $$ = new Syntax::IncrementExpressionNode($2, $1, true); }
+     | l_val DECR                                                       { $$ = new Syntax::DecrementExpressionNode($2, $1, true); }
+     | l_val assign_op expr %prec ASSIGN                                { $$ = new Syntax::AssignmentExpressionNode($2, $1, $2->token(), $3); }
+     | l_val                                                            { $$ = $1; }
+     | IDENT LPAR expr_list RPAR                                        { $$ = new Syntax::CallExpressionNode($1, $1->text(), $3); }
+     | literal_val                                                      { $$ = $1; }
+     ;
+
+l_val : IDENT                                                           { $$ = new Syntax::NameExpressionNode($1, $1->text()); }
+      | IDENT LBRACKET expr RBRACKET                                    { $$ = new Syntax::IndexExpressionNode($1, $1->text(), $3); }
+      | l_val DOT l_val                                                 { $$ = new Syntax::MemberExpressionNode($2, $1, $3); }
+      ;
+
+un_expr : MINUS expr %prec UMINUS                                       { $$ = new Syntax::UnaryExpressionNode($1, $1->token(), $2); }
+        | BANG expr                                                     { $$ = new Syntax::UnaryExpressionNode($1, $1->token(), $2); }
+        | TILDE expr                                                    { $$ = new Syntax::UnaryExpressionNode($1, $1->token(), $2); }
+        ;
+
+bin_expr : expr DPIPE expr                                              { $$ = new Syntax::BinaryExpressionNode($2, $1, $2->token(), $3); }
+         | expr DAMP expr                                               { $$ = new Syntax::BinaryExpressionNode($2, $1, $2->token(), $3); }
+         | expr PIPE expr                                               { $$ = new Syntax::BinaryExpressionNode($2, $1, $2->token(), $3); }
+         | expr AMP expr                                                { $$ = new Syntax::BinaryExpressionNode($2, $1, $2->token(), $3); }
+         | expr EQUALS expr                                             { $$ = new Syntax::BinaryExpressionNode($2, $1, $2->token(), $3); }
+         | expr NEQUAL expr                                             { $$ = new Syntax::BinaryExpressionNode($2, $1, $2->token(), $3); }
+         | expr GT expr                                                 { $$ = new Syntax::BinaryExpressionNode($2, $1, $2->token(), $3); }
+         | expr GE expr                                                 { $$ = new Syntax::BinaryExpressionNode($2, $1, $2->token(), $3); }
+         | expr LT expr                                                 { $$ = new Syntax::BinaryExpressionNode($2, $1, $2->token(), $3); }
+         | expr LE expr                                                 { $$ = new Syntax::BinaryExpressionNode($2, $1, $2->token(), $3); }
+         | expr PLUS expr                                               { $$ = new Syntax::BinaryExpressionNode($2, $1, $2->token(), $3); }
+         | expr MINUS expr                                              { $$ = new Syntax::BinaryExpressionNode($2, $1, $2->token(), $3); }
+         | expr STAR expr                                               { $$ = new Syntax::BinaryExpressionNode($2, $1, $2->token(), $3); }
+         | expr SLASH expr                                              { $$ = new Syntax::BinaryExpressionNode($2, $1, $2->token(), $3); }
+         | expr MOD expr                                                { $$ = new Syntax::BinaryExpressionNode($2, $1, $2->token(), $3); }
+         ;
+
+assign_op : ASSIGN                                                      { $$ = $1; }
+          | PLUSASSIGN                                                  { $$ = $1; }
+          | MINUSASSIGN                                                 { $$ = $1; }
+          | STARASSIGN                                                  { $$ = $1; }
+          | SLASHASSIGN                                                 { $$ = $1; }
+          ;
+
+literal_val : INTCONST   {$$ = new Syntax::LiteralValExpressionNode($1); /*std::cout << "INTCONST: " << val << std::endl;*/}
+            | REALCONST  {$$ = new Syntax::LiteralValExpressionNode($1); /*std::cout << "REALCONST: " << val << std::endl;*/}
+            | STRCONST   {$$ = new Syntax::LiteralValExpressionNode($1); /*TODO: trim quotation marks std::cout << "STRCONST: " << val << std::endl;*/}
+            | CHARCONST  {$$ = new Syntax::LiteralValExpressionNode($1); /*std::cout << "CHARCONST: " << val << std::endl;*/}
+            ;
+
+var_decl : TYPE ident_list SEMI                                       { $$ = new Syntax::VariableGroupDeclarationNode($1, $1->text(), $2, false, false); }                                 
+         | CONST TYPE ident_list SEMI                                 { $$ = new Syntax::VariableGroupDeclarationNode($2, $2->text(), $3, true, false); }
+         | TYPE CONST ident_list SEMI                                 { $$ = new Syntax::VariableGroupDeclarationNode($1, $1->text(), $3, true, false); }
+         | STRUCT IDENT ident_list SEMI                               { $$ = new Syntax::VariableGroupDeclarationNode($2, $2->text(), $3, false, true); }
+         | CONST STRUCT IDENT ident_list SEMI                         { $$ = new Syntax::VariableGroupDeclarationNode($3, $3->text(), $4, true, true); }
+         | STRUCT IDENT CONST ident_list SEMI                         { $$ = new Syntax::VariableGroupDeclarationNode($2, $2->text(), $4, true, true); }
+         ; 
+
+ident_list : ident_ca                                                 { Syntax::PartialVariableDeclarationNode* e = $1; $$ = std::vector<Syntax::PartialVariableDeclarationNode*>(); $$.push_back(e);}
+           | ident_list COMMA ident_ca                                { Syntax::PartialVariableDeclarationNode* e = $3; std::vector<Syntax::PartialVariableDeclarationNode*> &args = $1; args.push_back(e); $$ = args;}
+           ;
+
+ident_ca : IDENT ASSIGN expr                                          { $$ = new Syntax::PartialVariableDeclarationNode($1, $1->text(), true, false, -1, $3); }
+         | IDENT LBRACKET INTCONST RBRACKET ASSIGN expr               { $$ = new Syntax::PartialVariableDeclarationNode($1, $1->text(), true, true, $3->get_int_value(), $6); }
+         | IDENT                                                      { $$ = new Syntax::PartialVariableDeclarationNode($1, $1->text()); }
+         | IDENT LBRACKET INTCONST RBRACKET                           { $$ = new Syntax::PartialVariableDeclarationNode($1, $1->text(), false, true, $3->get_int_value()); }
+         ;
+
+%%
+
+void yy::parser::error(const location &loc , const std::string &message) {
+    std::ostringstream errstream;
+    errstream << "Error near " << driver.curr_file //driver.location().begin.filename 
+                << " line " << loc.begin.line //driver.location().begin.line 
+                << " text '" << driver.part_one_lexeme_list.back().text << "'\n\t" << message << std::endl;
+    std::string err_msg = errstream.str();
+    driver.m_diagnostics.push_back(err_msg);
+    driver.m_translation_units.push_back(new Syntax::TranslationUnitNode(nullptr, temporary_glob_decl_list));	
+
+    driver.m_error_flag = true;
+    //std::cout << "Error: " << message << std::endl << "Error location: " << driver.location() << std::endl;
+}
+
+void add_to_temp_list(Syntax::GlobalDeclarationNode* gdn) {
+    temporary_glob_decl_list.push_back(gdn);
+}
+
+// void print_formal_param_list(std::vector<Symbol::ParameterSymbol> list) {
+//         std::vector<Symbol::ParameterSymbol>::iterator iter;
+//     for( iter = list.begin(); iter != list.end(); iter++) {
+//         Syntax::ParameterSymbol p = *iter;
+//         std::cout << (p.constant() ? "const " : "") << p.var_type() << " " << p.var_name() << " " << (p.array() ? "[]" : "") << std::endl;
+//     }
+// }

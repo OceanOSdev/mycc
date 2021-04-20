@@ -1,179 +1,248 @@
 \documentclass{article}
 \usepackage[utf8]{inputenc}
 \usepackage{hyperref}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{csquotes}
+\usepackage{makeidx}
+\makeindex
 
 \title{Compiler Documentation}
 \author{Thomas Maloney \\ 
-net-id \href{mailto:tmaloney@iastate.edu}{tmaloney@iastate.edu}}
-\date{March 2021}
+net-id: \href{mailto:tmaloney@iastate.edu}{tmaloney@iastate.edu}}
+\date{April 2021}
 
 \begin{document}
 
 \maketitle
 
+\tableofcontents
 \newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\R}{\mathbb{R}}
 
-\section{Part 0 Documentation}
-\subsection{main.c} 
-\label{ssec:p0main}
+\newpage
+\section{Overview}
+The compiler has been rewritten in C++ and has gone through a complete "makeover" so to speak.
+The documentation on the old C code from previous versions is in the document \code{developers-old.pdf} which is very much outdated and exists purely for historical reasons.
+The documentation is now broken up into a section for each namespace in the source code to give an overview of the purpose of each module and the data structures used.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                            %
+%                DEFAULT                     %
+%                                            %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{The Default Namespace}
+\label{default:namespace}
+
+\subsection{main.cpp}
+\label{default:main}
 This file contains the entry point of the compiler.
-It passes the arguments from the command line to a method that parses them (described in section \ref{ssec:p0argparser}) and returns a \code{struct} that contains info about what flags were passed and what the possible output file might be (should that have been given).
+It passes the arguments from the command line to a method that parses them (described in section \ref{defautl:argparser}) and returns a \code{struct} that contains info about what flags were passed and what the possible output file might be (should that have been given).
 I then check which flag got passed in and whether the output should be written to a provided file or just \code{stdout}.
-The only \code{mode} flag that currently gets handled is \code{-0}.
+Contains helper methods to handle manually running the lexer, or running the parser and handling the list of translation unit syntax tree nodes (either to be ran through the syntax checker for part 2 or passed to the binder for parts 3+).
 
-\subsection{args\_parser} 
-\label{ssec:p0argparser}
-The header file contains a \code{struct}, an \code{enum} (both described in section \ref{ssec:p0datastructs}), and a method signature that gets implemented in \code{args\_parser.c}.
-Here I use \code{getopt} from \code{unistd.h} to read/parse each flag and then record which flag and whether there was an output file to a \code{struct} that I return.
-The potential output file gets passed back as an out-parameter.
-If no flags were passed in, or one that doesn't exist, I print out the string that describes how to use the program to \code{stderr}.
+\subsection{arg\_parser}
+\label{defautl:argparser}
+This actually has not changed much, if at all from the original C variant, so to paraphrase what the C variant did:
 
-\subsection{Data Structures} 
-\label{ssec:p0datastructs}
-There is one \code{struct} and one \code{enum} that have been defined so far:
-\begin{itemize}
-    \item (\code{struct}) \code{parsed\_args\_t}: This data type holds what \code{mode} flag gets passed in by way of the \code{mode\_e enum}.
-    It also contains a flag that signals if there is a specific output file that should be written to instead of \code{stdout}.
-    \item (\code{enum}) \code{mode\_e}: This just represents the possible \code{mode} flags that can be passed in plus an extra one that is set by default to make it easier to check if none of the required flags were passed in.
-\end{itemize}
+\begin{displayquote}
+    The header file contains a \code{struct}, an \code{enum}, and a method signature that gets implemented in \code{args\_parser.c}.
+    Here I use \code{getopt} from \code{unistd.h} to read/parse each flag and then record which flag and whether there was an output file to a \code{struct} that I return.
+    The potential output file gets passed back as an out-parameter.
+    If no flags were passed in, or one that doesn't exist, I print out the string that describes how to use the program to \code{stderr}.
+\end{displayquote}
 
-\section{Part 1 Documentation}
-\subsection{main.c} 
-\label{ssec:p1main}
-For the most part, everything here is pretty similar to what's described in section \ref{ssec:p0main}.
-That is, not much has really changed.
-The one thing that has, however is that it now grabs the parsed file names that get stored in a \code{parsed\_args\_t} instance after which it sets a global variable equal to the array.
-This allows the generated lexer file to access the list of files it needs to lex.
+\subsection{driver}
+\label{default:driver}
+The \code{driver} class was written so that flex and bison can "communicate" and also gives me a single interface with which I can interact with the lexer and parser.
+The C++ documentation for bison was pretty underwhelming (at least for use cases where you wanted to treat the parser like you were using C++ and not just trying to interface with C)
+and the C++ documentation for flex was almost nonexistant so the \code{driver} class is the result of what I \emph{think} is necessary for them to pass data between eachother in C++ land.
 
-\subsection{lexer.l} 
-\label{ssec:p1lexer}
-Contains the regex rules for matching tokens.
-There is also a function in it that allows \code{main.c} to set the starting input file from an \code{extern} string array that also gets pulled in from \code{main.c}.
-Currently the lexer will just ignore preprocessor symbols. 
+As for custom data I store in the driver, I keep a list of \code{TranslationUnitNode}s that get synthesized by the parser after it finishes its rounds so to speak.
+There's more on that in section \ref{syntax:namespace}.
+I also keep track of the current file (although multifile code support is effectively dropped in part 3 onward, still technically works in parts 1 and 2 though).
+I also keep track of a list of \code{LexemeDataNode}s (see section \ref{default:lexemes} below) and a flag to indicate if any errors occured.
 
-\subsection{log\_utils} 
-\label{ssec:p1logutils}
-Provides two function for logging data (info and errors) to the output stream, templated to match the assignment's specifications.
+\subsection{lexeme\_data.h}
+\label{default:lexemes}
+This defines a class \code{LexemeDataNode} which contains token information generated by the lexer.
+The purpose of this class is to allow me to collect the token data neccessary for output in part 1 without having to print the data immediately to the console.
+Ultimately, the reason why I didn't just build a list of strings instead was so I could fix any output formatting issues in one spot instead of having to \code{grep} through the lexer.l file.
 
-\subsection{args\_parser} 
-\label{ssec:p1argparser}
-Pretty similar to its implementation described in section \ref{ssec:p0argparser}.
-A new feature in it is the ability to parse the input files from the command line and store them in an array.
+\subsection{lexer}
+\label{default:lexer}
+The biggest change that was made to the lexer from the previous version is that it now interacts with the \code{driver} class and passes all tokens through to bison as a \code{SyntaxToken} data type.
+More on that in section \ref{syntax:namespace}.
+Other than that, it still just handles the parsing of lexemes.
 
-\subsection{Data Structures} 
-\label{ssec:p1datastructs}
-There is one \code{struct} and one \code{enum} that have been defined so far:
-\begin{itemize}
-    \item (\code{struct}) \code{parsed\_args\_t}: This data type is still similar to how it is described in section \ref{ssec:p0datastructs}.
-        It has only changed in that it now keeps track of the input files.
-    \item (\code{enum}) \code{mode\_e}: Same as described in section \ref{ssec:p0datastructs}.
-    \item (\code{enum}) \code{token\_e}: Enumerated list of syntax token types.
-\end{itemize}
+\subsection{mycc.ypp}
+\label{default:parser}
+The bison grammar file, imports almost all (if not actually all) syntax node classes from the \code{Syntax} namespace described in section \ref{syntax:namespace}.
 
-\section{Part 2 Documentation}
-\subsection{main.c}
-\label{ssec:p2main}
-The biggest difference from how this was implemented in section \ref{ssec:p1main} is all of the logging is done in \code{main.c} instead of the lexer.
-All of the logging for the parser is also done in \code{main.c}.
-Notable diffrences that came about from this new approach is that we no longer log tokens or symbols as we come across them but rather build a list (be it of tokens or of symbols) first.
-These lists get passed back to \code{main.c} where we now call the logging methods on them.
-This change is actually what allows us to have backwards compatability with the \code{-1} flag.
+\subsection{part\_two\_syntax\_check}
+\label{default:syntaxcheck}
+The \code{PartTwoSyntaxPrinter} class takes in the root node of the syntax tree keeping a (slightly less crude than before) "symbol" table of the variables, structs, and functions (along with their params, and local structs and variables).
+It then calls the instance of the \code{Logger} it gets passed and prints out the syntax information of the file that it parsed.
 
-There are also a lot of extern variables that are stored in \code{main.c} to make interfacing with flex and bison less painful.
-Another responsibility that has been shifted onto \code{main.c} is switching files for flex instead of doing it in the EOF handler.
+\subsection{qsem}
+\label{default:qsem}
+The "Quick Semantic Analyzer".
+It's quick since it actually isn't doing any analysis, rather it's just the code that logs the results from the analysis (which is actually done by the \code{binder} as described in section \ref{binding:namespace}).
+Also technically in its own namespace since originally when I was porting to C++, \code{qsem} was going to actually perform some half-backed semantic analysis just as a sanity check while I was working on the binding code. 
 
-\subsection{args\_parser}
-\label{ssec:p2argparser}
-Almost identical to its implementation described in section \ref{ssec:p1argparser}.
-The only change was that in the handler for the \code{-2} flag, we store the input files as described in section \ref{ssec:p1argparser}.
+\subsection{syntax\_tree\_printer}
+\label{default:syntaxtreeprinter}
+This is just an addition I made to help me debug parsing and to some degree binding as well, it can be invoked like \code{./mycc -6 [input file]}.
+Note that it only prints to standard out.
 
-\subsection{mycc.y}
-\label{ssec:p2parser}
-This file contains the grammar definition for the parser and keeps a stack of:
-\begin{itemize}
-     \item strings for variables 
-     \item strings for parameter variables
-     \item strings for struct fields
-     \item \code{struct\_decl\_symbol\_t}s for \code{struct}s
-\end{itemize}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                            %
+%                LOGGING                     %
+%                                            %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-Depending on which production rule ends up getting matched, the stack of strings for variables either gets appended to a function symbol (if it is a local variable) or it gets appended to the list of global variables.
-Likewise for the stack of \code{struct\_decl\_symbol\_t}s for \code{struct}s.
-The data types that these stacks get appended to are described in both section \ref{ssec:p2crudesymbolslist} and section \ref{ssec:p2datastructs}.
+\section{The Logging Namespace}
+\label{logging:namespace}
 
-\subsection{lexer.l}
-\label{ssec:p2lexer}
-Updated the regex to properly match a few tokens that it missed before.
-The biggest architectural change from its implementation in section \ref{ssec:p1lexer} is that we no longer immediately write the token to stdout.
-We instead build a list of them using the new \code{token\_list\_node\_t} which is covered briefly in section \ref{ssec:p2tokenlist}.
-We also return a token each time we lex one so that our bison parser can utilize it.
-Another thing that has changed is that instead of handling switching files to lex from inside the EOF handler, that responsibility has been moved into \code{main.c}.
+\subsection{Logger}
+\label{logging:logger}
+A generic logging class that takes in an output stream on construction so to direct the output of the log calls.
 
-\subsection{token\_list}
-\label{ssec:p2tokenlist}
-The files \code{token\_list.h} and \code{token\_list.c} contain the declaration and implementation details of the \code{token\_list\_node\_t} struct.
-The purpose of this data type is to act as a linked list containing information about each token that is lexed from the lexer.
-The struct contains fields for:
-\begin{itemize}
-    \item The filename where the token was lexed.
-    \item The line number in the file that the token can be found.
-    \item The text that the token represents.
-    \item The token type (an enum generated by bison).
-    \item Whether or not this token represents an error.
-    \item The error description (should this token represent an error).
-    \item A pointer to the next entry in the token list.
-\end{itemize}
+\subsection{Diagnostics}
+\label{logging:diagnostics}
+A class that essentially acts as a wrapper around a list of strings.
+The interface for this class is just a list of functions that report semantic errors to a private vector of strings.
+This way, if I want/need to change the message that gets reported, I just need to change a string in one method as opposed to searching for it throughout the codebase.
 
-\subsection{log\_utils}
-\label{ssec:p2logutils}
-In terms of its purpose, it's similar to how it was as described in section \ref{ssec:p1logutils}.
-The biggest change was the addition of logging methods for logging the required symbols generated by the parser.
-Each logging method also now requires the output file for which it should write to.
+\subsection{Part Three Info}
+\label{logging:seminfo}
+Contains the structs: \code{PartThreeVariableInfo}, \code{PartThreeStructInfo}, \code{PartThreeStatementInfo}, \code{PartThreeFunctionInfo}, and \code{PartThreeInfoList}.
+These essentially act as the "part 3" equivalent of the \code{PartTwoSyntaxPrinter} class (see section \ref{default:syntaxcheck}).
+The biggest difference in this case (other than the fact that the structs above contain info about the bound tree and the class from section \ref{default:syntaxcheck} deals with the syntax tree) is that the part three info structs are built during binding, instead of while traversing the bound tree afterwards.
+This is done since I don't attach \code{SyntaxToken} information to every \code{BoundNode} like I do with every \code{SyntaxNode}.
 
-\subsection{crude\_symbols\_list}
-\label{ssec:p2crudesymbolslist}
-Since the parser gives us symbols from the bottom of the production rules going up, we can't just print the symbols as we see them.
-The purpose of both \code{crude\_symbols\_list.h} and \code{crude\_symbols\_list.c} is to define and implement the types:
-\begin{itemize}
-    \item \code{struct\_decl\_symbol\_t}
-    \item \code{func\_decl\_symbol\_t}
-    \item \code{func\_proto\_symbol\_t}
-    \item \code{parse\_error\_symbol\_t}
-    \item \code{symbol\_data\_t}
-    \item \code{symbol\_type\_t}
-    \item \code{symbol\_parse\_list\_node\_t}
-    \item \code{symbol\_parse\_list\_t}
-\end{itemize}
-All (except \code{symbol\_parse\_list\_node\_t}, and \code{symbol\_parse\_list\_t}) of which are described in section \ref{ssec:p2datastructs}.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                            %
+%                SYMBOLS                     %
+%                                            %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-The purpose of the \code{symbol\_parse\_list\_node\_t} type is to represent a node in a linked list that contains information about either a function definition, a function prototype, or some parsing error.
-The \code{symbol\_parse\_list\_node\_t} contains a member of type \code{symbol\_type\_t} which tells us which symbol type information it contains, which, in turn tells us which field from the union type to grab.
+\section{The Symbols Namespace}
+\label{symbols:namespace}
 
-The purpose of the \code{symbol\_parse\_list\_t} is to keep a list of previously mentioned data type which corresponds to the function definitions/prototypes/errors the parser encounterd in the "current" file.
-It also contains an array of \code{char*} (strings) that contain the identifiers for the global variables in a given file.
-Likewise it also contains an array of \code{struct\_decl\_symbol\_t*} that contain the global \code{struct}s in a given file.
+\subsection{Symbol}
+\label{symbol:symbol}
+Abstract class that resembles some symbol type that would be stored in a symbol table.
+Contains a protected field to store the name of the symbol (e.g. a function name, type name, variable name, etc.) and an abstract method for getting what kind of symbol it is.
 
-\subsection{Data Structures}
-\label{ssec:p2datastructs}
-Any data structures not listed here have not been listed since they have not changed from how they were described in section \ref{ssec:p1datastructs}.
-The exception being \code{token\_e} since with the introduction of bison, it was no longer necessary and thus removed.
+\subsection{Parameter Symbol}
+\label{symbol:parametersymbol}
+Represents a parameter to a function.
+Contains a \code{TypeSymbol} (see section \ref{symbol:typesymbol}) instance that records what C type the parameter is (e.g. int, const float, char[], struct somedata, etc).
+Also records whether the parameter is a constant and if it is an array type.
 
-The data structures so far:
-\begin{itemize}
-    \item (\code{struct}) \code{struct\_decl\_symbol\_t}: A \code{struct} to represent \code{struct}s.
-    Contains fields to store the name of a \code{struct}, how many members it has, and the members' identifiers.
-    \item (\code{struct}) \code{func\_decl\_symbol\_t}: A type that represents a function definition symbol.
-    Contains fields to store the name of the function, the list of parameters, the list of local variables, and the list of local \code{struct}s.
-    \item (\code{struct}) \code{func\_proto\_symbol\_t}: A type that represents a function prototype declaration.
-    Contains fields to store the name of the function and a list of its parameters.
-    \item (\code{struct}) \code{parse\_error\_symbol\_t}: A type that represents an error from the parser.
-    Conatins fields to store the file name where the error occured, the line number in that file, the text that caused the error, and the message returned by the parser.
-    \item (\code{union}) \code{symbol\_data\_t}: A union type that makes it possible to store \code{func\_decl\_symbol\_t}, \code{func\_proto\_symbol\_t}, and \code{parse\_error\_symbol\_t} types in the same symbol list.
-    Sort of like quasi-polymorphism. (But not entirely)
-    \item (\code{enum}) \code{symbol\_type\_t}: Enumerated list type of possible symbol types that a \code{symbol\_parse\_list\_node\_t} could be.
-    \item (\code{struct}) \code{symbol\_parse\_list\_node\_t}: See section \ref{ssec:p2crudesymbolslist}.
-    \item (\code{struct}) \code{symbol\_parse\_list\_t}: See section \ref{ssec:p2crudesymbolslist}.
-    \item (\code{struct}) \code{token\_list\_node\_t}: See section \ref{ssec:p2tokenlist}.
-\end{itemize}
+\subsection{Function Symbol}
+\label{symbol:functionsymbol}
+Represents a function in code.
+Like the \code{ParameterSymbol}, this also contains a \code{TypeSymbol} instance to keep track of the type of value the function returns.
+It also contains a list of \code{ParameterSymbol}s that keep track of the function's parameter info.
+Since there can exist multiple function prototypes for a single function, I keep track of the line that the function is defined on so when looking defining the function, I can check whether it already has been defined or if it was just declared.
+
+\subsection{Type Symbol}
+\label{symbol:typesymbol}
+The \code{TypeSymbol} class sort of ended up as the "mac daddy" of the other symbol types.
+It contains an instance of a struct \code{TypeAttribute}s which keep track of whether the type is a struct, an integer type, a numeric type, an array, and/or a constant.
+The \code{TypeAttribute}s struct has a partial ordering (\code{std::partial\_ordering} in C++20) defined on it that says for any two given \code{TypeAttributes} $\alpha_0$ and $\alpha_1$, we have
+\begin{equation*}
+    \Leftrightarrow (\alpha_0,\alpha_1) = 
+    \begin{cases}
+        \text{undordered} & \text{only one of $\alpha_0$ or $\alpha_1$ is either an array or a struct} \\
+        \text{less} & \alpha_0\in\Z \text{ and } \alpha_1\in\R\setminus\Z \\
+        \text{greater} & \alpha_1\in\Z \text{ and } \alpha_0\in\R\setminus\Z \\
+        \text{equivalent} & \text{all of $\alpha_0$ and $\alpha_1$ attributes are equal} \\
+        \text{unordered} & \text{otherwise}
+    \end{cases}
+\end{equation*}
+
+(I know technically $x\in\R\setminus\Z$ isn't the best (or even remotely accurate) way to represent $x$ is a \code{float} and not an \code{int}, but I felt it still gets the message across).
+(Also, the reason for choosing the symbol $\Leftrightarrow$ is because C++20's three way comparitor is written \code{<=>} which in my case returns the partial order).
+I then defined a partial order on the \code{TypeSymbol} class itself that says for any two \code{TypeSymbol}s $\tau_0$ and $\tau_1$, we have
+\begin{equation*}
+    \Leftrightarrow (\tau_0, \tau_1) =
+    \begin{cases}
+        \alpha(\tau_0) \Leftrightarrow \alpha(\tau_1) & \alpha(\tau_0) \Leftrightarrow \alpha(\tau_1) \text{ does not evaluate as equivalent} \\
+        \text{id}(\tau_0) \Leftrightarrow \text{id}(\tau_1) & \text{otherwise}
+    \end{cases}
+\end{equation*}
+Where $\alpha(\tau)$ represents the \code{TypeAttribute}s of some type $\tau$ and id$(\tau)$ returns the name of some type $\tau$.
+
+This partial order can be intuited as representing whether a given type can be "widened" to another given type.
+For example, $\Leftrightarrow (\text{char}, \text{float}) = \text{Less}$ which means that \code{char} can be widened to a \code{float}.
+Types that are "unordered" are unable to be cast to eachother, both implicitly and explicitly.
+
+One of the convinient parts about this is that it makes it relatively easy to determine the wider type of two types in a binary expression (which also makes it easy to determine if the operator is valid on two types).
+
+\subsection{Struct Symbol}
+\label{symbol:structsymbol}
+The \code{StructSymbol} class represents information about a user defined struct.
+It contains a list of \code{VariableSymbol}s which are used to keep track of the type information about the struct's members.
+
+\subsection{Variable Symbol}
+\label{symbol:variablesymbol}
+The \code{VariableSymbol} class represents information about a variable, be it global or local (or in the case described in section \ref{symbol:structsymbol}, represents members of a user defined type).
+It contains information the type of the variable, whether or not it is an array type (and if so, what its size is), and whether or not it is a constant.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                            %
+%                SYNTAX                      %
+%                                            %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{The Syntax Namespace}
+\label{syntax:namespace}
+
+\subsection{Overview}
+\label{syntax:overview}
+While there are a metric ton of files and classes in the \code{Syntax} namespace, they are all relatively light.
+Each class essentially just represents a production on the parse tree, with some information added or discarded as needed.
+The \code{Syntax} namespace and corresponding classes were added to provide a more typesafe way to interact with the syntax tree.
+One of the exceptions to this is the \code{SyntaxToken} class, as it isn't really a node on the syntax tree, but rather an attribute of the non-terminals, containing info like the token type, the line number, and the text.
+
+% \subsection{Syntax Expressions}
+% \label{syntax:expressions}
+
+
+% \subsection{Syntax Statements}
+% \label{syntax:statements}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                            %
+%                BINDING                     %
+%                                            %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{The Binding Namespace}
+\label{binding:namespace}
+
+\subsection{Overview}
+\label{binding:overview}
+Like the \code{Syntax} namespace (see section \ref{syntax:namespace}), the \code{Binding} namespace \emph{also} has a metric ton of files and classes.
+Fortunately, they are also relatively light.
+The bound nodes contain similar info to the syntax nodes, however, they don't keep track of the \code{SyntaxToken}s like the syntax nodes do, and instead of storing the evaluated type as just a string, they store bound \code{TypeSymbol} references.
+
+\subsection{Binder}
+\label{binding:binder}
+The \code{Binder} class acts as the driver of the semantic analysis and binding process and is (unlike the other classes in the namespace) a pretty heavy class.
+The \code{Binder} class essentially performs a recursive descent on the syntax tree built from the parser and then synthesizes the attributes of each \code{BoundNode} from the bottom up (save for some inherited things like scope).
+
+% \subsection{Bound Expressions}
+% \label{binding:expressions}
+
+% \subsection{Bound Statements}
+% \label{binding:statements}
 
 \end{document}

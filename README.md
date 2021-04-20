@@ -2,6 +2,7 @@
 
 ## How to build
 To build the project and documentation, simply run `make`. 
+For speedy build times, run `make -jN` where N is some number.
 To remove generated files, run `make clean`.
 For convenience, to build just the latex documentation, you can run `make docs`.
 
@@ -33,3 +34,7 @@ For convenience, to build just the latex documentation, you can run `make docs`.
     - User-Defined Structs
     - Struct Member Selection 
 - [x] Updated LaTeX doc
+
+## Part 3 Features
+- [x] Can now perform type checking on all features listed above in Part 2
+- [ ] Updated LaTeX doc

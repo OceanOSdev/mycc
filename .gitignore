@@ -1,6 +1,13 @@
 *.o
+*.ro
 mycc
-lexer.c
+lexer.cpp
+mycc.tab.hpp 
+mycc.tab.cpp
+location.hh
+pch.h.gch
+mycc.ypp.*
+vgcore.*
 
 ## Core latex/pdflatex auxiliary files:
 *.aux
@@ -20,6 +27,7 @@ lexer.c
 *.dvi
 *.xdv
 *-converted-to.*
+*.idx
 # these rules might exclude image files for figures etc.
 # *.ps
 # *.eps
@@ -34,4 +42,8 @@ lexer.c
 
 
 #test file
+test_files
+test_files/*
 test*.c
+
+.vscode/
