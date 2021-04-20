@@ -30,6 +30,7 @@
 
 #include <string>
 #include <stdexcept>
+#include <vector>
 
 
 namespace Binding {
@@ -154,7 +155,13 @@ BoundExpressionNode* TreeRewriter::rewrite_expression(BoundExpressionNode* expre
 }
 
 BoundExpressionNode* TreeRewriter::rewrite_assignment_expression(BoundAssignmentExpressionNode* assignment_expression) {
+    auto expression = rewrite_expression(assignment_expression->expression());
+    auto variable = rewrite_expression(assignment_expression->variable_reference());
 
+    if (expression == assignment_expression->expression() && variable == assignment_expression->variable_reference())
+        return assignment_expression;
+    
+    return new BoundAssignmentExpressionNode(assignment_expression->assignment_op_kind(), dynamic_cast<BoundVariableReferenceExpressionNode*>(variable), expression);
 }
 
 BoundExpressionNode* TreeRewriter::rewrite_binary_expression(BoundBinaryExpressionNode* binary_expression) {
@@ -168,11 +175,29 @@ BoundExpressionNode* TreeRewriter::rewrite_binary_expression(BoundBinaryExpressi
 }
 
 BoundExpressionNode* TreeRewriter::rewrite_call_expression(BoundCallExpressionNode* call_expression) {
+    bool requires_rewrite = false;
+    std::vector<BoundExpressionNode*> new_args;
+    auto num_args = call_expression->arguments().size();
+    for (std::vector<BoundExpressionNode*>::size_type i = 0; i < num_args; i++) {
+        auto old_arg = call_expression->arguments()[i];
+        auto new_arg = rewrite_expression(old_arg);
+        if (old_arg != new_arg)
+            requires_rewrite = true;
+        
+        new_args.push_back(new_arg);
+    }
 
+    if (!requires_rewrite) return call_expression;
+    return new BoundCallExpressionNode(call_expression->function(), new_args);
 }
 
 BoundExpressionNode* TreeRewriter::rewrite_cast_expression(BoundCastExpressionNode* cast_expression) {
+    auto expression = rewrite_expression(cast_expression->expression());
 
+    if (expression == cast_expression->expression())
+        return cast_expression;
+
+    return new BoundCastExpressionNode(cast_expression->type(), expression);
 }
 
 BoundExpressionNode* TreeRewriter::rewrite_decrement_expression(BoundDecrementExpressionNode* decrement_expression) {
@@ -194,19 +219,31 @@ BoundExpressionNode* TreeRewriter::rewrite_increment_expression(BoundIncrementEx
 }
 
 BoundExpressionNode* TreeRewriter::rewrite_index_expression(BoundIndexExpressionNode* index_expression) {
+    auto expression = rewrite_expression(index_expression->expression());
 
+    if (expression == index_expression->expression())
+        return index_expression;
+    
+    return new BoundIndexExpressionNode(index_expression->variable_reference(), expression);
 }
 
 BoundExpressionNode* TreeRewriter::rewrite_literal_val_expression(BoundLiteralValExpressionNode* literal_val_expression) {
-
+    return literal_val_expression;
 }
 
 BoundExpressionNode* TreeRewriter::rewrite_member_expression(BoundMemberAccessExpressionNode* member_expression) {
+    auto encapsulated_ref = rewrite_expression(member_expression->encapsulated_variable_reference());
+    auto encapsulating_ref = rewrite_expression(member_expression->encapsulating_variable_reference());
 
+    if (encapsulated_ref == member_expression->encapsulated_variable_reference() &&
+        encapsulating_ref == member_expression->encapsulating_variable_reference())
+        return member_expression;
+    
+    return new BoundMemberAccessExpressionNode(encapsulated_ref, encapsulating_ref);
 }
 
 BoundExpressionNode* TreeRewriter::rewrite_var_reference_expression(BoundVariableReferenceExpressionNode* var_reference_expression) {
-
+    return var_reference_expression;
 }
 
 BoundExpressionNode* TreeRewriter::rewrite_ternary_expression(BoundTernaryExpressionNode* ternary_expression) {
