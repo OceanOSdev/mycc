@@ -13,7 +13,7 @@ const char* usage_str =
 "\t-1: Part 1\n"
 "\t-2: Part 2\n"
 "\t-3: Part 3\n"
-"\t-4: Part 4 (not implemented yet)\n"
+"\t-4: Part 4\n"
 "\t-5: Part 5 (not implemented yet)\n"
 "\t-6: Output Syntax Tree (for debugging purposes)\n\n"
 "Valid options:\n"

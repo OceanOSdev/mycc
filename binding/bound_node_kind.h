@@ -31,6 +31,7 @@ enum BoundNodeKind {
     LabelStatement,
     IfStatement,
     GotoStatement,
+    ConditionalGotoStatement,
     ForStatement,
     WhileStatement,
     DoWhileStatement,
