@@ -53,6 +53,8 @@ BoundStatementNode* TreeRewriter::rewrite_statement(BoundStatementNode* statemen
             return rewrite_block_statement(dynamic_cast<BoundBlockStatementNode*>(statement));
         case BoundNodeKind::VariableGroupDeclaration:
             return rewrite_variable_group_declaration(dynamic_cast<BoundVariableGroupDeclarationNode*>(statement));
+        case BoundNodeKind::VariableDeclaration:
+            return rewrite_variable_declaration(dynamic_cast<BoundVariableDeclarationNode*>(statement));
         case BoundNodeKind::IfStatement:
             return rewrite_if_statement(dynamic_cast<BoundIfStatementNode*>(statement));
         case BoundNodeKind::ForStatement:
@@ -83,11 +85,49 @@ BoundStatementNode* TreeRewriter::rewrite_expression_statement(BoundExpressionSt
 }
 
 BoundStatementNode* TreeRewriter::rewrite_block_statement(BoundBlockStatementNode* block_statement) {
+    std::vector<BoundStatementNode*> statements;
+    bool requires_rewrite = false;
+    auto decl_list_size = block_statement->statements();
+    for (std::vector<BoundStatementNode*>::size_type i = 0; i < decl_list_size; i++) {
+        auto old_statement = block_statement->statements()[i];
+        auto new_statement = rewrite_statement(old_statement);
+        if (old_statement != new_statement)
+            requires_rewrite = true;
+        
+        statements.push_back(new_statement);
+    }
 
+    if (!requires_rewrite) return block_statement;
+    return new BoundBlockStatementNode(statements);
 }
 
 BoundStatementNode* TreeRewriter::rewrite_variable_group_declaration(BoundVariableGroupDeclarationNode* var_group_decl) {
+    std::vector<BoundVariableDeclarationNode*> var_decls;
+    bool requires_rewrite = false;
+    auto decl_list_size = var_group_decl->variable_declarations();
+    for (std::vector<BoundVariableDeclarationNode*>::size_type i = 0; i < decl_list_size; i++) {
+        auto old_var_decl = var_group_decl->variable_declarations()[i];
+        auto new_var_decl = rewrite_statement(old_var_decl);
+        if (old_var_decl != new_var_decl)
+            requires_rewrite = true;
+        
+        var_decls.push_back(new_var_decl);
+    }
 
+    if (!requires_rewrite) return var_group_decl;
+    return new BoundVariableGroupDeclarationNode(var_decls);
+}
+
+BoundStatementNode* TreeRewriter::rewrite_variable_declaration(BoundVariableDeclarationNode* var_decl) {
+    if (!var_decl->is_initialized())
+        return var_decl;
+    
+    auto initializer = rewrite_expression(var_decl->initializer());
+
+    if (initializer == var_decl->initializer())
+        return var_decl;
+    
+    return new BoundVariableDeclarationNode(var_decl->variable_symbol(), initializer); 
 }
 
 BoundStatementNode* TreeRewriter::rewrite_if_statement(BoundIfStatementNode* if_statement) {
@@ -107,11 +147,16 @@ BoundStatementNode* TreeRewriter::rewrite_do_while_statement(BoundDoWhileStateme
 }
 
 BoundStatementNode* TreeRewriter::rewrite_return_statement(BoundReturnStatementNode* return_statement) {
+    BoundExpressionNode* expression = return_statement->expression() == nullptr ? nullptr : rewrite_expression(return_statement->expression());
 
+    if (expression == return_statement->expression())
+        return return_statement;
+    
+    return new BoundReturnStatementNode(expression);
 }
 
 BoundStatementNode* TreeRewriter::rewrite_struct_declaration(BoundStructDeclarationNode* struct_declaration) {
-
+    return struct_declaration;
 }
 
 BoundStatementNode* TreeRewriter::rewrite_label_statement(BoundLabelStatementNode* label_statement) {
@@ -270,8 +315,5 @@ BoundExpressionNode* TreeRewriter::rewrite_unary_expression(BoundUnaryExpression
 
     return new BoundUnaryExpressionNode(unary_expression->op(), operand);
 }
-
-
-
 
 }

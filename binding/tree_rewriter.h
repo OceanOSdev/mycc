@@ -10,6 +10,7 @@ class BoundExpressionNode;
 class BoundExpressionStatementNode;
 class BoundBlockStatementNode;
 class BoundVariableGroupDeclarationNode;
+class BoundVariableDeclarationNode;
 class BoundIfStatementNode;
 class BoundForStatementNode;
 class BoundWhileStatementNode;
@@ -46,6 +47,7 @@ private:
     BoundStatementNode* rewrite_expression_statement(BoundExpressionStatementNode* expression_statement);
     BoundStatementNode* rewrite_block_statement(BoundBlockStatementNode* block_statement);
     BoundStatementNode* rewrite_variable_group_declaration(BoundVariableGroupDeclarationNode* var_group_decl);
+    BoundStatementNode* rewrite_variable_declaration(BoundVariableDeclarationNode* var_decl);
     BoundStatementNode* rewrite_if_statement(BoundIfStatementNode* if_statement);
     BoundStatementNode* rewrite_for_statement(BoundForStatementNode* for_statement);
     BoundStatementNode* rewrite_while_statement(BoundWhileStatementNode* while_statement);
