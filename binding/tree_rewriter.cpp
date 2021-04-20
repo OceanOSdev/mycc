@@ -239,7 +239,7 @@ BoundExpressionNode* TreeRewriter::rewrite_member_expression(BoundMemberAccessEx
         encapsulating_ref == member_expression->encapsulating_variable_reference())
         return member_expression;
     
-    return new BoundMemberAccessExpressionNode(encapsulated_ref, encapsulating_ref);
+    return new BoundMemberAccessExpressionNode(dynamic_cast<BoundMemberAccessExpressionNode*>(encapsulated_ref), dynamic_cast<BoundMemberAccessExpressionNode*>(encapsulating_ref));
 }
 
 BoundExpressionNode* TreeRewriter::rewrite_var_reference_expression(BoundVariableReferenceExpressionNode* var_reference_expression) {
