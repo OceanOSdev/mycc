@@ -150,7 +150,8 @@ BoundExpressionNode* TreeRewriter::rewrite_expression(BoundExpressionNode* expre
             return rewrite_ternary_expression(dynamic_cast<BoundTernaryExpressionNode*>(expression));
         case BoundNodeKind::UnaryExpression:
             return rewrite_unary_expression(dynamic_cast<BoundUnaryExpressionNode*>(expression));
-
+        default:
+            throw std::runtime_error("Unexpected bound node while rewriting expression.");
     }
 }
 
