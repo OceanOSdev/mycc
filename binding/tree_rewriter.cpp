@@ -87,7 +87,7 @@ BoundStatementNode* TreeRewriter::rewrite_expression_statement(BoundExpressionSt
 BoundStatementNode* TreeRewriter::rewrite_block_statement(BoundBlockStatementNode* block_statement) {
     std::vector<BoundStatementNode*> statements;
     bool requires_rewrite = false;
-    auto decl_list_size = block_statement->statements();
+    auto decl_list_size = block_statement->statements().size();
     for (std::vector<BoundStatementNode*>::size_type i = 0; i < decl_list_size; i++) {
         auto old_statement = block_statement->statements()[i];
         auto new_statement = rewrite_statement(old_statement);
@@ -104,14 +104,14 @@ BoundStatementNode* TreeRewriter::rewrite_block_statement(BoundBlockStatementNod
 BoundStatementNode* TreeRewriter::rewrite_variable_group_declaration(BoundVariableGroupDeclarationNode* var_group_decl) {
     std::vector<BoundVariableDeclarationNode*> var_decls;
     bool requires_rewrite = false;
-    auto decl_list_size = var_group_decl->variable_declarations();
+    auto decl_list_size = var_group_decl->variable_declarations().size();
     for (std::vector<BoundVariableDeclarationNode*>::size_type i = 0; i < decl_list_size; i++) {
         auto old_var_decl = var_group_decl->variable_declarations()[i];
         auto new_var_decl = rewrite_statement(old_var_decl);
         if (old_var_decl != new_var_decl)
             requires_rewrite = true;
         
-        var_decls.push_back(new_var_decl);
+        var_decls.push_back(dynamic_cast<BoundVariableDeclarationNode*>(new_var_decl));
     }
 
     if (!requires_rewrite) return var_group_decl;
@@ -131,19 +131,19 @@ BoundStatementNode* TreeRewriter::rewrite_variable_declaration(BoundVariableDecl
 }
 
 BoundStatementNode* TreeRewriter::rewrite_if_statement(BoundIfStatementNode* if_statement) {
-
+    return if_statement;
 }
 
 BoundStatementNode* TreeRewriter::rewrite_for_statement(BoundForStatementNode* for_statement) {
-
+    return for_statement;
 }
 
 BoundStatementNode* TreeRewriter::rewrite_while_statement(BoundWhileStatementNode* while_statement) {
-
+    return while_statement;
 }
 
 BoundStatementNode* TreeRewriter::rewrite_do_while_statement(BoundDoWhileStatementNode* do_while_statement) {
-
+    return do_while_statement;
 }
 
 BoundStatementNode* TreeRewriter::rewrite_return_statement(BoundReturnStatementNode* return_statement) {

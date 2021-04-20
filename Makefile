@@ -108,7 +108,7 @@ BINDING_SRC_NO_PATH += bound_variable_reference_expression_node.cpp bound_member
 BINDING_SRC_NO_PATH += bound_assignment_expression_node.cpp bound_unary_expression_node.cpp bound_call_expression_node.cpp
 BINDING_SRC_NO_PATH += bound_ternary_expression_node.cpp bound_increment_expression_node.cpp bound_empty_statement_node.cpp
 BINDING_SRC_NO_PATH += bound_label_statement_node.cpp bound_if_statement_node.cpp bound_goto_statement_node.cpp bound_for_statement_node.cpp
-BINDING_SRC_NO_PATH += bound_do_while_statement_node.cpp bound_while_statement_node.cpp
+BINDING_SRC_NO_PATH += bound_do_while_statement_node.cpp bound_while_statement_node.cpp tree_rewriter.cpp
 BINDING_SRC_NO_PATH += binder.cpp 
 BINDING_SRCS = $(addprefix  $(BINDING_DIR)/, $(BINDING_SRC_NO_PATH))
 BINDING_OBJS = $(patsubst %.cpp,$(OBJDIR)/%.o,$(BINDING_SRC_NO_PATH))
@@ -145,6 +145,9 @@ BINDER_DEPS_BIND_SRCS += bound_variable_reference_expression_node.cpp bound_memb
 BINDER_DEPS_BIND_SRCS += bound_binary_expression_node.cpp bound_unary_expression_node.cpp bound_assignment_expression_node.cpp bound_call_expression_node.cpp
 BINDER_DEPS_BIND_SRCS += bound_ternary_expression_node.cpp bound_increment_expression_node.cpp
 BINDER_DEPS_SRCS = $(addprefix $(BINDING_DIR)/, $(BINDER_DEPS_BIND_SRCS))
+
+TREE_REWRITER_SRCS = $(BINDER_DEPS_BIND_SRCS)
+TREE_REWRITER_DEPS = $(addprefix $(BINDING_DIR)/, $(TREE_REWRITER_SRCS))
 
 BINDER_DEPS_SRCS_SYNT = expression_node.cpp expression_statement_node.cpp global_variable_group_declaration_node.cpp global_struct_declaration_node.cpp
 BINDER_DEPS_SRCS_SYNT += function_prototype_node.cpp function_definition_node.cpp formal_parameter_node.cpp cast_expression_node.cpp
@@ -228,6 +231,7 @@ old-doc:
 #dependencies
 $(OBJDIR)/lexer.o: mycc.tab.hpp lexer.cpp
 $(OBJDIR)/mycc.tab.o: mycc.tab.hpp $(SYNTAX_SRCS)
+$(OBJDIR)/tree_rewriter.o: $(TREE_REWRITER_DEPS)
 $(OBJDIR)/binder.o: $(BINDER_DEPS_SRCS) 
 $(OBJDIR)/diagnostics.o: $(SYNTAX_DIR)/syntax_token.cpp
 $(OBJDIR)/part_two_syntax_check.o: $(PART_TWO_SYNT_CHECK_DEPS)

@@ -17,6 +17,7 @@ class BoundWhileStatementNode;
 class BoundDoWhileStatementNode;
 class BoundReturnStatementNode;
 class BoundStructDeclarationNode;
+class BoundLabelStatementNode;
 class BoundGotoStatementNode;
 
 class BoundExpressionNode;
