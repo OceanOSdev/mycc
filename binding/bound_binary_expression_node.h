@@ -20,10 +20,10 @@ private:
     static BoundBinaryOperatorNode* BindITypeOperator(BoundBinaryOpKind opKind, const Symbols::TypeSymbol* left, const Symbols::TypeSymbol* right);
     static BoundBinaryOperatorNode* BindNTypeOperator(BoundBinaryOpKind opKind, const Symbols::TypeSymbol* left, const Symbols::TypeSymbol* right);
     static BoundBinaryOperatorNode* BindNTypeCompOperator(BoundBinaryOpKind opKind, const Symbols::TypeSymbol* left, const Symbols::TypeSymbol* right);
-    BoundBinaryOperatorNode(BoundBinaryOpKind op, const Symbols::TypeSymbol* left, const Symbols::TypeSymbol* right, const Symbols::TypeSymbol* type);
 public:
+    BoundBinaryOperatorNode(BoundBinaryOpKind op, const Symbols::TypeSymbol* left, const Symbols::TypeSymbol* right, const Symbols::TypeSymbol* type);
     static BoundBinaryOperatorNode* Bind(Syntax::btokentype syntax_token_type, const Symbols::TypeSymbol* left, const Symbols::TypeSymbol* right);
-    
+       
     /*
      * The type symbol for the left side of the expression.
      */

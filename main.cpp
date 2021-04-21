@@ -129,11 +129,12 @@ void run_bound_tree_printer(Arguments* args) {
     if (run_parser(args, std::move(d))) {
         auto root = new Syntax::ProgramNode(nullptr, d.get_translation_units());
         auto binder = Binding::Binder::bind_program(root);
-        QuickSemanticAnalyzer::log_analysis(logger, binder->part_three_info_list());
         if (binder->err_flag())
             logger->log_diagnostics_list(binder->diagnostics());
-        else
-            BoundTreePrinter::print_bound_tree(binder->global_decls());
+        else {
+            auto printer = new BoundTreePrinter();
+            printer->print_bound_tree(binder->global_decls());
+        }
     } else {
         for (auto diagnostic : d.get_diagnostics())
             logger->log_err(diagnostic);

@@ -501,14 +501,6 @@ BoundStatementNode* Binder::bind_variable_group_declaration(Syntax::VariableGrou
     for (auto partial_dec : variable_group->partial_variable_group()) {
         std::string ident = partial_dec->identifier();
         BoundExpressionNode* initial_val = nullptr;
-        if (partial_dec->is_assigned()) {
-            initial_val = bind_expression(partial_dec->expression());
-            if (!Symbols::TypeSymbol::are_types_equivalent(initial_val->type(), var_type)) {
-                m_diagnostics->report_incompatible_conversion(partial_dec->token(), initial_val->type()->str(), var_type->str());
-                m_err_flag = true;
-                initial_val = new BoundErrorExpressionNode();
-            }
-        }
 
         bool is_array = partial_dec->is_array();
         bool is_const = variable_group->is_const();
@@ -523,6 +515,15 @@ BoundStatementNode* Binder::bind_variable_group_declaration(Syntax::VariableGrou
                                                             is_array,
                                                             partial_dec->array_length(),
                                                             is_const);
+        
+        if (partial_dec->is_assigned()) {
+            initial_val = bind_expression(partial_dec->expression());
+            if (!Symbols::TypeSymbol::are_types_equivalent(initial_val->type(), type)) {
+                m_diagnostics->report_incompatible_conversion(partial_dec->token(), initial_val->type()->str(), type->str());
+                m_err_flag = true;
+                initial_val = new BoundErrorExpressionNode();
+            }
+        }
         
         auto added_to_scope = m_scope->try_declare_variable(variable_symbol);
         if (!added_to_scope) {

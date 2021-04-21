@@ -258,9 +258,25 @@ BoundExpressionNode* TreeRewriter::rewrite_expression(BoundExpressionNode* expre
 BoundExpressionNode* TreeRewriter::rewrite_assignment_expression(BoundAssignmentExpressionNode* assignment_expression) {
     auto expression = rewrite_expression(assignment_expression->expression());
     auto variable = rewrite_expression(assignment_expression->variable_reference());
+    auto assign_op_kind = assignment_expression->assignment_op_kind();
+    if (assign_op_kind != BoundAssignmentOpKind::ASSIGN) {
+        // rewrite 'var <op>= expr' to 'var = (var <op> expr)'
+        BoundBinaryOpKind new_op_kind;
+        switch(assign_op_kind) {
+            case Binding::BoundAssignmentOpKind::PLUS_ASSIGN: new_op_kind = BoundBinaryOpKind::Addition; break;
+            case Binding::BoundAssignmentOpKind::MINUS_ASSIGN: new_op_kind = BoundBinaryOpKind::Subtraction; break;
+            case Binding::BoundAssignmentOpKind::STAR_ASSIGN: new_op_kind = BoundBinaryOpKind::Multiplication; break;
+            case Binding::BoundAssignmentOpKind::SLASH_ASSIGN: new_op_kind = BoundBinaryOpKind::Division; break;
+            default: throw std::runtime_error("Invalid state when rewriting assignment expression.");
+        }
+        auto bin_op = new BoundBinaryOperatorNode(new_op_kind, variable->type(), expression->type(), variable->type());
+        auto new_rval = new BoundBinaryExpressionNode(bin_op, variable, expression);
+        return new BoundAssignmentExpressionNode(BoundAssignmentOpKind::ASSIGN, dynamic_cast<BoundVariableReferenceExpressionNode*>(variable), new_rval);
+    }
 
     if (expression == assignment_expression->expression() && variable == assignment_expression->variable_reference())
         return assignment_expression;
+    
     
     return new BoundAssignmentExpressionNode(assignment_expression->assignment_op_kind(), dynamic_cast<BoundVariableReferenceExpressionNode*>(variable), expression);
 }

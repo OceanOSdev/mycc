@@ -4,7 +4,7 @@
 
 namespace Binding {
 
-enum BoundBinaryOpKind {
+enum BoundBinaryOpKind : int{
     /* I Types */
     Modulo,
     BitwiseAnd,
@@ -26,8 +26,6 @@ enum BoundBinaryOpKind {
     LogicalAnd,
     LogicalOr
 };
-
-using BoundBinaryOpKind = enum BoundBinaryOpKind;
 
 }
 

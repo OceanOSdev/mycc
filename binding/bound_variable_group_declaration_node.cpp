@@ -20,7 +20,7 @@ BoundExpressionNode* BoundVariableDeclarationNode::initializer() const {
 }
 
 bool BoundVariableDeclarationNode::is_initialized() const {
-    return m_initializer == nullptr;
+    return m_initializer != nullptr;
 }
 
 /*

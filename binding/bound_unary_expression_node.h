@@ -10,7 +10,7 @@ namespace Syntax {
 
 namespace Binding {
 
-enum BoundUnaryOpKind {
+enum BoundUnaryOpKind : int {
     /* I Types */
     OnesComplement,
     
@@ -19,7 +19,6 @@ enum BoundUnaryOpKind {
     LogicalNegation,
 };
 
-using BoundUnaryOpKind = enum BoundUnaryOpKind;
 
 class BoundUnaryOperatorNode {
 private:
