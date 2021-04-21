@@ -42,7 +42,7 @@ std::string const BoundTreePrinter::m_indent_str = "  ";
 BoundTreePrinter::BoundTreePrinter() : m_indent(0) {}
 
 void BoundTreePrinter::print_indent() const {
-    // probably a better and more C++ish way
+    // there's probably a better and more C++ish way
     // to do this, but I'm only using this for
     // debugging so it's not really mission
     // critical.
@@ -60,7 +60,7 @@ void BoundTreePrinter::print_bound_tree(std::vector<Binding::BoundGlobalDeclarat
             {
                 auto gdec = dynamic_cast<Binding::BoundGlobalStatementNode*>(dec);
                 // forgo from rewriting nonfunction global statements for now
-                // since (I think (and I haven't thought much about this)) they shouldn't
+                // since (I think (and be warned, I haven't thought about this much)) they shouldn't
                 // end up using any conditional statements in them. (i.e. they should be compile time constants)
                 print_statement(gdec->statement());
                 break;
@@ -82,7 +82,8 @@ void BoundTreePrinter::print_bound_tree(std::vector<Binding::BoundGlobalDeclarat
 
 void BoundTreePrinter::print_statement(Binding::BoundStatementNode* statement) {
     auto kind = statement->kind();
-    print_indent();
+    if (kind != Binding::BoundNodeKind::LabelStatement)
+        print_indent();
     switch (kind) {
         case Binding::BoundNodeKind::ExpressionStatement:
             print_expression_statement(dynamic_cast<Binding::BoundExpressionStatementNode*>(statement));
@@ -144,16 +145,27 @@ void BoundTreePrinter::print_block_statement(Binding::BoundBlockStatementNode* b
 }
 
 void BoundTreePrinter::print_variable_group_declaration(Binding::BoundVariableGroupDeclarationNode* var_group_decl) {
-    std::vector<Binding::BoundVariableDeclarationNode*>::iterator var_decl_iter;
-    auto var_decs = var_group_decl->variable_declarations();
-    auto last = std::prev(var_decs.end(), 1);
-    for(var_decl_iter = var_decs.begin(); var_decl_iter != var_decs.end(); var_decl_iter++ ) {
-        print_variable_declaration(*var_decl_iter);
-        if (var_decl_iter != last) {
+    bool is_first = true;
+    for (auto var_dec : var_group_decl->variable_declarations()) {
+        if (is_first) {
+            is_first = false;
+        } else {
             std::cout << std::endl;
             print_indent();
         }
+
+        print_variable_declaration(var_dec);
     }
+    // std::vector<Binding::BoundVariableDeclarationNode*>::iterator var_decl_iter;
+    // auto var_decs = var_group_decl->variable_declarations();
+    // auto last = std::prev(var_decs.end(), 1);
+    // for(var_decl_iter = var_decs.begin(); var_decl_iter != var_decs.end(); var_decl_iter++ ) {
+    //     print_variable_declaration(*var_decl_iter);
+    //     if (var_decl_iter != last) {
+    //         std::cout << std::endl;
+    //         print_indent();
+    //     }
+    // }
 }
 
 void BoundTreePrinter::print_variable_declaration(Binding::BoundVariableDeclarationNode* var_decl) {
@@ -184,8 +196,11 @@ void BoundTreePrinter::print_do_while_statement( __attribute__((unused)) Binding
 
 }
 
-void BoundTreePrinter::print_return_statement( __attribute__((unused)) Binding::BoundReturnStatementNode* return_statement) {
-
+void BoundTreePrinter::print_return_statement(Binding::BoundReturnStatementNode* return_statement) {
+    std::cout << "return ";
+    if (return_statement->expression() != nullptr) {
+        print_expression(return_statement->expression());
+    }
 }
 
 void BoundTreePrinter::print_struct_declaration( __attribute__((unused)) Binding::BoundStructDeclarationNode* struct_declaration) {
@@ -257,7 +272,7 @@ void BoundTreePrinter::print_assignment_expression(Binding::BoundAssignmentExpre
     print_expression(assignment_expression->expression());
 }
 
-void BoundTreePrinter::print_binary_expression( __attribute__((unused)) Binding::BoundBinaryExpressionNode* binary_expression) {
+void BoundTreePrinter::print_binary_expression(Binding::BoundBinaryExpressionNode* binary_expression) {
     print_expression(binary_expression->left());
     std::cout << " ";
     print_binary_op_token(binary_expression->op()->op_kind());
@@ -265,8 +280,19 @@ void BoundTreePrinter::print_binary_expression( __attribute__((unused)) Binding:
     print_expression(binary_expression->right());
 }
 
-void BoundTreePrinter::print_call_expression( __attribute__((unused)) Binding::BoundCallExpressionNode* call_expression) {
+void BoundTreePrinter::print_call_expression(Binding::BoundCallExpressionNode* call_expression) {
+    std::cout << call_expression->function()->name() << '(';
+    bool is_first = true;
+    for (auto arg : call_expression->arguments()) {
+        if (is_first) {
+            is_first = false;
+        } else {
+            std::cout << ", ";
+        }
 
+        print_expression(arg);
+    }
+    std::cout << ')';    
 }
 
 void BoundTreePrinter::print_cast_expression(Binding::BoundCastExpressionNode* cast_expression) {
@@ -275,12 +301,28 @@ void BoundTreePrinter::print_cast_expression(Binding::BoundCastExpressionNode* c
     std::cout << ")";
 }
 
-void BoundTreePrinter::print_decrement_expression( __attribute__((unused)) Binding::BoundDecrementExpressionNode* decrement_expression) {
-
+void BoundTreePrinter::print_decrement_expression(Binding::BoundDecrementExpressionNode* decrement_expression) {
+    if (decrement_expression->notation() == Binding::IDNotation::PREFIX) {
+        std::cout << "--(";
+        print_expression(decrement_expression->expression());
+        std::cout << ')';
+    } else {
+        std::cout << '(';
+        print_expression(decrement_expression->expression());
+        std::cout << ")--";
+    }
 }
 
-void BoundTreePrinter::print_increment_expression( __attribute__((unused)) Binding::BoundIncrementExpressionNode* increment_expression) {
-
+void BoundTreePrinter::print_increment_expression(Binding::BoundIncrementExpressionNode* increment_expression) {
+    if (increment_expression->notation() == Binding::IDNotation::PREFIX) {
+        std::cout << "++(";
+        print_expression(increment_expression->expression());
+        std::cout << ')';
+    } else {
+        std::cout << '(';
+        print_expression(increment_expression->expression());
+        std::cout << ")++";
+    }
 }
 
 void BoundTreePrinter::print_index_expression(Binding::BoundIndexExpressionNode* index_expression) {
@@ -304,15 +346,17 @@ void BoundTreePrinter::print_literal_val_expression(Binding::BoundLiteralValExpr
     }
 }
 
-void BoundTreePrinter::print_member_expression( __attribute__((unused)) Binding::BoundMemberAccessExpressionNode* member_expression) {
-
+void BoundTreePrinter::print_member_expression(Binding::BoundMemberAccessExpressionNode* member_expression) {
+    print_expression(member_expression->encapsulating_variable_reference());
+    std::cout << '.';
+    print_expression(member_expression->encapsulated_variable_reference());
 }
 
 void BoundTreePrinter::print_var_reference_expression(Binding::BoundVariableReferenceExpressionNode* var_reference_expression) {
     std::cout << var_reference_expression->variable_reference()->name();
 }
 
-void BoundTreePrinter::print_ternary_expression( __attribute__((unused)) Binding::BoundTernaryExpressionNode* ternary_expression) {
+void BoundTreePrinter::print_ternary_expression(Binding::BoundTernaryExpressionNode* ternary_expression) {
     print_expression(ternary_expression->conditional());
     std::cout << " ? ";
     print_expression(ternary_expression->true_expr());

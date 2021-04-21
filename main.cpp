@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include <vector>
 #include "arg_parser.h"
 #include "lexeme_data.h"
