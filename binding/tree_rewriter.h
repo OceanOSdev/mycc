@@ -80,6 +80,13 @@ private:
 public:
 
     static BoundBlockStatementNode* rewrite(BoundStatementNode* statement, int label_offset = 0);
+    
+    /*
+     * Acts does the same thing as the other rewrite function, but
+     * returns the new BoundBlockStatementNode through an "out" parameter
+     * and returns the label count after rewriting through the usual means.
+     */
+    static int rewrite(BoundStatementNode* in_statement, BoundBlockStatementNode*& out_statement, int label_offset = 0);
 
 };
 

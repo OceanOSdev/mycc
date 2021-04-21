@@ -37,7 +37,6 @@
 
 namespace Binding {
 
-
 TreeRewriter::TreeRewriter() : m_label_count(0) {}
 TreeRewriter::TreeRewriter(int label_offset) : m_label_count(label_offset) {}
 
@@ -45,6 +44,19 @@ BoundLabel* TreeRewriter::generate_label() {
     ++m_label_count;
     std::string label = "L" + std::to_string(m_label_count);
     return new BoundLabel(label);
+}
+
+/*
+ * Acts does the same thing as the other rewrite function, but
+ * returns the new BoundBlockStatementNode through an "out" parameter
+ * and returns the label count after rewriting through the usual means.
+ */
+int TreeRewriter::rewrite(BoundStatementNode* in_statement, BoundBlockStatementNode*& out_statement, int label_offset) {
+    // cant just call the other rewrite method since I need access to an instance
+    // of the rewriter class to grab the label count.
+    auto rewriter = new TreeRewriter(label_offset);
+    out_statement = flatten(rewriter->rewrite_statement(in_statement));
+    return rewriter->m_label_count;
 }
 
 BoundBlockStatementNode* TreeRewriter::rewrite(BoundStatementNode* statement, int label_offset) {
