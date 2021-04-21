@@ -255,12 +255,32 @@ BoundStatementNode* TreeRewriter::rewrite_for_statement(BoundForStatementNode* f
         statements.push_back(new BoundExpressionStatementNode(for_statement->third_expression()));
     statements.push_back(new BoundGotoStatementNode(continue_label));
     statements.push_back(new BoundLabelStatementNode(break_label));
-    //return for_statement;
     return rewrite_statement(new BoundBlockStatementNode(statements));
 }
 
 BoundStatementNode* TreeRewriter::rewrite_while_statement(BoundWhileStatementNode* while_statement) {
-    return while_statement;
+    // want to rewrite expresssion
+    //
+    // while <cond>
+    //    <body>
+    // -----------> rewrite as
+    //
+    // continue:
+    // goto break if <cond> false
+    // <body>
+    // goto continue
+    // break:
+    //
+    auto break_label = while_statement->break_label();
+    auto continue_label = while_statement->continue_label();
+    std::vector<BoundStatementNode*> statements = {
+        new BoundLabelStatementNode(continue_label),
+        new BoundConditionalGotoStatementNode(break_label, while_statement->condition_expression(), false),
+        while_statement->body_statement(),
+        new BoundGotoStatementNode(continue_label),
+        new BoundLabelStatementNode(break_label)
+    };
+    return rewrite_statement(new BoundBlockStatementNode(statements));
 }
 
 BoundStatementNode* TreeRewriter::rewrite_do_while_statement(BoundDoWhileStatementNode* do_while_statement) {
