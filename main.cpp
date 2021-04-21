@@ -9,14 +9,50 @@
 #include "part_two_syntax_check.h"
 #include "logging/diagnostics.h"
 #include "binding/binder.h"
+#include "bound_tree_printer.h"
 
-const char* versionInfo =
+const char* version_info =
 "My bare-bones C compiler (for COM 440)\n"
 "\tWritten by Thomas Maloney (tmaloney@iastate.edu)\n"
 "\tVersion 0.3\n"
 "\t4 March, 2021\n";
 
 Logging::Logger* logger;
+
+void argument_handler(Arguments* args);
+bool run_parser(Arguments* pat, Driver&& d);
+void print_token_list(std::vector<LexemeDataNode> tlist);
+void run_lexer(Arguments* args); 
+void run_syntax_checker(Arguments* args); 
+void run_semantic_analyzer(Arguments* args);
+void run_syntax_tree_printer(Arguments* args);
+void run_bound_tree_printer(Arguments* args);
+
+int main(int argc, char* argv[]) {
+    auto arguments = Arguments::parse_arguments(argc, argv);
+    argument_handler(arguments);
+    return 0;
+}
+
+void argument_handler(Arguments* args) {
+    if (args->should_output_file()) {
+        logger = new Logging::Logger(args->output_filename());
+    } else {
+        logger= new Logging::Logger();
+    }
+
+    switch (args->compiler_mode()) {
+        case CompilerMode::MODE_ERR: break; // <-- should literally never happen.
+        case CompilerMode::MODE_ZERO: logger->log_info(std::string(version_info)); break;
+        case CompilerMode::MODE_ONE: run_lexer(args); break;
+        case CompilerMode::MODE_TWO: run_syntax_checker(args); break;
+        case CompilerMode::MODE_THREE: run_semantic_analyzer(args); break;
+        case CompilerMode::MODE_FOUR: break;
+        case CompilerMode::MODE_FIVE: break;
+        case CompilerMode::MODE_SIX: run_syntax_tree_printer(args); break;
+        case CompilerMode::MODE_SEVEN: run_bound_tree_printer(args); break;
+    }
+}
 
 void print_token_list(std::vector<LexemeDataNode> tlist) {
     std::vector<LexemeDataNode>::iterator iter;
@@ -28,25 +64,21 @@ void print_token_list(std::vector<LexemeDataNode> tlist) {
     }
 }
 
-void runLexer(parsed_args_t* pat) {
+void run_lexer(Arguments* args) {
     Driver d;
-    for (int i = 0; i < pat->numFiles; i++) {
-        std::string filename = std::string( pat->inputFiles[i]);
+    for (auto filename: args->input_filenames()) {
         std::ifstream ifstrm(filename);
         std::istream* ist = &ifstrm;
         d.switch_input_stream(filename, ist);
         d.init_new_input();
         while ((d.lex()).type >= 1) {}
-
     }
-
     auto tlist = d.get_part_one_lexeme_list();
     print_token_list(tlist);
 }
 
-bool runParser(parsed_args_t* pat, Driver&& d) {
-    for (int i = 0; i < pat->numFiles /*&& !d.error_flag()*/; i++) {
-        std::string filename = std::string( pat->inputFiles[i]);
+bool run_parser(Arguments* args, Driver&& d) {
+    for (auto filename : args->input_filenames()) {
         std::ifstream ifstrm(filename);
         std::istream* ist = &ifstrm;
         d.switch_input_stream(filename, ist);
@@ -57,41 +89,34 @@ bool runParser(parsed_args_t* pat, Driver&& d) {
     return !d.error_flag();
 }
 
-void runSyntaxChecker(parsed_args_t* pat) {
+void run_syntax_checker(Arguments* args) {
     Driver d;
-    auto parsed = runParser(pat, std::move(d));
+    auto parsed = run_parser(args, std::move(d));
     auto root = new Syntax::ProgramNode(nullptr, d.get_translation_units());
     auto synt = new PartTwoSyntaxPrinter(root, logger);
     synt->print_info();
     if (!parsed)
         for (auto diagnostic : d.get_diagnostics())
             logger->log_err(diagnostic);
-    //SyntaxTreePrinter::print_nodes(tun[0]);
-
-
-    // print_symbol_parse_list(fout, spls, pat->numFiles);
 }
 
-void runSemanticAnalyzer(parsed_args_t* pat) {
+void run_semantic_analyzer(Arguments* args) {
     Driver d;
-    if (runParser(pat, std::move(d))) {
+    if (run_parser(args, std::move(d))) {
         auto root = new Syntax::ProgramNode(nullptr, d.get_translation_units());
         auto binder = Binding::Binder::bind_program(root);
         QuickSemanticAnalyzer::log_analysis(logger, binder->part_three_info_list());
         if (binder->err_flag())
             logger->log_diagnostics_list(binder->diagnostics());
-        //auto root = new Syntax::ProgramNode(d.get_translation_units());
-        //SyntaxTreePrinter::print_nodes(d.get_translation_units()[0]);
     } else {
         for (auto diagnostic : d.get_diagnostics())
             logger->log_err(diagnostic);
     }
-
 }
 
-void runSyntaxTreePrinter(parsed_args_t* pat) {
+void run_syntax_tree_printer(Arguments* args) {
     Driver d;
-    auto parsed = runParser(pat, std::move(d));
+    auto parsed = run_parser(args, std::move(d));
     auto root = new Syntax::ProgramNode(nullptr, d.get_translation_units());
     SyntaxTreePrinter::print_nodes(root->units()[0]);
     if (!parsed)
@@ -99,37 +124,18 @@ void runSyntaxTreePrinter(parsed_args_t* pat) {
             logger->log_err(diagnostic);
 }
 
-void handleArgs(parsed_args_t* pat, char* oFileName) {
-    if (pat->useOutputFile) {
-        logger = new Logging::Logger(std::string(oFileName));
+void run_bound_tree_printer(Arguments* args) {
+    Driver d;
+    if (run_parser(args, std::move(d))) {
+        auto root = new Syntax::ProgramNode(nullptr, d.get_translation_units());
+        auto binder = Binding::Binder::bind_program(root);
+        QuickSemanticAnalyzer::log_analysis(logger, binder->part_three_info_list());
+        if (binder->err_flag())
+            logger->log_diagnostics_list(binder->diagnostics());
+        else
+            BoundTreePrinter::print_bound_tree(binder->global_decls());
     } else {
-        logger = new Logging::Logger();
+        for (auto diagnostic : d.get_diagnostics())
+            logger->log_err(diagnostic);
     }
-    
-    switch (pat->mode) {
-        case MODE_ERR: break; // <-- Should literally never happen
-        case MODE_ZERO: logger->log_info(std::string(versionInfo)); break;
-        case MODE_ONE: runLexer(pat); break;
-        case MODE_TWO: runSyntaxChecker(pat); break;
-        case MODE_THREE:runSemanticAnalyzer(pat); break;
-        case MODE_FOUR: break;
-        case MODE_FIVE: break;
-        case MODE_SIX: runSyntaxTreePrinter(pat); break;
-    }
-
-    // probably shouldn't close stdout
-    //if (pat->useOutputFile)
-        //fclose(fout);
-}
-
-int main(int argc, char* argv[]) {
-//#ifdef YYDEBUG
-    //yydebug = 1;
-//#endif
-    //head = init_token_list();
-    char* oFileName = NULL;
-    parsed_args_t* pat = parseArgs(argc, argv, &oFileName);
-    handleArgs(pat, oFileName);
-    //unalloc_token_list(head);
-    return 0;
 }

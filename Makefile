@@ -61,7 +61,7 @@ endef
 ######################################################
 
 
-SRCS = driver.cpp arg_parser.cpp qsem.cpp part_two_syntax_check.cpp syntax_tree_printer.cpp main.cpp
+SRCS = driver.cpp arg_parser.cpp qsem.cpp part_two_syntax_check.cpp bound_tree_printer.cpp syntax_tree_printer.cpp main.cpp
 OBJDIR = bin
 TARG = mycc
 
@@ -161,7 +161,8 @@ BINDER_DEPS_SRCS += $(addprefix $(SYNTAX_DIR)/, $(BINDER_DEPS_SRCS_SYNT))
 BINDER_DEPS_SRCS_LOG += diagnostics.cpp part_three_info.cpp
 BINDER_DEPS_SRCS += $(addprefix $(LOGGING_DIR)/, $(BINDER_DEPS_SRCS_LOG))
 
-
+B_TREE_PRINTER_DEP_SRCS_NP = tree_rewriter.cpp bound_global_statement_node.cpp bound_function_definition_node.cpp
+B_TREE_PRINTER_DEP = $(addprefix $(BINDING_DIR)/, $(B_TREE_PRINTER_DEP_SRCS_NP))
 
 
 all: nodoc docs
@@ -236,6 +237,7 @@ $(OBJDIR)/binder.o: $(BINDER_DEPS_SRCS)
 $(OBJDIR)/diagnostics.o: $(SYNTAX_DIR)/syntax_token.cpp
 $(OBJDIR)/part_two_syntax_check.o: $(PART_TWO_SYNT_CHECK_DEPS)
 $(OBJDIR)/qsem.o: $(LOGGING_DIR)/part_three_info.cpp
+$(OBJDIR)/bound_tree_printer.o: $(B_TREE_PRINTER_DEP)
 
 
 .PHONY: all nodoc debug benchmark verbose clean cclean destroy docs old-doc
