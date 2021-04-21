@@ -54,7 +54,7 @@ void DiagnosticsList::report_expression_cannot_be_void(Syntax::SyntaxToken* toke
 
 void DiagnosticsList::report_no_definition_for_type_symbol(Syntax::SyntaxToken* token, std::string symbol_id) {
     Location loc = from_syntax_token(token);
-    std::string message = "No definition for '" + symbol_id + "'";
+    std::string message = "Incomplete type '" + symbol_id + "' cannot be used here";
     report(loc,message);
 }
 

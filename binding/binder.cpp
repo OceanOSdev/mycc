@@ -493,7 +493,7 @@ BoundStatementNode* Binder::bind_variable_group_declaration(Syntax::VariableGrou
     std::vector<BoundVariableDeclarationNode*> bound_variables;
     auto type_symbol_id = variable_group->type();
     auto var_type = bind_type_clause(type_symbol_id);
-    if (Symbols::TypeSymbol::is_error_type(var_type)) {
+    if (Symbols::TypeSymbol::is_error_or_incomplete_type(var_type)) {
         m_diagnostics->report_no_definition_for_type_symbol(variable_group->token(), var_type->str());
         m_err_flag = true;
     }

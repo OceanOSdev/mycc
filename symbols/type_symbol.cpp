@@ -171,6 +171,13 @@ bool TypeSymbol::is_error_type(const TypeSymbol* type) {
         return are_types_equivalent(type, &TypeSymbol::Error);
 }
 
+bool TypeSymbol::is_error_or_incomplete_type(const TypeSymbol* type) {
+        if (is_error_type(type)) return true;
+
+        return are_types_equivalent(type, &TypeSymbol::Void);
+}
+
+
 bool TypeSymbol::can_be_explicitly_casted(const TypeSymbol* from, const TypeSymbol* to) {
         auto order = (*from <=> *to);
         return std::is_lteq(order) || std::is_gteq(order);
