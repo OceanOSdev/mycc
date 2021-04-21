@@ -94,6 +94,7 @@ void BoundTreePrinter::print_bound_tree(std::vector<Binding::BoundGlobalDeclarat
 
 void BoundTreePrinter::print_statement(Binding::BoundStatementNode* statement) {
     auto kind = statement->kind();
+    if (kind == Binding::BoundNodeKind::EmptyStatement) return;
     if (kind != Binding::BoundNodeKind::LabelStatement)
         print_indent();
     switch (kind) {
@@ -253,7 +254,7 @@ void BoundTreePrinter::print_struct_declaration(Binding::BoundStructDeclarationN
 }
 
 void BoundTreePrinter::print_label_statement(Binding::BoundLabelStatementNode* label_statement) {
-    std::cout << label_statement->label()->name();
+    std::cout << label_statement->label()->name() << ":";
 }
 
 void BoundTreePrinter::print_goto_statement(Binding::BoundGotoStatementNode* goto_statement) {
@@ -268,6 +269,7 @@ void BoundTreePrinter::print_conditional_goto_statement(Binding::BoundConditiona
 
 
 void BoundTreePrinter::print_expression(Binding::BoundExpressionNode* expression) {
+    if (expression == nullptr) return;
     auto kind = expression->kind();
     switch (kind) {
         case Binding::BoundNodeKind::AssignmentExpression:

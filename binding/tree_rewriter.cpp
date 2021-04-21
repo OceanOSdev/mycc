@@ -177,11 +177,86 @@ BoundStatementNode* TreeRewriter::rewrite_variable_declaration(BoundVariableDecl
 }
 
 BoundStatementNode* TreeRewriter::rewrite_if_statement(BoundIfStatementNode* if_statement) {
-    return if_statement;
+    if (!if_statement->has_else_statement()) {
+        // want to rewrite expresssion
+        //
+        // if <cond>
+        //    <then>
+        // -----------> rewrite as
+        //
+        // goto end if <cond> false
+        // <then>
+        // end:
+        //
+        auto end_label = generate_label();
+        std::vector<BoundStatementNode*> statements = {
+            new BoundConditionalGotoStatementNode(end_label, if_statement->condition(), false),
+            if_statement->then_statement(),
+            new BoundLabelStatementNode(end_label)
+        };
+
+        return rewrite_statement(new BoundBlockStatementNode(statements));
+    } else {
+        // want to rewrite expresssion
+        //
+        // if <cond>
+        //    <then>
+        // else
+        //    <else>
+        // -----------> rewrite as
+        //
+        // goto else if <cond> false
+        // <then>
+        // goto end
+        // else:
+        // <else>
+        // end:
+        //
+        auto else_label = generate_label();
+        auto end_label = generate_label();
+        std::vector<BoundStatementNode*> statements = {
+            new BoundConditionalGotoStatementNode(else_label, if_statement->condition(), false),
+            if_statement->then_statement(),
+            new BoundGotoStatementNode(end_label),
+            new BoundLabelStatementNode(else_label),
+            if_statement->else_statement(),
+            new BoundLabelStatementNode(end_label)
+        };
+
+        return rewrite_statement(new BoundBlockStatementNode(statements));
+    }
 }
 
 BoundStatementNode* TreeRewriter::rewrite_for_statement(BoundForStatementNode* for_statement) {
-    return for_statement;
+    // want to rewrite expresssion
+    //
+    // for (<init>; <cond>; <inc>)
+    //    <body>
+    // -----------> rewrite as
+    //
+    // <init>
+    // continue:
+    // goto break if <cond> false
+    // <body>
+    // <inc>
+    // goto continue
+    // break:
+    //
+    auto break_label = for_statement->break_label();
+    auto continue_label = for_statement->continue_label();
+    std::vector<BoundStatementNode*> statements;
+    if (for_statement->has_initial_expression())
+        statements.push_back(new BoundExpressionStatementNode(for_statement->initial_expression()));
+    statements.push_back(new BoundLabelStatementNode(continue_label));
+    if (for_statement->has_condition_expression())
+        statements.push_back(new BoundConditionalGotoStatementNode(break_label, for_statement->condition_expression(), false));
+    statements.push_back(for_statement->body_statement());
+    if (for_statement->has_third_expression())
+        statements.push_back(new BoundExpressionStatementNode(for_statement->third_expression()));
+    statements.push_back(new BoundGotoStatementNode(continue_label));
+    statements.push_back(new BoundLabelStatementNode(break_label));
+    //return for_statement;
+    return rewrite_statement(new BoundBlockStatementNode(statements));
 }
 
 BoundStatementNode* TreeRewriter::rewrite_while_statement(BoundWhileStatementNode* while_statement) {
