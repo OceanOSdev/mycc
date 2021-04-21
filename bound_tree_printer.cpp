@@ -34,6 +34,8 @@
 #include "symbols/variable_symbol.h"
 #include "symbols/type_symbol.h"
 #include "symbols/function_symbol.h"
+#include "symbols/struct_symbol.h"
+#include "symbols/parameter_symbol.h"
 
 #include <iostream>
 
@@ -70,7 +72,17 @@ void BoundTreePrinter::print_bound_tree(std::vector<Binding::BoundGlobalDeclarat
                 auto func = dynamic_cast<Binding::BoundFunctionDefinitionNode*>(dec);
                 Binding::BoundBlockStatementNode* rewritten = nullptr;
                 label_counter = Binding::TreeRewriter::rewrite(func->statements(), rewritten, label_counter);
-                std::cout << func->function_symbol()->type()->str() << " " << func->function_symbol()->name() << std::endl;
+                std::cout << func->function_symbol()->name() << "(";
+                bool is_first = true;
+                for (auto param : func->function_symbol()->params()) {
+                    if (is_first)
+                        is_first = false;
+                    else
+                        std::cout << ", ";
+                    
+                    std::cout << param->name() << " : " <<  param->type()->str(); 
+                }
+                std::cout << ") : " << func->function_symbol()->type()->str() << std::endl;
                 print_statement(rewritten);
                 break;
             }
@@ -141,6 +153,7 @@ void BoundTreePrinter::print_block_statement(Binding::BoundBlockStatementNode* b
         print_statement(statement);
     }
     m_indent--;
+    print_indent();
     std::cout << '}';
 }
 
@@ -156,16 +169,6 @@ void BoundTreePrinter::print_variable_group_declaration(Binding::BoundVariableGr
 
         print_variable_declaration(var_dec);
     }
-    // std::vector<Binding::BoundVariableDeclarationNode*>::iterator var_decl_iter;
-    // auto var_decs = var_group_decl->variable_declarations();
-    // auto last = std::prev(var_decs.end(), 1);
-    // for(var_decl_iter = var_decs.begin(); var_decl_iter != var_decs.end(); var_decl_iter++ ) {
-    //     print_variable_declaration(*var_decl_iter);
-    //     if (var_decl_iter != last) {
-    //         std::cout << std::endl;
-    //         print_indent();
-    //     }
-    // }
 }
 
 void BoundTreePrinter::print_variable_declaration(Binding::BoundVariableDeclarationNode* var_decl) {
@@ -180,20 +183,41 @@ void BoundTreePrinter::print_variable_declaration(Binding::BoundVariableDeclarat
     }
 }
 
-void BoundTreePrinter::print_if_statement( __attribute__((unused)) Binding::BoundIfStatementNode* if_statement) {
-
+void BoundTreePrinter::print_if_statement(Binding::BoundIfStatementNode* if_statement) {
+    std::cout << "if (";
+    print_expression(if_statement->condition());
+    std::cout << ")";
+    print_statement(if_statement->then_statement());
+    if (if_statement->has_else_statement()) {
+        std::cout << "else";
+        print_statement(if_statement->else_statement());
+    }
 }
 
-void BoundTreePrinter::print_for_statement( __attribute__((unused)) Binding::BoundForStatementNode* for_statement) {
-
+void BoundTreePrinter::print_for_statement(Binding::BoundForStatementNode* for_statement) {
+    std::cout << "for (";
+    print_expression(for_statement->initial_expression());
+    std::cout << "; ";
+    print_expression(for_statement->condition_expression());
+    std::cout << "; ";
+    print_expression(for_statement->third_expression());
+    std::cout << ")";
+    print_statement(for_statement->body_statement());
 }
 
-void BoundTreePrinter::print_while_statement( __attribute__((unused)) Binding::BoundWhileStatementNode* while_statement) {
-
+void BoundTreePrinter::print_while_statement(Binding::BoundWhileStatementNode* while_statement) {
+    std::cout << "while (";
+    print_expression(while_statement->condition_expression());
+    std::cout << ")";
+    print_statement(while_statement->body_statement());
 }
 
-void BoundTreePrinter::print_do_while_statement( __attribute__((unused)) Binding::BoundDoWhileStatementNode* do_while_statement) {
-
+void BoundTreePrinter::print_do_while_statement(Binding::BoundDoWhileStatementNode* do_while_statement) {
+    std::cout << "do";
+    print_statement(do_while_statement->body_statement());
+    std::cout << "while (";
+    print_expression(do_while_statement->condition_expression());
+    std::cout << ")";
 }
 
 void BoundTreePrinter::print_return_statement(Binding::BoundReturnStatementNode* return_statement) {
@@ -203,20 +227,43 @@ void BoundTreePrinter::print_return_statement(Binding::BoundReturnStatementNode*
     }
 }
 
-void BoundTreePrinter::print_struct_declaration( __attribute__((unused)) Binding::BoundStructDeclarationNode* struct_declaration) {
+void BoundTreePrinter::print_struct_declaration(Binding::BoundStructDeclarationNode* struct_declaration) {
+    std::cout << "struct " << struct_declaration->struct_symbol()->name() << std::endl;
+    print_indent();
+    std::cout << '{' << std::endl;
+    m_indent++;
+    print_indent();
+    bool is_first = true;
+    for (auto member : struct_declaration->struct_symbol()->members()) {
+        if (is_first) {
+            is_first = false;
+        } else {
+            std::cout << std::endl;
+            print_indent();
+        }
 
+        std::cout << member->name()
+                  << (member->is_array() ? "[" + std::to_string(member->array_size()) + "] : " :  " : ")
+                  << member->var_type()->str();
+    }
+    std::cout << std::endl;
+    m_indent--;
+    print_indent();
+    std::cout << '}';
 }
 
-void BoundTreePrinter::print_label_statement( __attribute__((unused)) Binding::BoundLabelStatementNode* label_statement) {
-
+void BoundTreePrinter::print_label_statement(Binding::BoundLabelStatementNode* label_statement) {
+    std::cout << label_statement->label()->name();
 }
 
-void BoundTreePrinter::print_goto_statement( __attribute__((unused)) Binding::BoundGotoStatementNode* goto_statement) {
-
+void BoundTreePrinter::print_goto_statement(Binding::BoundGotoStatementNode* goto_statement) {
+    std::cout << "goto " << goto_statement->label()->name();
 }
 
-void BoundTreePrinter::print_conditional_goto_statement( __attribute__((unused)) Binding::BoundConditionalGotoStatementNode* conditional_goto_statement) {
-
+void BoundTreePrinter::print_conditional_goto_statement(Binding::BoundConditionalGotoStatementNode* conditional_goto_statement) {
+    std::cout << "goto " << conditional_goto_statement->label()->name() << " ";
+    std::cout << (conditional_goto_statement->jump_if_true() ? "if" : "unless") << " ";
+    print_expression(conditional_goto_statement->condition());
 }
 
 
