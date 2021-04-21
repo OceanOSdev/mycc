@@ -14,6 +14,7 @@
 #include "bound_while_statement_node.h"
 #include "bound_label_statement_node.h"
 #include "bound_goto_statement_node.h"
+#include "bound_conditional_goto_statement_node.h"
 #include "bound_variable_group_declaration_node.h"
 #include "bound_literal_val_expression_node.h"
 #include "bound_index_expression_node.h"
@@ -31,18 +32,49 @@
 #include <string>
 #include <stdexcept>
 #include <vector>
+#include <stack>
 
 
 namespace Binding {
 
 
 TreeRewriter::TreeRewriter() : m_label_count(0) {}
+TreeRewriter::TreeRewriter(int label_offset) : m_label_count(label_offset) {}
 
 BoundLabel* TreeRewriter::generate_label() {
     ++m_label_count;
     std::string label = "L" + std::to_string(m_label_count);
     return new BoundLabel(label);
 }
+
+BoundBlockStatementNode* TreeRewriter::rewrite(BoundStatementNode* statement, int label_offset) {
+    auto rewriter = new TreeRewriter(label_offset);
+    auto result = rewriter->rewrite_statement(statement);
+    return flatten(result);
+}
+
+BoundBlockStatementNode* TreeRewriter::flatten(BoundStatementNode* statement) {
+    std::vector<BoundStatementNode*> flattened_statement_list;
+    std::stack<BoundStatementNode*> remaining_statements;
+    remaining_statements.push(statement);
+
+    while (!remaining_statements.empty()) {
+        auto current = remaining_statements.top();
+        remaining_statements.pop();
+
+        if (auto block_statement = dynamic_cast<BoundBlockStatementNode*>(current)) {
+            auto statements = block_statement->statements();
+            for (auto r_iter = statements.rbegin(); r_iter != statements.rend(); r_iter++) {
+                remaining_statements.push(*r_iter);
+            }
+        } else {
+            flattened_statement_list.push_back(current);
+        }
+    }
+
+    return new BoundBlockStatementNode(flattened_statement_list);
+}
+
 
 BoundStatementNode* TreeRewriter::rewrite_statement(BoundStatementNode* statement) {
     auto kind = statement->kind();
@@ -71,6 +103,8 @@ BoundStatementNode* TreeRewriter::rewrite_statement(BoundStatementNode* statemen
             return rewrite_label_statement(dynamic_cast<BoundLabelStatementNode*>(statement));
         case BoundNodeKind::GotoStatement:
             return rewrite_goto_statement(dynamic_cast<BoundGotoStatementNode*>(statement));
+        case BoundNodeKind::ConditionalGotoStatement:
+            return rewrite_conditional_goto_statement(dynamic_cast<BoundConditionalGotoStatementNode*>(statement));
         default:
             throw std::runtime_error("Unexpected bound node while rewriting statement.");
     }
@@ -165,6 +199,15 @@ BoundStatementNode* TreeRewriter::rewrite_label_statement(BoundLabelStatementNod
 
 BoundStatementNode* TreeRewriter::rewrite_goto_statement(BoundGotoStatementNode* goto_statement) {
     return goto_statement;
+}
+
+BoundStatementNode* TreeRewriter::rewrite_conditional_goto_statement(BoundConditionalGotoStatementNode* conditional_goto_statement) {
+    auto expression = rewrite_expression(conditional_goto_statement->condition());
+
+    if (expression == conditional_goto_statement->condition())
+        return conditional_goto_statement;
+
+    return new BoundConditionalGotoStatementNode(conditional_goto_statement->label(), expression, conditional_goto_statement->jump_if_true());
 }
 
 

@@ -19,6 +19,7 @@ class BoundReturnStatementNode;
 class BoundStructDeclarationNode;
 class BoundLabelStatementNode;
 class BoundGotoStatementNode;
+class BoundConditionalGotoStatementNode;
 
 class BoundExpressionNode;
 class BoundAssignmentExpressionNode;
@@ -41,6 +42,9 @@ class TreeRewriter {
 private:
     int m_label_count;
     TreeRewriter();
+    TreeRewriter(int label_offset);
+
+    static BoundBlockStatementNode* flatten(BoundStatementNode* statement);
 
     BoundLabel* generate_label();
 
@@ -57,6 +61,7 @@ private:
     BoundStatementNode* rewrite_struct_declaration(BoundStructDeclarationNode* struct_declaration);
     BoundStatementNode* rewrite_label_statement(BoundLabelStatementNode* label_statement);
     BoundStatementNode* rewrite_goto_statement(BoundGotoStatementNode* goto_statement);
+    BoundStatementNode* rewrite_conditional_goto_statement(BoundConditionalGotoStatementNode* conditional_goto_statement);
 
     BoundExpressionNode* rewrite_expression(BoundExpressionNode* expression);
     BoundExpressionNode* rewrite_assignment_expression(BoundAssignmentExpressionNode* assignment_expression);
@@ -73,6 +78,8 @@ private:
     BoundExpressionNode* rewrite_unary_expression(BoundUnaryExpressionNode* unary_expression);
 
 public:
+
+    static BoundBlockStatementNode* rewrite(BoundStatementNode* statement, int label_offset = 0);
 
 };
 
