@@ -29,6 +29,8 @@
 #include "bound_ternary_expression_node.h"
 #include "bound_increment_expression_node.h"
 
+#include "../symbols/type_symbol.h"
+
 #include <string>
 #include <stdexcept>
 #include <vector>
@@ -47,7 +49,7 @@ BoundLabel* TreeRewriter::generate_label() {
 }
 
 /*
- * Acts does the same thing as the other rewrite function, but
+ * Does the same thing as the other rewrite function, but
  * returns the new BoundBlockStatementNode through an "out" parameter
  * and returns the label count after rewriting through the usual means.
  */
@@ -385,9 +387,12 @@ BoundExpressionNode* TreeRewriter::rewrite_assignment_expression(BoundAssignment
             default: throw std::runtime_error("Invalid state when rewriting assignment expression.");
         }
         auto bin_op = new BoundBinaryOperatorNode(new_op_kind, variable->type(), expression->type(), variable->type());
-        auto new_rval = new BoundBinaryExpressionNode(bin_op, variable, expression);
+        auto new_rval = rewrite_expression(new BoundBinaryExpressionNode(bin_op, variable, expression));
         return new BoundAssignmentExpressionNode(BoundAssignmentOpKind::ASSIGN, dynamic_cast<BoundVariableReferenceExpressionNode*>(variable), new_rval);
     }
+
+    if (Symbols::TypeSymbol::requires_bytecode_cast(expression->type(), variable->type()))
+        expression = new BoundCastExpressionNode(variable->type(), expression);
 
     if (expression == assignment_expression->expression() && variable == assignment_expression->variable_reference())
         return assignment_expression;
@@ -400,6 +405,12 @@ BoundExpressionNode* TreeRewriter::rewrite_binary_expression(BoundBinaryExpressi
     auto left = rewrite_expression(binary_expression->left());
     auto right = rewrite_expression(binary_expression->right());
 
+    // When emitting byte code, we will have to explicitly cast integer types to non integer types
+    if (Symbols::TypeSymbol::requires_bytecode_cast(left->type(), binary_expression->op()->type()))
+        left = new BoundCastExpressionNode(binary_expression->op()->type(), left);
+    else if (Symbols::TypeSymbol::requires_bytecode_cast(right->type(), binary_expression->op()->type()))
+        right = new BoundCastExpressionNode(binary_expression->op()->type(), right);
+    
     if (left == binary_expression->left() && right == binary_expression->right())
         return binary_expression;
     

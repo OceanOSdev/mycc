@@ -167,6 +167,36 @@ bool TypeSymbol::are_types_equivalent(const TypeSymbol* lhs, const TypeSymbol* r
         return std::is_lteq(*lhs <=> *rhs);
 }
 
+/*
+ * Determines whether the lhs type is the same as the rhs type.
+ */
+bool TypeSymbol::are_types_equal(const TypeSymbol* lhs, const TypeSymbol* rhs) {
+        return std::is_eq(*lhs <=> *rhs);
+}
+
+/*
+ * Whether or not we will need to explicitly cast from type "from" to type "to"
+ * when we generate bytecode.
+ * 
+ * Should be used while rewriting the bound tree to deal with cases where an
+ * integer type needs to be widened to a non-integer numeric type.
+ */
+bool TypeSymbol::requires_bytecode_cast(const TypeSymbol* from, const TypeSymbol* to) {
+        if (from->attributes().is_array && to->attributes().is_array)
+                return (from->name() != to->name()); //if they're same base type, don't need to cast, otherwise need (invalid) cast
+
+        // Edge case, either <from>, <to>, or both are non numeric types
+        // If I recall correctly, come rewrite time this should never be
+        // the case since I believe I have binder throw a type error,
+        // but for debug purposes I'll add this in here and remove it
+        // later when I feel more confident that we never hit this condition
+        if (!(from->attributes().is_numeric_type && to->attributes().is_numeric_type)) {
+                return true; // *Technically* would require cast, but such a cast would be invalid anyways 
+        }
+
+        return (from->attributes().is_integer_type && !to->attributes().is_integer_type);
+}
+
 bool TypeSymbol::is_error_type(const TypeSymbol* type) {
         return are_types_equivalent(type, &TypeSymbol::Error);
 }

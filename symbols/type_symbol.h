@@ -93,13 +93,25 @@ public:
     static const TypeSymbol* get_wider_type(const TypeSymbol* lhs, const TypeSymbol* rhs);
 
     /*
-     * Determines whether the lhs type is the same as the rhs type
+     * Determines whether the lhs type is the same as the rhs type.
      * 
      * OR
      * 
      * whether the lhs type can be implicitly widened to the rhs type. 
      */
     static bool are_types_equivalent(const TypeSymbol* lhs, const TypeSymbol* rhs);
+    /*
+     * Determines whether the lhs type is the same as the rhs type.
+     */
+    static bool are_types_equal(const TypeSymbol* lhs, const TypeSymbol* rhs);
+    /*
+     * Whether or not we will need to explicitly cast from type "from" to type "to"
+     * when we generate bytecode.
+     * 
+     * Should be used while rewriting the bound tree to deal with cases where an
+     * integer type needs to be widened to a non-integer numeric type.
+     */
+    static bool requires_bytecode_cast(const TypeSymbol* from, const TypeSymbol* to);
     static bool is_error_type(const TypeSymbol* type);
     static bool is_error_or_incomplete_type(const TypeSymbol* type);
     /*
