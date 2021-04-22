@@ -113,7 +113,12 @@ BINDING_SRC_NO_PATH += binder.cpp
 BINDING_SRCS = $(addprefix  $(BINDING_DIR)/, $(BINDING_SRC_NO_PATH))
 BINDING_OBJS = $(patsubst %.cpp,$(OBJDIR)/%.o,$(BINDING_SRC_NO_PATH))
 
-ALL_SRC_FILES = $(SRCS) $(SYNTAX_SRCS) $(SYMBOLS_SRCS) $(BINDING_SRCS)
+CODEGEN_DIR = codegen
+CODEGEN_SRC_NO_PATH = code_gen_payload.cpp emitter.cpp
+CODEGEN_SRCS = $(addprefix $(CODEGEN_DIR)/, $(CODEGEN_SRC_NO_PATH))
+CODEGEN_OBJS = $(patsubst %.cpp,$(OBJDIR)/%.o,$(CODEGEN_SRC_NO_PATH))
+
+ALL_SRC_FILES = $(SRCS) $(SYNTAX_SRCS) $(SYMBOLS_SRCS) $(BINDING_SRCS) $(CODEGEN_SRCS)
 
 OBJS += $(LOGGING_OBJS)
 DEPS += $(patsubst %.cpp,$(OBJDIR)/%.d,$(LOGGING_SRC_NO_PATH))
@@ -123,6 +128,8 @@ OBJS += $(SYNTAX_OBJS)
 DEPS += $(patsubst %.cpp,$(OBJDIR)/%.d,$(SYNTAX_SRC_NO_PATH))
 OBJS += $(BINDING_OBJS)
 DEPS += $(patsubst %.cpp,$(OBJDIR)/%.d,$(BINDING_SRC_NO_PATH))
+OBJS += $(CODEGEN_OBJS)
+DEPS += $(patsubst %.cpp,$(OBJDIR)/%.d,$(CODEGEN_SRC_NO_PATH))
 OBJS += $(patsubst %.cpp,$(OBJDIR)/%.o,$(SRCS))
 DEPS += $(patsubst %.cpp,$(OBJDIR)/%.d,$(SRCS))
 
@@ -196,6 +203,9 @@ $(OBJDIR)/%.o: $(SYNTAX_DIR)/%.cpp
 $(OBJDIR)/%.o: $(BINDING_DIR)/%.cpp 
 	@$(call run_and_test,$(CXX) $(FLAGS) -MMD -MF $(OBJDIR)/$*.d -c $< -o $@)
 
+$(OBJDIR)/%.o: $(CODEGEN_DIR)/%.cpp 
+	@$(call run_and_test,$(CXX) $(FLAGS) -MMD -MF $(OBJDIR)/$*.d -c $< -o $@)
+
 $(OBJDIR)/%.o: %.cpp 
 	@$(call run_and_test,$(CXX) $(FLAGS) -MMD -MF $(OBJDIR)/$*.d -c $< -o $@)
 
@@ -238,6 +248,9 @@ $(OBJDIR)/diagnostics.o: $(SYNTAX_DIR)/syntax_token.cpp
 $(OBJDIR)/part_two_syntax_check.o: $(PART_TWO_SYNT_CHECK_DEPS)
 $(OBJDIR)/qsem.o: $(LOGGING_DIR)/part_three_info.cpp
 $(OBJDIR)/bound_tree_printer.o: $(B_TREE_PRINTER_DEP)
+$(OBJDIR)/code_gen_payload.o: $(BINDING_DIR)/tree_rewriter.cpp
+$(OBJDIR)/emitter.o: $(CODEGEN_DIR)/code_gen_payload.cpp
+
 
 
 .PHONY: all nodoc debug benchmark verbose clean cclean destroy docs old-doc

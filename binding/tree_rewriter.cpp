@@ -28,12 +28,14 @@
 #include "bound_call_expression_node.h"
 #include "bound_ternary_expression_node.h"
 #include "bound_increment_expression_node.h"
+#include "bound_global_declaration_node.h"
+#include "bound_global_statement_node.h"
+#include "bound_function_definition_node.h"
 
 #include "../symbols/type_symbol.h"
 
 #include <string>
 #include <stdexcept>
-#include <vector>
 #include <stack>
 
 
@@ -46,6 +48,44 @@ BoundLabel* TreeRewriter::generate_label() {
     ++m_label_count;
     std::string label = "L" + std::to_string(m_label_count);
     return new BoundLabel(label);
+}
+
+BoundGlobalDeclarationNode* TreeRewriter::rewrite_global_statement(BoundGlobalStatementNode* bound_global_statement) {
+    auto statement = rewrite(bound_global_statement->statement());
+
+    // There should only be one statement in the returned flattened bound block statement
+    // so we grab that, wrap it in a BoundGlobalStatementNode, and return it.
+    return new BoundGlobalStatementNode(statement->statements().at(0));
+}
+
+
+std::vector<BoundGlobalDeclarationNode*> TreeRewriter::rewrite(std::vector<BoundGlobalDeclarationNode*> bound_program) {
+    int label_counter = 0;
+    std::vector<BoundGlobalDeclarationNode*> lowered_program;
+    for (auto dec : bound_program) {
+        auto kind = dec->kind();
+        switch (kind) {
+            case Binding::BoundNodeKind::GlobalStatement:
+            {
+                auto gdec = dynamic_cast<BoundGlobalStatementNode*>(dec);
+                lowered_program.push_back(rewrite_global_statement(gdec));
+                break;
+            }
+            case BoundNodeKind::FunctionDefinition:
+            {
+                auto func = dynamic_cast<BoundFunctionDefinitionNode*>(dec);
+                BoundBlockStatementNode* rewritten = nullptr;
+                label_counter = TreeRewriter::rewrite(func->statements(), rewritten, label_counter);
+                auto bound_function_def = new BoundFunctionDefinitionNode(func->function_symbol(), rewritten);
+                lowered_program.push_back(bound_function_def);
+                break;
+            }
+            default:
+                throw std::runtime_error("Invalid global declaration kind.");
+        }
+    }
+
+    return lowered_program;
 }
 
 /*

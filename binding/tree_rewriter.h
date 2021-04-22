@@ -2,6 +2,8 @@
 #ifndef TREE_REWRITER_H
 #define TREE_REWRITER_H
 
+#include <vector>
+
 namespace Binding {
 
 // Forward Decs
@@ -34,7 +36,8 @@ class BoundMemberAccessExpressionNode;
 class BoundVariableReferenceExpressionNode;
 class BoundTernaryExpressionNode;
 class BoundUnaryExpressionNode;
-
+class BoundGlobalDeclarationNode;
+class BoundGlobalStatementNode;
 
 class BoundLabel;
 
@@ -47,6 +50,8 @@ private:
     static BoundBlockStatementNode* flatten(BoundStatementNode* statement);
 
     BoundLabel* generate_label();
+    
+    static BoundGlobalDeclarationNode* rewrite_global_statement(BoundGlobalStatementNode* bound_global_statement);
 
     BoundStatementNode* rewrite_statement(BoundStatementNode* statement);
     BoundStatementNode* rewrite_expression_statement(BoundExpressionStatementNode* expression_statement);
@@ -88,6 +93,8 @@ public:
      */
     static int rewrite(BoundStatementNode* in_statement, BoundBlockStatementNode*& out_statement, int label_offset = 0);
 
+
+    static std::vector<BoundGlobalDeclarationNode*> rewrite(std::vector<BoundGlobalDeclarationNode*> bound_program);
 };
 
 }
