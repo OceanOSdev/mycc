@@ -3,7 +3,7 @@
 #include "mycc.tab.hpp"
 #include <string>
 
-typedef enum yy::parser::token::yytokentype yyparsetoken_t;
+using yyparsetoken_t = yy::parser::token::yytokentype;
 
 class LexemeDataNode {
     public:
