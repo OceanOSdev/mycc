@@ -168,8 +168,12 @@ BINDER_DEPS_SRCS += $(addprefix $(SYNTAX_DIR)/, $(BINDER_DEPS_SRCS_SYNT))
 BINDER_DEPS_SRCS_LOG += diagnostics.cpp part_three_info.cpp
 BINDER_DEPS_SRCS += $(addprefix $(LOGGING_DIR)/, $(BINDER_DEPS_SRCS_LOG))
 
-B_TREE_PRINTER_DEP_SRCS_NP = tree_rewriter.cpp bound_global_statement_node.cpp bound_function_definition_node.cpp
-B_TREE_PRINTER_DEP = $(addprefix $(BINDING_DIR)/, $(B_TREE_PRINTER_DEP_SRCS_NP))
+B_TREE_PRINTER_B_DEP_SRCS_NP = tree_rewriter.cpp bound_global_statement_node.cpp bound_function_definition_node.cpp
+B_TREE_PRINTER_B_DEP = $(addprefix $(BINDING_DIR)/, $(B_TREE_PRINTER_B_DEP_SRCS_NP))
+B_TREE_PRINTER_E_DEP_SRCS_NP = code_gen_payload.cpp
+B_TREE_PRINTER_E_DEP = $(addprefix $(CODEGEN_DIR)/, $(B_TREE_PRINTER_E_DEP_SRCS_NP))
+B_TREE_PRINTER_DEP = $(B_TREE_PRINTER_B_DEP) $(B_TREE_PRINTER_E_DEP)
+
 
 
 all: nodoc docs
@@ -247,8 +251,8 @@ $(OBJDIR)/binder.o: $(BINDER_DEPS_SRCS)
 $(OBJDIR)/diagnostics.o: $(SYNTAX_DIR)/syntax_token.cpp
 $(OBJDIR)/part_two_syntax_check.o: $(PART_TWO_SYNT_CHECK_DEPS)
 $(OBJDIR)/qsem.o: $(LOGGING_DIR)/part_three_info.cpp
-$(OBJDIR)/bound_tree_printer.o: $(B_TREE_PRINTER_DEP)
 $(OBJDIR)/code_gen_payload.o: $(BINDING_DIR)/tree_rewriter.cpp
+$(OBJDIR)/bound_tree_printer.o: $(B_TREE_PRINTER_DEP)
 $(OBJDIR)/emitter.o: $(CODEGEN_DIR)/code_gen_payload.cpp
 
 

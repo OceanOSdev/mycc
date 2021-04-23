@@ -9,6 +9,7 @@
 #include "logging/diagnostics.h"
 #include "binding/binder.h"
 #include "bound_tree_printer.h"
+#include "codegen/code_gen_payload.h"
 
 const char* version_info =
 "My bare-bones C compiler (for COM 440)\n"
@@ -132,7 +133,9 @@ void run_bound_tree_printer(Arguments* args) {
             logger->log_diagnostics_list(binder->diagnostics());
         else {
             auto printer = new BoundTreePrinter();
-            printer->print_bound_tree(binder->global_decls());
+            // quick hack to get the codes filename (since we only support fully compiling one)
+            std::string filename = args->input_filenames().at(0);
+            printer->print_bound_tree(CodeGen::CodeGenPayload::create_payload(filename, binder->global_decls()));
         }
     } else {
         for (auto diagnostic : d.get_diagnostics())

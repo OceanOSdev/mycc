@@ -36,6 +36,7 @@
 #include "symbols/function_symbol.h"
 #include "symbols/struct_symbol.h"
 #include "symbols/parameter_symbol.h"
+#include "codegen/code_gen_payload.h"
 
 #include <iostream>
 
@@ -53,9 +54,9 @@ void BoundTreePrinter::print_indent() const {
     }
 }
 
-void BoundTreePrinter::print_bound_tree(std::vector<Binding::BoundGlobalDeclarationNode*> decs) {
-    int label_counter = 0;
-    for (auto dec : decs) {
+void BoundTreePrinter::print_bound_tree(CodeGen::CodeGenPayload* payload) {
+    std::cout << "Bound \"Tree\" (for " << payload->output_filename() << ")" << std::endl;
+    for (auto dec : payload->lowered_global_declarations()) {
         auto kind = dec->kind();
         switch (kind) {
             case Binding::BoundNodeKind::GlobalStatement:
@@ -70,8 +71,7 @@ void BoundTreePrinter::print_bound_tree(std::vector<Binding::BoundGlobalDeclarat
             case Binding::BoundNodeKind::FunctionDefinition:
             {
                 auto func = dynamic_cast<Binding::BoundFunctionDefinitionNode*>(dec);
-                Binding::BoundBlockStatementNode* rewritten = nullptr;
-                label_counter = Binding::TreeRewriter::rewrite(func->statements(), rewritten, label_counter);
+                //label_counter = Binding::TreeRewriter::rewrite(func->statements(), rewritten, label_counter);
                 std::cout << func->function_symbol()->name() << "(";
                 bool is_first = true;
                 for (auto param : func->function_symbol()->params()) {
@@ -83,7 +83,7 @@ void BoundTreePrinter::print_bound_tree(std::vector<Binding::BoundGlobalDeclarat
                     std::cout << param->name() << " : " <<  param->type()->str(); 
                 }
                 std::cout << ") : " << func->function_symbol()->type()->str() << std::endl;
-                print_statement(rewritten);
+                print_statement(func->statements());
                 break;
             }
             default:

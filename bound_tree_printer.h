@@ -45,6 +45,10 @@ enum BoundBinaryOpKind: int;
 enum BoundUnaryOpKind: int;
 }
 
+namespace CodeGen {
+class CodeGenPayload;
+}
+
 class BoundTreePrinter {
 private:
     static std::string const m_indent_str;
@@ -87,7 +91,7 @@ private:
 public:
     BoundTreePrinter();
 
-    void print_bound_tree(std::vector<Binding::BoundGlobalDeclarationNode*> decs);
+    void print_bound_tree(CodeGen::CodeGenPayload* payload);
 
 };
 
