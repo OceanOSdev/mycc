@@ -4,7 +4,7 @@
         {
             "type": "shell",
             "label": "Build",
-            "command": "make nodoc -j8",
+            "command": "make nodoc -j4",
             "problemMatcher": [
                 "$gcc"
             ],
@@ -13,7 +13,7 @@
         {
             "type": "shell",
             "label": "Rebuild",
-            "command": "make clean && make nodoc -j8",
+            "command": "make clean && make nodoc -j4",
             "problemMatcher": [
                 "$gcc"
             ],
@@ -22,7 +22,7 @@
         {
             "type": "shell",
             "label": "Debug Build",
-            "command": "make debug -j8",
+            "command": "make debug -j4",
             "problemMatcher": [
                 "$gcc"
             ],

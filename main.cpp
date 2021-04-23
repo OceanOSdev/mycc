@@ -71,7 +71,7 @@ void run_lexer(Arguments* args) {
         std::istream* ist = &ifstrm;
         d.switch_input_stream(filename, ist);
         d.init_new_input();
-        while ((d.lex()).type >= 1) {}
+        while (d.lex_and_check()) {}
     }
     auto tlist = d.get_part_one_lexeme_list();
     print_token_list(tlist);

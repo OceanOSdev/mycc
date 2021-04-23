@@ -54,6 +54,12 @@ std::vector<LexemeDataNode> Driver::get_part_one_lexeme_list() const {
     return part_one_lexeme_list;
 }
 
+bool Driver::lex_and_check() {
+    if (!m_reached_eof_or_error)
+        lex();
+    return m_reached_eof_or_error;
+}
+
 // void Driver::increaseLocation(unsigned int loc) {
 //     m_location += loc;
 //     std::cout << "increaseLocation(): " << loc << ", total = " << m_location << std::endl;

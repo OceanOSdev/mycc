@@ -120,9 +120,9 @@ FNAME  [a-zA-Z0-9_]*\.[a-zA-Z0-9_]+
 "<"                             { m_driver.curr_text = yytext; auto token = create_syntax_token(yytext, Syntax::token_type_t::LT, loc, m_driver.curr_file); auto sym_info = yy::parser::make_LT(token, loc); m_driver.part_one_lexeme_list.push_back(LexemeDataNode(sym_info, yy::parser::token::LT, std::string(yytext), false, "")); return sym_info; }
 "<="                            { m_driver.curr_text = yytext; auto token = create_syntax_token(yytext, Syntax::token_type_t::LE, loc, m_driver.curr_file); auto sym_info = yy::parser::make_LE(token, loc); m_driver.part_one_lexeme_list.push_back(LexemeDataNode(sym_info, yy::parser::token::LE, std::string(yytext), false, "")); return sym_info; }
 {ID}                            { m_driver.curr_text = yytext; auto token = create_syntax_token(yytext, Syntax::token_type_t::IDENT, loc, m_driver.curr_file); auto sym_info = yy::parser::make_IDENT(token, loc); m_driver.part_one_lexeme_list.push_back(LexemeDataNode(sym_info, yy::parser::token::IDENT, std::string(yytext), false, "")); return sym_info; }
-.                               { auto sym_info = yy::parser::make_END(loc); m_driver.part_one_lexeme_list.push_back(LexemeDataNode(sym_info, yy::parser::token::END, std::string(yytext), true, "Unexpected symbol")); /*throw yy::parser::syntax_error(loc, "invalid character: " + std::string(yytext));*/ }
-<COM><<EOF>>                    {  auto sym_info = yy::parser::make_END(loc); m_driver.part_one_lexeme_list.push_back(LexemeDataNode(sym_info, yy::parser::token::END, "", true, "Unclosed comment")); return yy::parser::make_END(yy::location());}
-<<EOF>>                         { return yyterminate();}
+.                               { m_driver.m_reached_eof_or_error = true; auto sym_info = yy::parser::make_END(loc); m_driver.part_one_lexeme_list.push_back(LexemeDataNode(sym_info, yy::parser::token::END, std::string(yytext), true, "Unexpected symbol")); /*throw yy::parser::syntax_error(loc, "invalid character: " + std::string(yytext));*/ }
+<COM><<EOF>>                    { m_driver.m_reached_eof_or_error = true; auto sym_info = yy::parser::make_END(loc); m_driver.part_one_lexeme_list.push_back(LexemeDataNode(sym_info, yy::parser::token::END, "", true, "Unclosed comment")); return yy::parser::make_END(yy::location());}
+<<EOF>>                         { m_driver.m_reached_eof_or_error = true; return yyterminate();}
 %%
 
 Syntax::SyntaxToken* create_syntax_token(std::string text, Syntax::token_type_t token, yy::location loc, std::string file) {

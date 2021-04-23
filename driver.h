@@ -27,6 +27,7 @@ public:
     std::vector<Syntax::TranslationUnitNode*> get_translation_units();
     std::vector<std::string> get_diagnostics() const;
     bool error_flag() const;
+    bool lex_and_check();
     friend class yy::parser;
     friend class Lexer;
 
@@ -43,6 +44,9 @@ private:
     yy::location m_location;
     std::vector<LexemeDataNode> part_one_lexeme_list;
     std::vector<Syntax::TranslationUnitNode*> m_translation_units;
+    bool m_reached_eof_or_error = false; // local pc only has bison 3.7 (can't for the life of me find the version on pyrite on aptitude)
+                                         // so this is a little hack to get around the fact that the "type" field of yy::parser::symbol_type
+                                         // seems to not exist anymore in bison 3.7 (since I would use that to determine if EOF was read)
     std::vector<std::string> m_diagnostics;
 };
 #endif

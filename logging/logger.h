@@ -7,7 +7,7 @@
 #include <ostream>
 #include <string>
 
-typedef enum yy::parser::token::yytokentype token_type;
+using token_type = yy::parser::token::yytokentype;
 namespace Logging {
 class DiagnosticsList;
 class Diagnostic;
