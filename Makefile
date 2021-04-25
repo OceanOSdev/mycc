@@ -4,23 +4,23 @@
 #  output.                                           #
 #                                                    #
 ######################################################
-export COM_COLOR   = \033[0;34m
-export OBJ_COLOR   = \033[0;36m
-export OK_COLOR    = \033[0;32m
-export ERROR_COLOR = \033[0;31m
-export WARN_COLOR  = \033[0;33m
-export NO_COLOR    = \033[m
+COM_COLOR   = \033[0;34m
+OBJ_COLOR   = \033[0;36m
+OK_COLOR    = \033[0;32m
+ERROR_COLOR = \033[0;31m
+WARN_COLOR  = \033[0;33m
+NO_COLOR    = \033[m
 
-export OK_STRING    = "[OK]"
-export ERROR_STRING = "[ERROR]"
-export WARN_STRING  = "[WARNING]"
-export COM_STRING   = "Compiling"
-export LD_STRING   	= "Linking"
+OK_STRING    = "[OK]"
+ERROR_STRING = "[ERROR]"
+WARN_STRING  = "[WARNING]"
+COM_STRING   = "Compiling"
+LD_STRING   	= "Linking"
 
-export MODULE_STR_COLOR = \033[1;35m
-export MODULE_BIF_COLOR = \033[1;30m
+MODULE_STR_COLOR = \033[1;35m
+MODULE_BIF_COLOR = \033[1;30m
 
-export MODULE_BIF_STR = "------------------------------------------------------------------------------"
+MODULE_BIF_STR = "------------------------------------------------------------------------------"
 
 define run_and_test
 printf "%b" "$(COM_COLOR)$(COM_STRING) $(OBJ_COLOR)$(@F)$(MODULE_BIF_COLOR)...$(NO_COLOR)\r"; \
@@ -65,10 +65,10 @@ SRCS = driver.cpp arg_parser.cpp qsem.cpp part_two_syntax_check.cpp bound_tree_p
 OBJDIR = bin
 TARG = mycc
 
-export ECHOF = echo -e
-export ECHO = echo
-export CXX = g++
-export FLAGS = -std=c++20 -Werror -Wall -Wextra -Wstrict-aliasing -pedantic -Wunreachable-code
+ECHOF = echo -e
+ECHO = echo
+CXX = g++
+FLAGS = -std=c++20 -Werror -Wall -Wextra -Wstrict-aliasing -pedantic -Wunreachable-code
 LDFLAGS = 
 BFLAGS = -d
 
@@ -109,7 +109,7 @@ BINDING_SRC_NO_PATH += bound_assignment_expression_node.cpp bound_unary_expressi
 BINDING_SRC_NO_PATH += bound_ternary_expression_node.cpp bound_increment_expression_node.cpp bound_empty_statement_node.cpp
 BINDING_SRC_NO_PATH += bound_label_statement_node.cpp bound_if_statement_node.cpp bound_goto_statement_node.cpp bound_for_statement_node.cpp
 BINDING_SRC_NO_PATH += bound_do_while_statement_node.cpp bound_while_statement_node.cpp bound_conditional_goto_statement_node.cpp tree_rewriter.cpp
-BINDING_SRC_NO_PATH += binder.cpp 
+BINDING_SRC_NO_PATH += binder.cpp binder_stmt.cpp binder_expr.cpp
 BINDING_SRCS = $(addprefix  $(BINDING_DIR)/, $(BINDING_SRC_NO_PATH))
 BINDING_OBJS = $(patsubst %.cpp,$(OBJDIR)/%.o,$(BINDING_SRC_NO_PATH))
 
@@ -134,8 +134,14 @@ OBJS += $(patsubst %.cpp,$(OBJDIR)/%.o,$(SRCS))
 DEPS += $(patsubst %.cpp,$(OBJDIR)/%.d,$(SRCS))
 
 
+##############################################
+#											 #
+#     DEPENDENCY LIST FOR CPP FILES			 #
+#											 #
+##############################################
+
 ###############################
-# DEPENDENCY LIST FOR CPP FILES
+# PART TWO SYNTAX CHECKER DEPS
 ###############################
 PART_TWO_SYNT_CHECK_DEPS_SRCS = program_node.cpp global_variable_group_declaration_node.cpp global_struct_declaration_node.cpp 
 PART_TWO_SYNT_CHECK_DEPS_SRCS += function_prototype_node.cpp function_definition_node.cpp translation_unit_node.cpp syntax_node.cpp
@@ -143,31 +149,63 @@ PART_TWO_SYNT_CHECK_DEPS_SRCS += variable_group_declaration_node.cpp formal_para
 
 PART_TWO_SYNT_CHECK_DEPS = $(addprefix $(SYNTAX_DIR)/, $(PART_TWO_SYNT_CHECK_DEPS_SRCS))
 
-BINDER_DEPS_BIND_SRCS = bound_expression_statement_node.cpp bound_error_expression_node.cpp bound_scope.cpp bound_global_statement_node.cpp 
-BINDER_DEPS_BIND_SRCS += bound_function_definition_node.cpp bound_block_statement_node.cpp bound_return_statement_node.cpp bound_empty_statement_node.cpp
-BINDER_DEPS_BIND_SRCS += bound_label_statement_node.cpp bound_if_statement_node.cpp bound_goto_statement_node.cpp bound_for_statement_node.cpp 
-BINDER_DEPS_BIND_SRCS += bound_do_while_statement_node.cpp bound_while_statement_node.cpp bound_variable_group_declaration_node.cpp 
-BINDER_DEPS_BIND_SRCS += bound_literal_val_expression_node.cpp bound_index_expression_node.cpp bound_struct_declaration_node.cpp 
-BINDER_DEPS_BIND_SRCS += bound_variable_reference_expression_node.cpp bound_member_access_expression_node.cpp bound_cast_expression_node.cpp
-BINDER_DEPS_BIND_SRCS += bound_binary_expression_node.cpp bound_unary_expression_node.cpp bound_assignment_expression_node.cpp bound_call_expression_node.cpp
-BINDER_DEPS_BIND_SRCS += bound_ternary_expression_node.cpp bound_increment_expression_node.cpp
+###############################
+# BINDER_STMT DEPS
+###############################
+BINDER_STMT_DEPS_SRCS_BIND = bound_expression_statement_node.cpp bound_error_expression_node.cpp bound_scope.cpp bound_block_statement_node.cpp
+BINDER_STMT_DEPS_SRCS_BIND += bound_return_statement_node.cpp bound_empty_statement_node.cpp bound_label_statement_node.cpp bound_if_statement_node.cpp 
+BINDER_STMT_DEPS_SRCS_BIND += bound_goto_statement_node.cpp bound_for_statement_node.cpp bound_do_while_statement_node.cpp bound_while_statement_node.cpp
+BINDER_STMT_DEPS_SRCS_BIND += bound_variable_group_declaration_node.cpp bound_struct_declaration_node.cpp
+BINDER_STMT_DEPS_SRCS = $(addprefix $(BINDING_DIR)/, $(BINDER_STMT_DEPS_SRCS_BIND))
+
+BINDER_STMT_DEPS_SRCS_SYNT = expression_statement_node.cpp variable_group_declaration_node.cpp struct_declaration_node.cpp block_statement_node.cpp 
+BINDER_STMT_DEPS_SRCS_SYNT += return_statement_node.cpp break_statement_node.cpp continue_statement_node.cpp if_statement_node.cpp
+BINDER_STMT_DEPS_SRCS_SYNT += for_statement_node.cpp do_while_statement_node.cpp while_statement_node.cpp
+BINDER_STMT_DEPS_SRCS += $(addprefix $(SYNTAX_DIR)/, $(BINDER_STMT_DEPS_SRCS_SYNT))
+
+BINDER_STMT_DEPS_SRCS_LOG += diagnostics.cpp part_three_info.cpp
+BINDER_STMT_DEPS_SRCS += $(addprefix $(LOGGING_DIR)/, $(BINDER_STMT_DEPS_SRCS_LOG))
+
+###############################
+# BINDER_EXPR DEPS
+###############################
+BINDER_EXPR_DEPS_SRCS_BIND = bound_scope.cpp bound_error_expression_node.cpp bound_literal_val_expression_node.cpp bound_index_expression_node.cpp
+BINDER_EXPR_DEPS_SRCS_BIND += bound_variable_reference_expression_node.cpp bound_member_access_expression_node.cpp bound_cast_expression_node.cpp 
+BINDER_EXPR_DEPS_SRCS_BIND += bound_binary_expression_node.cpp bound_unary_expression_node.cpp bound_assignment_expression_node.cpp 
+BINDER_EXPR_DEPS_SRCS_BIND += bound_call_expression_node.cpp bound_ternary_expression_node.cpp bound_increment_expression_node.cpp
+BINDER_EXPR_DEPS_SRCS = $(addprefix $(BINDING_DIR)/, $(BINDER_EXPR_DEPS_SRCS_BIND))
+
+BINDER_EXPR_DEPS_SRCS_SYNT = cast_expression_node.cpp expression_node.cpp literal_val_expression_node.cpp index_expression_node.cpp
+BINDER_EXPR_DEPS_SRCS_SYNT += struct_declaration_node.cpp name_expression_node.cpp member_expression_node.cpp binary_expression_node.cpp
+BINDER_EXPR_DEPS_SRCS_SYNT += unary_expression_node.cpp ternary_expression_node.cpp increment_expression_node.cpp decrement_expression_node.cpp
+BINDER_EXPR_DEPS_SRCS_SYNT += assignment_expression_node.cpp call_expression_node.cpp
+BINDER_EXPR_DEPS_SRCS += $(addprefix $(SYNTAX_DIR)/, $(BINDER_EXPR_DEPS_SRCS_SYNT))
+
+BINDER_EXPR_DEPS_SRCS_LOG = diagnostics.cpp
+BINDER_EXPR_DEPS_SRCS += $(addprefix $(LOGGING_DIR)/, $(BINDER_EXPR_DEPS_SRCS_LOG))
+
+###############################
+# BINDER DEPS
+###############################
+BINDER_DEPS_BIND_SRCS = bound_scope.cpp bound_global_statement_node.cpp bound_function_definition_node.cpp bound_block_statement_node.cpp
 BINDER_DEPS_SRCS = $(addprefix $(BINDING_DIR)/, $(BINDER_DEPS_BIND_SRCS))
 
-TREE_REWRITER_SRCS = $(BINDER_DEPS_BIND_SRCS) bound_conditional_goto_statement_node.cpp
-TREE_REWRITER_DEPS = $(addprefix $(BINDING_DIR)/, $(TREE_REWRITER_SRCS))
-
-BINDER_DEPS_SRCS_SYNT = expression_node.cpp expression_statement_node.cpp global_variable_group_declaration_node.cpp global_struct_declaration_node.cpp
-BINDER_DEPS_SRCS_SYNT += function_prototype_node.cpp function_definition_node.cpp formal_parameter_node.cpp cast_expression_node.cpp
-BINDER_DEPS_SRCS_SYNT += increment_expression_node.cpp decrement_expression_node.cpp block_statement_node.cpp return_statement_node.cpp
-BINDER_DEPS_SRCS_SYNT += break_statement_node.cpp continue_statement_node.cpp if_statement_node.cpp for_statement_node.cpp do_while_statement_node.cpp
-BINDER_DEPS_SRCS_SYNT += while_statement_node.cpp variable_group_declaration_node.cpp partial_variable_declaration_node.cpp literal_val_expression_node.cpp
-BINDER_DEPS_SRCS_SYNT += index_expression_node.cpp struct_declaration_node.cpp name_expression_node.cpp member_expression_node.cpp binary_expression_node.cpp
-BINDER_DEPS_SRCS_SYNT += unary_expression_node.cpp assignment_expression_node.cpp call_expression_node.cpp program_node.cpp ternary_expression_node.cpp
+BINDER_DEPS_SRCS_SYNT = global_variable_group_declaration_node.cpp global_struct_declaration_node.cpp function_prototype_node.cpp 
+BINDER_DEPS_SRCS_SYNT += function_definition_node.cpp formal_parameter_node.cpp program_node.cpp block_statement_node.cpp
 BINDER_DEPS_SRCS += $(addprefix $(SYNTAX_DIR)/, $(BINDER_DEPS_SRCS_SYNT))
 
 BINDER_DEPS_SRCS_LOG += diagnostics.cpp part_three_info.cpp
 BINDER_DEPS_SRCS += $(addprefix $(LOGGING_DIR)/, $(BINDER_DEPS_SRCS_LOG))
 
+###############################
+# TREE REWRITER DEPS
+###############################
+TREE_REWRITER_SRCS = $(BINDER_DEPS_BIND_SRCS) bound_conditional_goto_statement_node.cpp
+TREE_REWRITER_DEPS = $(addprefix $(BINDING_DIR)/, $(TREE_REWRITER_SRCS))
+
+###############################
+# BOUND TREE PRINTER DEPS
+###############################
 B_TREE_PRINTER_B_DEP_SRCS_NP = tree_rewriter.cpp bound_global_statement_node.cpp bound_function_definition_node.cpp
 B_TREE_PRINTER_B_DEP = $(addprefix $(BINDING_DIR)/, $(B_TREE_PRINTER_B_DEP_SRCS_NP))
 B_TREE_PRINTER_E_DEP_SRCS_NP = code_gen_payload.cpp
@@ -248,6 +286,8 @@ $(OBJDIR)/lexer.o: mycc.tab.hpp lexer.cpp
 $(OBJDIR)/mycc.tab.o: mycc.tab.hpp $(SYNTAX_SRCS)
 $(OBJDIR)/tree_rewriter.o: $(TREE_REWRITER_DEPS)
 $(OBJDIR)/binder.o: $(BINDER_DEPS_SRCS) 
+$(OBJDIR)/binder_stmt.o: $(BINDER_STMT_DEPS_SRCS) 
+$(OBJDIR)/binder_expr.o: $(BINDER_EXPR_DEPS_SRCS) 
 $(OBJDIR)/diagnostics.o: $(SYNTAX_DIR)/syntax_token.cpp
 $(OBJDIR)/part_two_syntax_check.o: $(PART_TWO_SYNT_CHECK_DEPS)
 $(OBJDIR)/qsem.o: $(LOGGING_DIR)/part_three_info.cpp
@@ -257,6 +297,6 @@ $(OBJDIR)/emitter.o: $(CODEGEN_DIR)/code_gen_payload.cpp
 
 
 
-.PHONY: all nodoc debug benchmark verbose clean cclean destroy docs old-doc
+.PHONY: all nodoc debug benchmark verbose clean destroy docs old-doc
 
 -include $(DEPS)

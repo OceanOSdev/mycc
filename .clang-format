@@ -1,0 +1,5 @@
+Language:        Cpp
+BasedOnStyle: LLVM
+
+AlignConsecutiveAssignments: true
+AlignOperands:   AlignAfterOperator
