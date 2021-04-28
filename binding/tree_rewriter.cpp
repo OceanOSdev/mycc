@@ -468,6 +468,60 @@ BoundExpressionNode* TreeRewriter::rewrite_binary_expression(BoundBinaryExpressi
     auto left = rewrite_expression(binary_expression->left());
     auto right = rewrite_expression(binary_expression->right());
 
+    auto bin_op = binary_expression->op()->op_kind();
+    switch (bin_op) {
+        case BoundBinaryOpKind::Equals: [[fallthrough]];
+        case BoundBinaryOpKind::NotEquals: [[fallthrough]];
+        case BoundBinaryOpKind::LessThan: [[fallthrough]];
+        case BoundBinaryOpKind::LessThanOrEquals: [[fallthrough]];
+        case BoundBinaryOpKind::GreaterThan: [[fallthrough]];
+        case BoundBinaryOpKind::GreaterThanOrEquals: [[fallthrough]];
+        case BoundBinaryOpKind::LogicalAnd: [[fallthrough]];
+        case BoundBinaryOpKind::LogicalOr: return rewrite_binary_conditional_expression(binary_expression);
+        default: break;
+    }
+
+    // When emitting byte code, we will have to explicitly cast integer types to non integer types
+    if (Symbols::TypeSymbol::requires_bytecode_cast(left->type(), binary_expression->op()->type()))
+        left = new BoundCastExpressionNode(binary_expression->op()->type(), left);
+    else if (Symbols::TypeSymbol::requires_bytecode_cast(right->type(), binary_expression->op()->type()))
+        right = new BoundCastExpressionNode(binary_expression->op()->type(), right);
+    
+    if (left == binary_expression->left() && right == binary_expression->right())
+        return binary_expression;
+    
+    return new BoundBinaryExpressionNode(binary_expression->op(), left, right);
+}
+
+BoundExpressionNode* TreeRewriter::rewrite_binary_conditional_expression(BoundBinaryExpressionNode* binary_expression) {
+    auto left = rewrite_expression(binary_expression->left());
+    auto right = rewrite_expression(binary_expression->right());
+
+    bool is_left_literal = left->kind() == BoundNodeKind::LiteralExpression;
+    bool is_right_literal = right->kind() == BoundNodeKind::LiteralExpression;
+
+    const auto true_literal = new BoundLiteralValExpressionNode(1);
+    const auto false_literal = new BoundLiteralValExpressionNode(0);
+
+    BoundLiteralValExpressionNode* lit_left = is_left_literal ? dynamic_cast<BoundLiteralValExpressionNode*>(left) : nullptr;
+    BoundLiteralValExpressionNode* lit_right = is_right_literal ? dynamic_cast<BoundLiteralValExpressionNode*>(right) : nullptr;
+
+    if (is_left_literal) {
+        if (binary_expression->op()->op_kind() == BoundBinaryOpKind::LogicalOr) {
+            if (BoundLiteralValExpressionNode::is_nonzero(lit_left)) 
+                return true_literal; // true || <expr> evaluates to true
+            if (is_right_literal) {
+                return BoundLiteralValExpressionNode::is_nonzero(lit_right) ? true_literal : false_literal;
+            }
+        } else if (binary_expression->op()->op_kind() == BoundBinaryOpKind::LogicalAnd) {
+            if (!BoundLiteralValExpressionNode::is_nonzero(lit_left)) 
+                return false_literal; // false && <expr> evaluates to false
+            if (is_right_literal) {
+                return BoundLiteralValExpressionNode::is_nonzero(lit_right) ? true_literal : false_literal;
+            }
+        }
+    }
+
     // When emitting byte code, we will have to explicitly cast integer types to non integer types
     if (Symbols::TypeSymbol::requires_bytecode_cast(left->type(), binary_expression->op()->type()))
         left = new BoundCastExpressionNode(binary_expression->op()->type(), left);
@@ -569,6 +623,18 @@ BoundExpressionNode* TreeRewriter::rewrite_ternary_expression(BoundTernaryExpres
 
 BoundExpressionNode* TreeRewriter::rewrite_unary_expression(BoundUnaryExpressionNode* unary_expression) {
     auto operand = rewrite_expression(unary_expression->expression());
+
+    bool is_operand_literal = operand->kind() == BoundNodeKind::LiteralExpression;
+
+    const auto true_literal = new BoundLiteralValExpressionNode(1);
+    const auto false_literal = new BoundLiteralValExpressionNode(0);
+
+    BoundLiteralValExpressionNode* lit_operand = is_operand_literal ? dynamic_cast<BoundLiteralValExpressionNode*>(operand) : nullptr;
+    
+    if (is_operand_literal) {
+        if (unary_expression->op()->op_kind() == BoundUnaryOpKind::LogicalNegation)
+            return BoundLiteralValExpressionNode::is_nonzero(lit_operand) ? false_literal : true_literal;
+    }
 
     if (operand == unary_expression->expression())
         return unary_expression;

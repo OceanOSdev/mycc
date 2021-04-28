@@ -72,6 +72,7 @@ private:
     BoundExpressionNode* rewrite_expression(BoundExpressionNode* expression);
     BoundExpressionNode* rewrite_assignment_expression(BoundAssignmentExpressionNode* assignment_expression);
     BoundExpressionNode* rewrite_binary_expression(BoundBinaryExpressionNode* binary_expression);
+    BoundExpressionNode* rewrite_binary_conditional_expression(BoundBinaryExpressionNode* binary_expression);
     BoundExpressionNode* rewrite_call_expression(BoundCallExpressionNode* call_expression);
     BoundExpressionNode* rewrite_cast_expression(BoundCastExpressionNode* cast_expression);
     BoundExpressionNode* rewrite_decrement_expression(BoundDecrementExpressionNode* decrement_expression);
