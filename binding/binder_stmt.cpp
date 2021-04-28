@@ -49,8 +49,6 @@
 #include "../syntax/do_while_statement_node.h"
 #include "../syntax/while_statement_node.h"
 
-
-
 #define BREAK_LABEL 0
 #define CONTINUE_LABEL 1
 

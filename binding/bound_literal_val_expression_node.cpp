@@ -58,4 +58,18 @@ BoundNodeKind BoundLiteralValExpressionNode::kind() const {
 }
 
 
+bool BoundLiteralValExpressionNode::is_nonzero(BoundLiteralValExpressionNode* l_expr) {
+    auto type = l_expr->type();
+    using namespace Symbols;
+    if (TypeSymbol::are_types_equal(&TypeSymbol::Char, type))
+        return (bool)l_expr->char_value();
+    if (TypeSymbol::are_types_equal(&TypeSymbol::Int, type))
+        return (bool)l_expr->int_value();
+    if (TypeSymbol::are_types_equal(&TypeSymbol::Float, type))
+        return (bool)l_expr->float_value();
+    if (TypeSymbol::are_types_equal(&TypeSymbol::String, type))
+        return !l_expr->string_value().empty();
+    return false;
+}
+
 }

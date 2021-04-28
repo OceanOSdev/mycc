@@ -118,20 +118,36 @@ CODEGEN_SRC_NO_PATH = code_gen_payload.cpp emitter.cpp
 CODEGEN_SRCS = $(addprefix $(CODEGEN_DIR)/, $(CODEGEN_SRC_NO_PATH))
 CODEGEN_OBJS = $(patsubst %.cpp,$(OBJDIR)/%.o,$(CODEGEN_SRC_NO_PATH))
 
-ALL_SRC_FILES = $(SRCS) $(SYNTAX_SRCS) $(SYMBOLS_SRCS) $(BINDING_SRCS) $(CODEGEN_SRCS)
+FLOWANAL_DIR = flow_analysis
+FLOWANAL_SRC_NO_PATH = basic_block.cpp basic_block_branch.cpp basic_block_factory.cpp control_flow_graph_factory.cpp control_flow_graph.cpp
+FLOWANAL_SRCS = $(addprefix $(FLOWANAL_DIR)/, $(FLOWANAL_SRC_NO_PATH))
+FLOWANAL_OBJS = $(patsubst %.cpp,$(OBJDIR)/%.o,$(FLOWANAL_SRC_NO_PATH))
 
-OBJS += $(LOGGING_OBJS)
-DEPS += $(patsubst %.cpp,$(OBJDIR)/%.d,$(LOGGING_SRC_NO_PATH))
-OBJS += $(SYMBOLS_OBJS)
-DEPS += $(patsubst %.cpp,$(OBJDIR)/%.d,$(SYMBOLS_SRC_NO_PATH))
-OBJS += $(SYNTAX_OBJS)
-DEPS += $(patsubst %.cpp,$(OBJDIR)/%.d,$(SYNTAX_SRC_NO_PATH))
-OBJS += $(BINDING_OBJS)
-DEPS += $(patsubst %.cpp,$(OBJDIR)/%.d,$(BINDING_SRC_NO_PATH))
-OBJS += $(CODEGEN_OBJS)
-DEPS += $(patsubst %.cpp,$(OBJDIR)/%.d,$(CODEGEN_SRC_NO_PATH))
+ALL_SRC_FILES = $(SRCS) $(SYNTAX_SRCS) $(SYMBOLS_SRCS) $(BINDING_SRCS) $(CODEGEN_SRCS) $(FLOWANAL_SRCS)
+
+ALL_SRC_FILES_NP = $(SRCS) $(SYNTAX_SRC_NO_PATH) $(LOGGING_SRC_NO_PATH) 
+ALL_SRC_FILES_NP = $(SYMBOLS_SRC_NO_PATH) $(BINDING_SRCS) $(CODEGEN_SRCS) $(FLOWANAL_SRCS)
+
+ALL_OBJS = $(LOGGING_OBJS) $(SYMBOLS_OBJS) $(SYNTAX_OBJS) $(BINDING_OBJS) $(CODEGEN_OBJS) $(FLOWANAL_OBJS)
+
+OBJS += $(ALL_OBJS)
 OBJS += $(patsubst %.cpp,$(OBJDIR)/%.o,$(SRCS))
+
+DEPS += $(patsubst %.cpp,$(OBJDIR)/%.d,$(ALL_SRC_FILES_NP))
 DEPS += $(patsubst %.cpp,$(OBJDIR)/%.d,$(SRCS))
+
+# OBJS += $(LOGGING_OBJS)
+# DEPS += $(patsubst %.cpp,$(OBJDIR)/%.d,$(LOGGING_SRC_NO_PATH))
+# OBJS += $(SYMBOLS_OBJS)
+# DEPS += $(patsubst %.cpp,$(OBJDIR)/%.d,$(SYMBOLS_SRC_NO_PATH))
+# OBJS += $(SYNTAX_OBJS)
+# DEPS += $(patsubst %.cpp,$(OBJDIR)/%.d,$(SYNTAX_SRC_NO_PATH))
+# OBJS += $(BINDING_OBJS)
+# DEPS += $(patsubst %.cpp,$(OBJDIR)/%.d,$(BINDING_SRC_NO_PATH))
+# OBJS += $(CODEGEN_OBJS)
+# DEPS += $(patsubst %.cpp,$(OBJDIR)/%.d,$(CODEGEN_SRC_NO_PATH))
+# OBJS += $(patsubst %.cpp,$(OBJDIR)/%.o,$(SRCS))
+# DEPS += $(patsubst %.cpp,$(OBJDIR)/%.d,$(SRCS))
 
 
 ##############################################
@@ -246,6 +262,9 @@ $(OBJDIR)/%.o: $(BINDING_DIR)/%.cpp
 	@$(call run_and_test,$(CXX) $(FLAGS) -MMD -MF $(OBJDIR)/$*.d -c $< -o $@)
 
 $(OBJDIR)/%.o: $(CODEGEN_DIR)/%.cpp 
+	@$(call run_and_test,$(CXX) $(FLAGS) -MMD -MF $(OBJDIR)/$*.d -c $< -o $@)
+
+$(OBJDIR)/%.o: $(FLOWANAL_DIR)/%.cpp 
 	@$(call run_and_test,$(CXX) $(FLAGS) -MMD -MF $(OBJDIR)/$*.d -c $< -o $@)
 
 $(OBJDIR)/%.o: %.cpp 

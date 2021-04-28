@@ -47,6 +47,15 @@ public:
      * An enum representing the kind of bound node this is
      */
     BoundNodeKind kind() const override;
+
+    /**
+     * @brief Whether or not the given literal value
+     * would evaulate as true in a conditional.
+     * 
+     * @param l_expr The literal expression to check.
+     * @return Whether l_expr is a nonzero literal
+     */
+    static bool is_nonzero(BoundLiteralValExpressionNode* l_expr);
 };
 
 }
