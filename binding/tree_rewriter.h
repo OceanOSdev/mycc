@@ -48,6 +48,7 @@ private:
     TreeRewriter(int label_offset);
 
     static BoundBlockStatementNode* flatten(BoundStatementNode* statement);
+    static BoundBlockStatementNode* remove_dead_code(BoundBlockStatementNode* statement);
 
     BoundLabel* generate_label();
     

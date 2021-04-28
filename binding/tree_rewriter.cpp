@@ -1,5 +1,8 @@
 #include "tree_rewriter.h"
 
+#include "../flow_analysis/control_flow_graph.h"
+#include "../flow_analysis/basic_block.h"
+
 #include "bound_statement_node.h"
 #include "bound_expression_statement_node.h"
 #include "bound_error_expression_node.h"
@@ -37,6 +40,7 @@
 #include <string>
 #include <stdexcept>
 #include <stack>
+#include <set>
 
 
 namespace Binding {
@@ -97,14 +101,14 @@ int TreeRewriter::rewrite(BoundStatementNode* in_statement, BoundBlockStatementN
     // cant just call the other rewrite method since I need access to an instance
     // of the rewriter class to grab the label count.
     auto rewriter = new TreeRewriter(label_offset);
-    out_statement = flatten(rewriter->rewrite_statement(in_statement));
+    out_statement = remove_dead_code(flatten(rewriter->rewrite_statement(in_statement)));
     return rewriter->m_label_count;
 }
 
 BoundBlockStatementNode* TreeRewriter::rewrite(BoundStatementNode* statement, int label_offset) {
     auto rewriter = new TreeRewriter(label_offset);
     auto result = rewriter->rewrite_statement(statement);
-    return flatten(result);
+    return remove_dead_code(flatten(result));
 }
 
 BoundBlockStatementNode* TreeRewriter::flatten(BoundStatementNode* statement) {
@@ -127,6 +131,25 @@ BoundBlockStatementNode* TreeRewriter::flatten(BoundStatementNode* statement) {
     }
 
     return new BoundBlockStatementNode(flattened_statement_list);
+}
+
+BoundBlockStatementNode* TreeRewriter::remove_dead_code(BoundBlockStatementNode* statement) {
+    auto control_flow_graph = FlowAnalysis::ControlFlowGraph::create(statement);
+    std::set<BoundStatementNode*> reachable_statements;
+    for (auto blocks : control_flow_graph->block_list()) {
+        for (auto stmt : blocks->statements()) {
+            reachable_statements.insert(stmt);
+        }
+    }
+
+    auto new_statements = std::vector<BoundStatementNode*> (statement->statements());
+    for (long i = new_statements.size() - 1; i >= 0; i--) {
+        if (!reachable_statements.contains(new_statements[i])) {
+            new_statements.erase(new_statements.begin() + i);
+        }
+    }
+
+    return new BoundBlockStatementNode(new_statements);
 }
 
 

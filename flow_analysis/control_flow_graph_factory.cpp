@@ -141,7 +141,7 @@ ControlFlowGraph* ControlFlowGraphFactory::build(std::vector<BasicBlock*> blocks
 }
 
 
-void ControlFlowGraphFactory::remove_block(std::vector<BasicBlock*> block_list, BasicBlock* block_to_remove) {
+void ControlFlowGraphFactory::remove_block(std::vector<BasicBlock*>& block_list, BasicBlock* block_to_remove) {
     for (auto branch : block_to_remove->incoming()) {
         branch->from()->remove_outgoing(branch);
         auto iter_end = std::remove(m_branches.begin(), m_branches.end(), branch);

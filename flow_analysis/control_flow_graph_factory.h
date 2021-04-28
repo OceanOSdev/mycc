@@ -42,7 +42,7 @@ private:
      * @param block_list The list of blocks that contains unreachable code.
      * @param block_to_remove The block that represents unreachable code.
      */
-    void remove_block(std::vector<BasicBlock*> block_list, BasicBlock* block_to_remove);
+    void remove_block(std::vector<BasicBlock*>& block_list, BasicBlock* block_to_remove);
 public:
     /**
      * @brief Creates a new Control Flow Graph Factory.
