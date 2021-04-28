@@ -240,6 +240,12 @@ void DiagnosticsList::report_cannot_decrement_lval(Syntax::SyntaxToken* token, s
     report (loc,message);
 }
 
+void DiagnosticsList::report_all_paths_must_return(Syntax::SyntaxToken* token, std::string function_id) {
+    Location loc = from_syntax_token(token);
+    std::string message = "All code paths in function '" + function_id + "' must return a value";
+    report(loc,message);
+}
+
 
 std::string DiagnosticsList::syntax_token_type_to_string(Syntax::token_type_t token_type) {
         switch(token_type) {

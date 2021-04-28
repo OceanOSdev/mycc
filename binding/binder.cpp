@@ -16,6 +16,8 @@
 /* UTILITY INCLUDES */
 #include "../logging/diagnostics.h"
 #include "../logging/part_three_info.h"
+#include "tree_rewriter.h"
+#include "../flow_analysis/control_flow_graph.h"
 
 /* SYMBOL INCLUDES */
 #include "../symbols/type_symbol.h"
@@ -127,6 +129,7 @@ void Binder::set_current_function_scope(Symbols::FunctionSymbol* function_symbol
 
 void Binder::bind_global_declaration(Syntax::GlobalDeclarationNode* gdn) {
     if (m_err_flag) return; // bail early.
+    int label_counter = 0;
     auto syntaxKind = gdn->kind();
     switch (syntaxKind) {
         case Syntax::SyntaxKind::GlobalVariableDeclaration:
@@ -152,7 +155,15 @@ void Binder::bind_global_declaration(Syntax::GlobalDeclarationNode* gdn) {
         case Syntax::SyntaxKind::FunctionDefinition:
         {
             auto func_def = dynamic_cast<Syntax::FunctionDefinitionNode*>(gdn);
-            m_global_decls.push_back(bind_function_definition(func_def));
+            auto bound_func_def = bind_function_definition(func_def);
+            BoundBlockStatementNode* rewritten = nullptr;
+            label_counter = TreeRewriter::rewrite(bound_func_def->statements(), rewritten, label_counter);
+            auto fsymb = bound_func_def->function_symbol();
+            if (!Symbols::TypeSymbol::are_types_equivalent(fsymb->type(), &Symbols::TypeSymbol::Void) && !FlowAnalysis::ControlFlowGraph::all_paths_in_DAG_return(rewritten)) {
+                m_diagnostics->report_all_paths_must_return(func_def->token(), fsymb->name());
+                m_err_flag = true;
+            }
+            m_global_decls.push_back(new BoundFunctionDefinitionNode(fsymb, rewritten));
             break;
         }
         default:

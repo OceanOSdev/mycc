@@ -82,6 +82,7 @@ public:
     void report_invalid_break_or_continue(Syntax::SyntaxToken* token, std::string text);
     void report_cannot_increment_lval(Syntax::SyntaxToken* token, std::string type);
     void report_cannot_decrement_lval(Syntax::SyntaxToken* token, std::string type);
+    void report_all_paths_must_return(Syntax::SyntaxToken* token, std::string function_id);
 };
 }
 #endif
