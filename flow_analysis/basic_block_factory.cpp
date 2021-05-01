@@ -50,7 +50,7 @@ std::vector<BasicBlock*> BasicBlockFactory::build(Binding::BoundBlockStatementNo
                 m_statements.push_back(statement);
                 break;
             default:
-                throw std::runtime_error("Unexpected statement while analyzing control flow.");
+                throw std::runtime_error("Unexpected statement while analyzing control flow.\n\tStatement type: " + std::to_string(statement->kind()));
         }
     }
 

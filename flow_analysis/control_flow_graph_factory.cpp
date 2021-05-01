@@ -117,7 +117,7 @@ ControlFlowGraph* ControlFlowGraphFactory::build(std::vector<BasicBlock*> blocks
                         connect_blocks(current, next);
                     break;
                 default:
-                    throw std::runtime_error("Unexpected statement while building control flow graph");
+                    throw std::runtime_error("Unexpected statement while building control flow graph.\n\tStatement type: " + std::to_string(statement->kind()));
             }
         }
     }

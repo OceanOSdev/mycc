@@ -322,11 +322,13 @@ void BoundTreePrinter::print_assignment_expression(Binding::BoundAssignmentExpre
 }
 
 void BoundTreePrinter::print_binary_expression(Binding::BoundBinaryExpressionNode* binary_expression) {
+    std::cout << "(";
     print_expression(binary_expression->left());
-    std::cout << " ";
+    std::cout << ")";
     print_binary_op_token(binary_expression->op()->op_kind());
-    std::cout << " ";
+    std::cout << "(";
     print_expression(binary_expression->right());
+    std::cout << ")";
 }
 
 void BoundTreePrinter::print_call_expression(Binding::BoundCallExpressionNode* call_expression) {
