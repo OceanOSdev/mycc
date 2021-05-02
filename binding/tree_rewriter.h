@@ -86,14 +86,14 @@ private:
 
 public:
 
-    static BoundBlockStatementNode* rewrite(BoundStatementNode* statement, int label_offset = 0);
+    static BoundBlockStatementNode* rewrite(BoundStatementNode* statement, int label_offset = 0, bool is_global_statement = false);
     
     /*
      * Does the same thing as the other rewrite function, but
      * returns the new BoundBlockStatementNode through an "out" parameter
      * and returns the label count after rewriting through the usual means.
      */
-    static int rewrite(BoundStatementNode* in_statement, BoundBlockStatementNode*& out_statement, int label_offset = 0);
+    static int rewrite(BoundStatementNode* in_statement, BoundBlockStatementNode*& out_statement, int label_offset = 0, bool is_global_statement = false);
 
 
     static std::vector<BoundGlobalDeclarationNode*> rewrite(std::vector<BoundGlobalDeclarationNode*> bound_program);

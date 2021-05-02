@@ -5,7 +5,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/mycc",
-            "args": ["-3", "test_files/test.c"],
+            "args": ["-7", "test_files/test2.c"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],

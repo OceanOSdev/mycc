@@ -31,7 +31,7 @@
         {
             "type": "shell",
             "label": "Clean",
-            "command": "make cclean",
+            "command": "make clean",
             "problemMatcher": [
                 "$gcc"
             ],

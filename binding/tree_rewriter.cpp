@@ -55,7 +55,8 @@ BoundLabel* TreeRewriter::generate_label() {
 }
 
 BoundGlobalDeclarationNode* TreeRewriter::rewrite_global_statement(BoundGlobalStatementNode* bound_global_statement) {
-    auto statement = rewrite(bound_global_statement->statement());
+    const int default_label_counter = 0;
+    auto statement = rewrite(bound_global_statement->statement(), default_label_counter, true);
 
     // There should only be one statement in the returned flattened bound block statement
     // so we grab that, wrap it in a BoundGlobalStatementNode, and return it.
@@ -97,18 +98,19 @@ std::vector<BoundGlobalDeclarationNode*> TreeRewriter::rewrite(std::vector<Bound
  * returns the new BoundBlockStatementNode through an "out" parameter
  * and returns the label count after rewriting through the usual means.
  */
-int TreeRewriter::rewrite(BoundStatementNode* in_statement, BoundBlockStatementNode*& out_statement, int label_offset) {
+int TreeRewriter::rewrite(BoundStatementNode* in_statement, BoundBlockStatementNode*& out_statement, int label_offset, bool is_global_statement) {
     // cant just call the other rewrite method since I need access to an instance
     // of the rewriter class to grab the label count.
     auto rewriter = new TreeRewriter(label_offset);
-    out_statement = remove_dead_code(flatten(rewriter->rewrite_statement(in_statement)));
+    auto lowered_statement = flatten(rewriter->rewrite_statement(in_statement));
+    out_statement = is_global_statement ? lowered_statement : remove_dead_code(lowered_statement);
     return rewriter->m_label_count;
 }
 
-BoundBlockStatementNode* TreeRewriter::rewrite(BoundStatementNode* statement, int label_offset) {
+BoundBlockStatementNode* TreeRewriter::rewrite(BoundStatementNode* statement, int label_offset, bool is_global_statement) {
     auto rewriter = new TreeRewriter(label_offset);
-    auto result = rewriter->rewrite_statement(statement);
-    return remove_dead_code(flatten(result));
+    auto lowered_statement = flatten(rewriter->rewrite_statement(statement));
+    return is_global_statement ? lowered_statement : remove_dead_code(lowered_statement); // global statements aren't really "branching" code ya know? So no need to remove dead code.
 }
 
 BoundBlockStatementNode* TreeRewriter::flatten(BoundStatementNode* statement) {
