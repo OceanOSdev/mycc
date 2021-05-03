@@ -136,7 +136,7 @@ void Binder::bind_global_declaration(Syntax::GlobalDeclarationNode* gdn) {
         {
             auto vardec = 
                 (dynamic_cast<Syntax::GlobalVariableGroupDeclarationNode*>(gdn))->variable_group();
-            m_global_decls.push_back(new BoundGlobalStatementNode(bind_statement(vardec)));
+            m_global_decls.push_back(new BoundGlobalStatementNode(bind_statement(vardec, true)));
             break;
         }
         case Syntax::SyntaxKind::GlobalStructDeclaration:

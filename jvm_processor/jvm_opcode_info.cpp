@@ -1,5 +1,6 @@
 #include "jvm_opcode_info.h"
 #include "jvm_opcodes.h"
+#include "instruction_arguments.h"
 #include <stdexcept>
 #include <cassert>
 
@@ -342,22 +343,12 @@ int net_stack_modification(JVMOpCode op_code) {
 
 bool is_control_transfer(JVMOpCode op_code) {
     if (is_branch(op_code)) return true;
-    
-    // As of now, it seems the only non branching op codes
-    // that transfer control are the ones that we can't (easily)
-    // determine their modifications of the stack.
-    // I'm hesitant to replace this with a call to
-    // !is_constant_stack_modifier though since I'm not
-    // entirely convinced that I'm not dumb and just forgot
-    // about another opcode.
+
     switch (op_code) {
         case ireturn: [[fallthrough]];
         case freturn: [[fallthrough]];
         case areturn: [[fallthrough]];
-        case _return: [[fallthrough]];
-        case invokevirtual: [[fallthrough]];
-        case invokespecial: [[fallthrough]];
-        case invokestatic: return true;
+        case _return: return true;
         default: return false;
     }
 }
@@ -478,6 +469,56 @@ std::string op_code_name(JVMOpCode op_code) {
         case arraylength: return "arraylength";
         default:
             throw new std::runtime_error("Invalid op code value: " + std::to_string(op_code));
+    }
+}
+
+
+InstructionArgumentKind required_argument_kind(JVMOpCode op_code) {
+    switch (op_code) {
+        case bipush: return InstructionArgumentKind::Char_Constant;
+
+        case ldc: return InstructionArgumentKind::Any_Constant;
+
+        case iload: [[fallthrough]];
+        case fload: [[fallthrough]];
+        case aload: return InstructionArgumentKind::Integer_Constant;
+
+        case istore: [[fallthrough]];
+        case fstore: [[fallthrough]];
+        case astore: return InstructionArgumentKind::Integer_Constant;
+
+        case iinc: return InstructionArgumentKind::Integer_Tuple;
+
+        case ifeq: [[fallthrough]];
+        case ifne: [[fallthrough]];
+        case iflt: [[fallthrough]];
+        case ifge: [[fallthrough]];
+        case ifgt: [[fallthrough]];
+        case ifle: [[fallthrough]];
+        case if_icmpeq: [[fallthrough]];
+        case if_icmpne: [[fallthrough]];
+        case if_icmplt: [[fallthrough]];
+        case if_icmpge: [[fallthrough]];
+        case if_icmpgt: [[fallthrough]];
+        case if_icmple: [[fallthrough]];
+        case if_acmpeq: [[fallthrough]];
+        case if_acmpne: [[fallthrough]];
+        case _goto: return InstructionArgumentKind::Label;
+
+        case getstatic: [[fallthrough]];
+        case putstatic: [[fallthrough]];
+        case getfield: [[fallthrough]];
+        case putfield: return InstructionArgumentKind::Field_Accessor;
+
+        case invokevirtual: [[fallthrough]];
+        case invokespecial: [[fallthrough]];
+        case invokestatic: return InstructionArgumentKind::Method_Call;
+
+        case _new: [[fallthrough]];
+        case newarray: [[fallthrough]];
+        case anewarray: return InstructionArgumentKind::Type_Identifier;
+        
+        default: return InstructionArgumentKind::Empty; 
     }
 }
 

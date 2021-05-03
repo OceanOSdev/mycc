@@ -14,8 +14,9 @@ private:
     bool arr;
     int arr_c;
     bool m_is_const;
+    bool m_is_global;
 public:
-    VariableSymbol(std::string n, const TypeSymbol* t, bool is_arr = false, int arr_size = -1, bool is_const = false);
+    VariableSymbol(std::string n, const TypeSymbol* t, bool is_arr = false, int arr_size = -1, bool is_const = false, bool is_global = false);
     ~VariableSymbol();
 
     static VariableSymbol* from_parameter_symbol(ParameterSymbol* symbol);
@@ -39,6 +40,11 @@ public:
      * Whether or not the type is read only.
      */
     bool is_const() const;
+
+    /*
+     * Whether or not this variable is in global scope.
+     */
+    bool is_global() const;
 
     /*
      * The type of symbol this is.

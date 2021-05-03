@@ -15,14 +15,20 @@ namespace Symbols {
 
 namespace JVMProcessor {
 
-enum InstructionArgumentKind : uint8_t {
-    Empty,
-    Label,
-    Integer_Constant,
-    Float_Constant,
-    Type_Identifier,
-    Field_Accessor,
-    Method_Call
+enum InstructionArgumentKind : uint16_t {
+    Empty = 0b0,
+    Label = 0b1,
+    Integer_Tuple = 0b10,
+    Char_Constant = 0b100,
+    Integer_Constant = 0b1000,
+    Float_Constant = 0b10000,
+    String_Constant = 0b100000,
+    Type_Identifier = 0b1000000,
+    Field_Accessor = 0b10000000,
+    Method_Call = 0b100000000,
+
+    //Helper vals
+    Any_Constant = Char_Constant | Integer_Constant | Float_Constant | String_Constant
 };
 
 class InstructionArgument {
@@ -76,6 +82,54 @@ public:
 };
 
 /**
+ * @brief Represents a tuple int-valued argument to an
+ * instruction's op code. 
+ * 
+ * Exists because of op codes like iinc.
+ */
+class ITupleConstInstructionArgument : public InstructionArgument {
+private:
+    int m_ival_one;
+    int m_ival_two;
+public:
+    ITupleConstInstructionArgument(int val_one, int val_two);
+
+    /**
+     * @brief The first integer constant value. 
+     */
+    int first_value() const;
+    
+    /**
+     * @brief The second integer constant value. 
+     */
+    int second_value() const;
+
+    InstructionArgumentKind kind() const override;
+
+    std::string str() const override;
+};
+
+/**
+ * @brief Represents an char-valued argument to an
+ * instruction's op code. 
+ */
+class CConstInstructionArgument : public InstructionArgument {
+private:
+    char m_cval;
+public:
+    CConstInstructionArgument(char val);
+
+    /**
+     * @brief The character constant value. 
+     */
+    char value() const;
+
+    InstructionArgumentKind kind() const override;
+
+    std::string str() const override;
+};
+
+/**
  * @brief Represents an int-valued argument to an
  * instruction's op code. 
  */
@@ -109,6 +163,26 @@ public:
      * @brief The floating point constant value. 
      */
     float value() const;
+
+    InstructionArgumentKind kind() const override;
+
+    std::string str() const override;
+};
+
+/**
+ * @brief Represents a string-valued argument to an
+ * instruction's op code. 
+ */
+class SConstInstructionArgument : public InstructionArgument {
+private:
+    std::string m_sval;
+public:
+    SConstInstructionArgument(std::string val);
+
+    /**
+     * @brief The string constant value. 
+     */
+    std::string value() const;
 
     InstructionArgumentKind kind() const override;
 

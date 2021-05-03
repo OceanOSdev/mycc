@@ -93,10 +93,10 @@ private:
     
     /* statement bindings */
     BoundStatementNode* bind_error_statement();
-    BoundStatementNode* bind_statement(Syntax::StatementNode* statement);
+    BoundStatementNode* bind_statement(Syntax::StatementNode* statement, bool is_global_scope = false);
     BoundStatementNode* bind_expression_statement(Syntax::ExpressionStatementNode* expression_statement);
     BoundStatementNode* bind_block_statement(Syntax::BlockStatementNode* block_statement, bool create_new_scope = true);
-    BoundStatementNode* bind_variable_group_declaration(Syntax::VariableGroupDeclarationNode* variable_group);
+    BoundStatementNode* bind_variable_group_declaration(Syntax::VariableGroupDeclarationNode* variable_group, bool is_global_scope = false);
     BoundStatementNode* bind_return_statement(Syntax::ReturnStatementNode* return_statement);
     BoundStatementNode* bind_struct_declaration(Syntax::StructDeclarationNode* struct_declaration);
     BoundStatementNode* bind_break_statement(Syntax::BreakStatementNode* break_statement);

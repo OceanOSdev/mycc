@@ -4,8 +4,8 @@
 
 namespace Symbols {
 
-VariableSymbol::VariableSymbol(std::string n, const TypeSymbol* t, bool is_arr, int arr_size, bool is_const) :
-        Symbol(n), m_type(t), arr(is_arr), arr_c(arr_size), m_is_const(is_const) {}
+VariableSymbol::VariableSymbol(std::string n, const TypeSymbol* t, bool is_arr, int arr_size, bool is_const, bool is_global) :
+        Symbol(n), m_type(t), arr(is_arr), arr_c(arr_size), m_is_const(is_const), m_is_global(is_global) {}
 
 VariableSymbol::~VariableSymbol() {}
 
@@ -32,6 +32,8 @@ int VariableSymbol::array_size() const { return arr_c; }
  * Whether or not the type is read only.
  */
 bool VariableSymbol::is_const() const { return m_is_const; }
+
+bool VariableSymbol::is_global() const { return m_is_global; }
 
 /*
  * The type of symbol this is.

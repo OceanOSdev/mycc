@@ -58,7 +58,7 @@ BoundStatementNode* Binder::bind_error_statement() {
     return new BoundExpressionStatementNode(bind_error_expression());
 }
 
-BoundStatementNode* Binder::bind_statement(Syntax::StatementNode* statement) {
+BoundStatementNode* Binder::bind_statement(Syntax::StatementNode* statement, bool is_global_scope) {
     if (m_err_flag) return bind_error_statement();
     auto syntaxKind = statement->kind();
     switch (syntaxKind) {
@@ -78,7 +78,8 @@ BoundStatementNode* Binder::bind_statement(Syntax::StatementNode* statement) {
             return bind_struct_declaration(dynamic_cast<Syntax::StructDeclarationNode*>(statement));
         case Syntax::SyntaxKind::VariableDeclaration: 
             return bind_variable_group_declaration(
-                dynamic_cast<Syntax::VariableGroupDeclarationNode*>(statement)
+                dynamic_cast<Syntax::VariableGroupDeclarationNode*>(statement),
+                is_global_scope
             );
         case Syntax::SyntaxKind::IfStatement: 
             return bind_if_statement(dynamic_cast<Syntax::IfStatementNode*>(statement));
@@ -300,7 +301,7 @@ BoundStatementNode* Binder::bind_struct_declaration(Syntax::StructDeclarationNod
     return new BoundStructDeclarationNode(struct_symbol);
 }
 
-BoundStatementNode* Binder::bind_variable_group_declaration(Syntax::VariableGroupDeclarationNode* variable_group) {
+BoundStatementNode* Binder::bind_variable_group_declaration(Syntax::VariableGroupDeclarationNode* variable_group, bool is_global_scope) {
     std::vector<BoundVariableDeclarationNode*> bound_variables;
     auto type_symbol_id = variable_group->type();
     auto var_type = bind_type_clause(type_symbol_id);
@@ -325,7 +326,8 @@ BoundStatementNode* Binder::bind_variable_group_declaration(Syntax::VariableGrou
                                                             type,
                                                             is_array,
                                                             partial_dec->array_length(),
-                                                            is_const);
+                                                            is_const,
+                                                            is_global_scope);
         
         if (partial_dec->is_assigned()) {
             initial_val = bind_expression(partial_dec->expression());

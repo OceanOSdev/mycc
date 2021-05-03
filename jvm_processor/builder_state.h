@@ -3,8 +3,11 @@
 #define BUILDER_STATE_H
 
 #include <stack>
+#include <cstdint>
 
 namespace JVMProcessor {
+
+enum JVMOpCode : uint8_t;
 
 /**
  * @brief For debugging purposes, we create an enum to
@@ -52,6 +55,15 @@ public:
      * @brief The total number of op codes emitted by the builder. 
      */
     int op_codes_emitted() const;
+
+    /**
+     * @brief Records the emitted op code to the content stack.
+     * 
+     * @param op_code The op code that was emitted.
+     * 
+     * @note We actually don't record what gets added *quite* yet.
+     */
+    void add_op_code(JVMOpCode op_code);
 
     /**
      * @brief The current stack of types in the execution state.

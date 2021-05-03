@@ -4,7 +4,6 @@
 
 #include <cstdint>
 #include <string>
-#include <vector>
 
 namespace JVMProcessor {
 
@@ -14,9 +13,8 @@ class InstructionArgument;
 class Instruction {
 private:
     JVMOpCode m_op_code;
-    std::vector<InstructionArgument*> m_arguments;
+    InstructionArgument* m_argument;
 public:
-    Instruction(JVMOpCode op_code, std::vector<InstructionArgument*> arguments);
     Instruction(JVMOpCode op_code, InstructionArgument* argument);
     Instruction(JVMOpCode op_code);
 
@@ -26,10 +24,10 @@ public:
     JVMOpCode op_code() const;
 
     /**
-     * @brief The list of arguments taken by the op code in
+     * @brief The argument taken by the op code in
      * this instruction.
      */
-    std::vector<InstructionArgument*> arguments() const;
+    InstructionArgument* argument() const;
 
     /**
      * @brief The op code's mnemonic.
