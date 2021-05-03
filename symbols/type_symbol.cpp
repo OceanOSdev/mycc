@@ -96,6 +96,20 @@ std::string TypeSymbol::str() const {
         return ret;
 }
 
+std::string TypeSymbol::jasm_str(bool is_in_method_sig) const {
+        std::string ret = "";
+        if (m_attributes.is_array) ret += "[";
+        if (!m_attributes.is_struct) {
+                if (m_name == "char") return ret + "C"; 
+                else if (m_name == "int") return ret + "I"; 
+                else if (m_name == "float") return ret + "F"; 
+                else return ret + "V"; // the case of an error type should be handled by the time this method is called. 
+        }
+
+        if (is_in_method_sig) return ret + "L" + m_name + ";";
+        return m_name;
+}
+
 /*
  * Grabs an instance of TypeSymbol if it matches one of the
  * primitive types:

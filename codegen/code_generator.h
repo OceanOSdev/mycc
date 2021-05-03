@@ -1,6 +1,6 @@
 #pragma once
-#ifndef EMITTER_H
-#define EMITTER_H
+#ifndef CODE_GENERATOR_H
+#define CODE_GENERATOR_H
 
 #include <fstream>
 #include <ostream>
@@ -8,13 +8,17 @@
 
 namespace CodeGen {
 class CodeGenPayload;
-class Emitter {
+class CodeGenerator {
 private:
     std::ostream* m_outstream;
     CodeGenPayload* m_payload;
     bool m_debug_mode;
+
+    bool emit_global_variable_declarations();
+    bool emit_global_struct_declarations();
+    bool emit_local_struct_declarations();
 public:
-    Emitter(CodeGenPayload* payload, bool debug);
+    CodeGenerator(CodeGenPayload* payload, bool debug);
 
     bool emit();
 

@@ -70,6 +70,14 @@ public:
      */
     std::string str() const;
 
+    /**
+     * @brief String representation of type in java assembly format.
+     *  
+     * @param is_in_method_sig Whether to format as param/ret type 
+     *      (i.e. prepend 'L' and append ';' to object types).
+     */
+    std::string jasm_str(bool is_in_method_sig = true) const;
+
     /*
      * Grabs an instance of TypeSymbol if it matches one of the
      * primitive types:

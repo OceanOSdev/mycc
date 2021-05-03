@@ -114,7 +114,7 @@ BINDING_SRCS = $(addprefix  $(BINDING_DIR)/, $(BINDING_SRC_NO_PATH))
 BINDING_OBJS = $(patsubst %.cpp,$(OBJDIR)/%.o,$(BINDING_SRC_NO_PATH))
 
 CODEGEN_DIR = codegen
-CODEGEN_SRC_NO_PATH = code_gen_payload.cpp emitter.cpp
+CODEGEN_SRC_NO_PATH = code_gen_payload.cpp code_generator.cpp
 CODEGEN_SRCS = $(addprefix $(CODEGEN_DIR)/, $(CODEGEN_SRC_NO_PATH))
 CODEGEN_OBJS = $(patsubst %.cpp,$(OBJDIR)/%.o,$(CODEGEN_SRC_NO_PATH))
 
@@ -124,7 +124,9 @@ FLOWANAL_SRCS = $(addprefix $(FLOWANAL_DIR)/, $(FLOWANAL_SRC_NO_PATH))
 FLOWANAL_OBJS = $(patsubst %.cpp,$(OBJDIR)/%.o,$(FLOWANAL_SRC_NO_PATH))
 
 JVM_PROCESSOR_DIR = jvm_processor
-JVM_PROCESSOR_SRC_NO_PATH = jvm_opcode_info.cpp
+JVM_PROCESSOR_SRC_NO_PATH = jvm_opcode_info.cpp instruction_argument_empty.cpp instruction_argument_fconst.cpp instruction_argument_field.cpp
+JVM_PROCESSOR_SRC_NO_PATH += instruction_argument_iconst.cpp instruction_argument_label.cpp instruction_argument_method.cpp instruction_argument_type_id.cpp
+JVM_PROCESSOR_SRC_NO_PATH += instruction.cpp
 JVM_PROCESSOR_SRCS = $(addprefix $(JVM_PROCESSOR_DIR)/, $(JVM_PROCESSOR_SRC_NO_PATH))
 JVM_PROCESSOR_OBJS = $(patsubst %.cpp,$(OBJDIR)/%.o,$(JVM_PROCESSOR_SRC_NO_PATH))
 
@@ -238,7 +240,6 @@ B_TREE_PRINTER_E_DEP = $(addprefix $(CODEGEN_DIR)/, $(B_TREE_PRINTER_E_DEP_SRCS_
 B_TREE_PRINTER_DEP = $(B_TREE_PRINTER_B_DEP) $(B_TREE_PRINTER_E_DEP)
 
 
-
 all: nodoc docs
 
 nodoc: $(TARG)
@@ -324,7 +325,7 @@ $(OBJDIR)/part_two_syntax_check.o: $(PART_TWO_SYNT_CHECK_DEPS)
 $(OBJDIR)/qsem.o: $(LOGGING_DIR)/part_three_info.cpp
 $(OBJDIR)/code_gen_payload.o: $(BINDING_DIR)/tree_rewriter.cpp
 $(OBJDIR)/bound_tree_printer.o: $(B_TREE_PRINTER_DEP)
-$(OBJDIR)/emitter.o: $(CODEGEN_DIR)/code_gen_payload.cpp
+$(OBJDIR)/code_generator.o: $(CODEGEN_DIR)/code_gen_payload.cpp
 
 
 

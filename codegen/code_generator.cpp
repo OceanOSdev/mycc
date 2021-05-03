@@ -1,9 +1,9 @@
-#include "emitter.h"
+#include "code_generator.h"
 #include "code_gen_payload.h"
 
 namespace CodeGen {
 
-Emitter::Emitter(CodeGenPayload* payload, bool debug) :
+CodeGenerator::CodeGenerator(CodeGenPayload* payload, bool debug) :
     m_payload(payload), m_debug_mode(debug) {
 
     if (debug)
@@ -12,11 +12,11 @@ Emitter::Emitter(CodeGenPayload* payload, bool debug) :
         m_outstream = new std::ofstream(payload->output_filename());
 }
 
-bool Emitter::emit() {
+bool CodeGenerator::emit() {
     return false;
 }
 
-bool Emitter::is_debug() const {
+bool CodeGenerator::is_debug() const {
     return m_debug_mode;
 }
 

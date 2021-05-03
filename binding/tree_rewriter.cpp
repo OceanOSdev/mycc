@@ -508,6 +508,21 @@ BoundExpressionNode* TreeRewriter::rewrite_binary_conditional_expression(BoundBi
     BoundLiteralValExpressionNode* lit_left = is_left_literal ? dynamic_cast<BoundLiteralValExpressionNode*>(left) : nullptr;
     BoundLiteralValExpressionNode* lit_right = is_right_literal ? dynamic_cast<BoundLiteralValExpressionNode*>(right) : nullptr;
 
+    /*
+    if (binary_expression->op()->op_kind() == BoundBinaryOpKind::LogicalOr) {
+        if (is_right_literal && !BoundLiteralValExpressionNode::is_nonzero(lit_right))
+            return left;
+        if (is_left_literal && !BoundLiteralValExpressionNode::is_nonzero(lit_left)) 
+            return right;
+        return right;
+    } else if (binary_expression->op()->op_kind() == BoundBinaryOpKind::LogicalAnd) {
+        if (!BoundLiteralValExpressionNode::is_nonzero(lit_left)) 
+            return false_literal; // false && <expr> evaluates to false
+        return right;
+    }
+    */
+
+
     if (is_left_literal) {
         if (binary_expression->op()->op_kind() == BoundBinaryOpKind::LogicalOr) {
             if (BoundLiteralValExpressionNode::is_nonzero(lit_left)) 
