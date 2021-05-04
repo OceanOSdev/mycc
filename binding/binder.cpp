@@ -156,6 +156,7 @@ void Binder::bind_global_declaration(Syntax::GlobalDeclarationNode* gdn) {
         {
             auto func_def = dynamic_cast<Syntax::FunctionDefinitionNode*>(gdn);
             auto bound_func_def = bind_function_definition(func_def);
+            if (m_err_flag) break;
             BoundBlockStatementNode* rewritten = nullptr;
             label_counter = TreeRewriter::rewrite(bound_func_def->statements(), rewritten, label_counter);
             auto fsymb = bound_func_def->function_symbol();

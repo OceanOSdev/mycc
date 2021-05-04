@@ -10,12 +10,13 @@
 #include "binding/binder.h"
 #include "bound_tree_printer.h"
 #include "codegen/code_gen_payload.h"
+#include "codegen/code_generator.h"
 
 const char* version_info =
 "My bare-bones C compiler (for COM 440)\n"
 "\tWritten by Thomas Maloney (tmaloney@iastate.edu)\n"
-"\tVersion 0.3\n"
-"\t4 March, 2021\n";
+"\tVersion 0.5\n"
+"\t4 May, 2021\n";
 
 Logging::Logger* logger;
 
@@ -27,6 +28,7 @@ void run_syntax_checker(Arguments* args);
 void run_semantic_analyzer(Arguments* args);
 void run_syntax_tree_printer(Arguments* args);
 void run_bound_tree_printer(Arguments* args);
+void run_gen_purp_debug(Arguments* args);
 
 int main(int argc, char* argv[]) {
     auto arguments = Arguments::parse_arguments(argc, argv);
@@ -51,6 +53,7 @@ void argument_handler(Arguments* args) {
         case CompilerMode::MODE_FIVE: break;
         case CompilerMode::MODE_SIX: run_syntax_tree_printer(args); break;
         case CompilerMode::MODE_SEVEN: run_bound_tree_printer(args); break;
+        case CompilerMode::MODE_EIGHT: run_gen_purp_debug(args); break;
     }
 }
 
@@ -136,6 +139,26 @@ void run_bound_tree_printer(Arguments* args) {
             // quick hack to get the codes filename (since we only support fully compiling one)
             std::string filename = args->input_filenames().at(0);
             printer->print_bound_tree(CodeGen::CodeGenPayload::create_payload(filename, binder->global_decls()));
+        }
+    } else {
+        for (auto diagnostic : d.get_diagnostics())
+            logger->log_err(diagnostic);
+    }
+}
+
+void run_gen_purp_debug(Arguments* args) {
+    Driver d;
+    if (run_parser(args, std::move(d))) {
+        auto root = new Syntax::ProgramNode(nullptr, d.get_translation_units());
+        auto binder = Binding::Binder::bind_program(root);
+        if (binder->err_flag())
+            logger->log_diagnostics_list(binder->diagnostics());
+        else {
+            // quick hack to get the codes filename (since we only support fully compiling one)
+            std::string filename = args->input_filenames().at(0);
+            auto payload = CodeGen::CodeGenPayload::create_payload(filename, binder->global_decls());
+            auto code_generator = new CodeGen::CodeGenerator(payload, true);
+            code_generator->emit();
         }
     } else {
         for (auto diagnostic : d.get_diagnostics())

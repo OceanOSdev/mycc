@@ -6,6 +6,7 @@
 #include <ostream>
 #include <iostream>
 #include <unordered_map>
+#include <vector>
 
 namespace Binding {
     class BoundFunctionDefinitionNode;
@@ -42,9 +43,8 @@ private:
     bool m_debug_mode;
     JVMProcessor::JAsmBuilder* m_builder;
     std::unordered_map<Symbols::FunctionSymbol*, JVMProcessor::FinalizedBody*> m_compiled_method_bodies;
+    std::vector<Binding::BoundVariableDeclarationNode*> m_fields_needing_clinit;
     
-
-    void emit_global_variable_declaration(Symbols::VariableSymbol* global_variable);
     /**
      * @brief It doesn't actually matter if the struct is supposed to be
      * global or local to a function since any attempts to access it outside
@@ -56,6 +56,9 @@ private:
      */
     void emit_struct_declaration(Binding::BoundStructDeclarationNode* struct_decl);
     void emit_method(Binding::BoundFunctionDefinitionNode* method);
+    void emit_field(Binding::BoundVariableDeclarationNode* field, bool is_static = false);
+    void emit_basic_assembly_metadata(std::string class_name);
+
 
     // ====================
     //     Statements

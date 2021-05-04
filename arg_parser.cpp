@@ -14,7 +14,8 @@ const char* usage_str =
 "\t-4: Part 4\n"
 "\t-5: Part 5 (not implemented yet)\n"
 "\t-6: Output Syntax Tree (for debugging purposes)\n"
-"\t-7: Output Bound Tree (fo debugging purposes)\n\n"
+"\t-7: Output Bound Tree (for debugging purposes)\n"
+"\t-8: General Purpose Debugging Output (subject to change behavior whenever)\n\n"
 "Valid options:\n"
 "\t-o outfile: write to outfile instead of standard output\n";
 
@@ -39,7 +40,7 @@ Arguments* Arguments::parse_arguments(int argc, char* argv[]) {
     std::string out_file;
 
     int option;
-    while ((option = getopt(argc, argv, "01:2:3:456:7:o:")) != -1) {
+    while ((option = getopt(argc, argv, "01:2:3:456:7:8:o:")) != -1) {
         switch (option) {
             case '0': current_mode = CompilerMode::MODE_ZERO; break;
             case '1':
@@ -68,6 +69,10 @@ Arguments* Arguments::parse_arguments(int argc, char* argv[]) {
                 break;
             case '7':
                 current_mode = CompilerMode::MODE_SEVEN;
+                files = get_files(argc, argv);
+                break;
+            case '8':
+                current_mode = CompilerMode::MODE_EIGHT;
                 files = get_files(argc, argv);
                 break;
             case 'o':

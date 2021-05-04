@@ -12,7 +12,8 @@ enum CompilerMode: int {
     MODE_FOUR,
     MODE_FIVE,
     MODE_SIX,
-    MODE_SEVEN
+    MODE_SEVEN,
+    MODE_EIGHT
 };
 
 class Arguments {

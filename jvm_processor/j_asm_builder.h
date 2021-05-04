@@ -5,9 +5,16 @@
 #include <cstdint>
 #include <vector>
 #include <string>
+#include <set>
+
+namespace Binding {
+    class BoundVariableDeclarationNode;
+    class BoundLiteralValExpressionNode;
+}
 
 namespace Symbols {
     class VariableSymbol;
+    class FunctionSymbol;
 }
 
 namespace JVMProcessor {
@@ -18,6 +25,11 @@ class Instruction;
 class FinalizedBody;
 
 enum JVMOpCode : uint8_t;
+enum BlockDirectiveType : uint8_t {
+    ClassDirective,
+    MethodDirective,
+    CodeDirective
+};
 
 enum ReturnOpType : uint8_t {
     Void,
@@ -30,6 +42,27 @@ class LabelFixUpData;
 
 class JAsmBuilder {
 private:
+    /**
+     * @brief JVM doesn't like it when we use these
+     * as identifiers for things but since they
+     * are all valid identifiers in our subset of
+     * C, we just need to put quotations around
+     * them should they show up in source code
+     * that gets fed to the compiler.
+     */
+    static const std::set<std::string> m_forbidden_words;
+
+    /**
+     * @brief Wraps a string with quotations if need be so that
+     * it can be used as an identifier by the Krakatau Java
+     * assembler.
+     * 
+     * @param str The string to wrap (should we need to).
+     */
+    static std::string str_as_emittable_identifier(std::string str);
+
+    static std::string lit_as_emittable_const(Binding::BoundLiteralValExpressionNode* lit);
+
     /**
      * @brief Enum for denoting whether emit the
      * load or store op code in the 'emit_local_load_or_store_*'
@@ -47,7 +80,6 @@ private:
     std::vector<Instruction*> m_instructions;
     std::vector<Symbols::VariableSymbol*> m_locals;
     std::vector<LabelFixUpData*> m_fixups; // <-- todo: something with this, ill get back to it later.
-
     bool m_finalized;
 
     int get_local_variable_index(Symbols::VariableSymbol* local);
@@ -91,6 +123,60 @@ public:
      * @param local_variable The local variable to declare.
      */
     void declare_local(Symbols::VariableSymbol* local_variable);
+
+    /**
+     * @brief Emits a string representation of the class directive in
+     * Java assembly.
+     * 
+     * @param class_name The name of the class in the assembly info.
+     * @return '.class public "class_name"'
+     */
+    static std::string emit_class_directive(std::string class_name);
+
+    /**
+     * @brief Emits a string representation of the super directive.
+     * 
+     * @return '.super java/lang/Object'
+     */
+    static std::string emit_super_directive();
+
+    /**
+     * @brief Emits a string representation of the field directive.
+     * 
+     * @param field_decl The variable declaration for the field.
+     * @param is_static Whether or not this is a static field 
+     *      (in our case, a global variable vs a struct member).
+     * @param requires_clinit An out-param that notifies the caller if the field needs
+     *       to be initialized in the <clinit> method.
+     * @return '.field public [static] [final] <name> <Type> [= <init_expr>]'
+     */
+    static std::string emit_field_directive(Binding::BoundVariableDeclarationNode* field_decl, bool is_static, bool& requires_clinit);
+    
+    /**
+     * @brief Emits a string representation of the method directive.
+     * 
+     * @param method The function symbol for this method.
+     * @param is_static Whether or not this is a special function (i.e an initializer).
+     * @return '.method public [static] <name> : ([<Type list>])<Type>'
+     */
+    static std::string emit_method_definition_header(Symbols::FunctionSymbol* method, bool is_static = true);
+    
+    /**
+     * @brief Emits a string representation of the code directive.
+     * 
+     * @param max_stack_size The size the stack becomes in this method.
+     * @param local_count The total number of locals including parameters.
+     * @return '.code stack <max_stack_size> locals <local_count>'
+     */
+    static std::string emit_method_code_directive(int max_stack_size, int local_count);
+    
+    /**
+     * @brief Emits a string that ends a block directive.
+     * 
+     * @param directive_type The type of directive to "end".
+     * @return '.end <directive_type>'
+     */
+    static std::string emit_directive_end(BlockDirectiveType directive_type);
 };
 
 }
