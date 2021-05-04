@@ -114,7 +114,7 @@ BINDING_SRCS = $(addprefix  $(BINDING_DIR)/, $(BINDING_SRC_NO_PATH))
 BINDING_OBJS = $(patsubst %.cpp,$(OBJDIR)/%.o,$(BINDING_SRC_NO_PATH))
 
 CODEGEN_DIR = codegen
-CODEGEN_SRC_NO_PATH = code_gen_payload.cpp code_generator.cpp
+CODEGEN_SRC_NO_PATH = code_gen_payload.cpp label_fix_up_data.cpp code_gen_utils.cpp code_gen_emit_stmt.cpp code_gen_emit_expr.cpp code_generator.cpp
 CODEGEN_SRCS = $(addprefix $(CODEGEN_DIR)/, $(CODEGEN_SRC_NO_PATH))
 CODEGEN_OBJS = $(patsubst %.cpp,$(OBJDIR)/%.o,$(CODEGEN_SRC_NO_PATH))
 

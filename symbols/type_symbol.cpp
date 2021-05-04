@@ -227,6 +227,14 @@ bool TypeSymbol::can_be_explicitly_casted(const TypeSymbol* from, const TypeSymb
         return std::is_lteq(order) || std::is_gteq(order);
 }
 
+bool TypeSymbol::is_bytecode_reference_type(const TypeSymbol* type) {
+        if (type->attributes().is_array || 
+            type->attributes().is_struct ||
+            is_error_or_incomplete_type(type)) 
+            return true;
+        return are_types_equivalent(type, &Float);
+}
+
 const TypeSymbol TypeSymbol::Void = TypeSymbol("void", {false,false,false});
 const TypeSymbol TypeSymbol::Char = TypeSymbol("char", {false,true,true});
 const TypeSymbol TypeSymbol::Int = TypeSymbol("int", {false,true,true});

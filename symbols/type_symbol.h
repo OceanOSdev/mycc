@@ -129,6 +129,15 @@ public:
      */
     static bool is_conditional_type(const TypeSymbol* type);
     static bool can_be_explicitly_casted(const TypeSymbol* from, const TypeSymbol* to);
+
+    /*
+     * Whether or not during bytecode emitting if using 'type' requires the
+     * 'a' prefix.
+     * 
+     * Note: The 'Void' and 'Error' types are considered "reference types" in 
+     * this scenario. The decision was completely arbitrary. 
+     */
+    static bool is_bytecode_reference_type(const TypeSymbol* type);
 };
 
 }

@@ -9,4 +9,8 @@ void CodeGenerator::emit_pop_if_unused(bool used) {
         m_builder->emit_op_code(JVMProcessor::JVMOpCode::pop);
 }
 
+void CodeGenerator::declare_local(Symbols::VariableSymbol* local_variable) {
+    m_builder->declare_local(local_variable);
+}
+
 }

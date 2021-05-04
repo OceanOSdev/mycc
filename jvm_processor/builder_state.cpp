@@ -3,8 +3,6 @@
 
 namespace JVMProcessor {
 
-
-
 BuilderState::BuilderState() :
     m_max_stack_size(0),
     m_current_stack_size(0),

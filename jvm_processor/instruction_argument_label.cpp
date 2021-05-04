@@ -2,6 +2,9 @@
 
 namespace JVMProcessor {
 
+LabelInstructionArgument::LabelInstructionArgument(std::string label) :
+    m_label(label) {}
+
 InstructionArgumentKind LabelInstructionArgument::kind() const {
     return InstructionArgumentKind::Label;
 }
