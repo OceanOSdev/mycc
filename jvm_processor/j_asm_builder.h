@@ -52,15 +52,6 @@ private:
      */
     static const std::set<std::string> m_forbidden_words;
 
-    /**
-     * @brief Wraps a string with quotations if need be so that
-     * it can be used as an identifier by the Krakatau Java
-     * assembler.
-     * 
-     * @param str The string to wrap (should we need to).
-     */
-    static std::string str_as_emittable_identifier(std::string str);
-
     static std::string lit_as_emittable_const(Binding::BoundLiteralValExpressionNode* lit);
 
     /**
@@ -177,6 +168,16 @@ public:
      * @return '.end <directive_type>'
      */
     static std::string emit_directive_end(BlockDirectiveType directive_type);
+
+
+    /**
+     * @brief Wraps a string with quotations if need be so that
+     * it can be used as an identifier by the Krakatau Java
+     * assembler.
+     * 
+     * @param str The string to wrap (should we need to).
+     */
+    static std::string str_as_emittable_identifier(std::string str);
 };
 
 }

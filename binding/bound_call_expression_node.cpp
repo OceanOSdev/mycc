@@ -1,8 +1,13 @@
 #include "bound_call_expression_node.h"
 #include "../symbols/type_symbol.h"
 #include "../symbols/function_symbol.h"
+#include "bound_node_factory.h"
 
 namespace Binding {
+
+BoundCallExpressionNode* Factory::call(Symbols::FunctionSymbol* function, std::vector<BoundExpressionNode*> arguments) {
+    return new BoundCallExpressionNode(function, arguments);
+}
 
 BoundCallExpressionNode::BoundCallExpressionNode(Symbols::FunctionSymbol* function, std::vector<BoundExpressionNode*> arguments) :
     m_function(function), m_arguments(arguments) {}

@@ -1,9 +1,13 @@
 #include "bound_variable_reference_expression_node.h"
 #include "../symbols/type_symbol.h"
 #include "../symbols/variable_symbol.h"
-
+#include "bound_node_factory.h"
 
 namespace Binding {
+
+BoundVariableReferenceExpressionNode* Factory::var_ref(Symbols::VariableSymbol* variable) {
+    return new BoundVariableReferenceExpressionNode(variable);
+}
 
 BoundVariableReferenceExpressionNode::BoundVariableReferenceExpressionNode(Symbols::VariableSymbol* variable_reference) :
     m_variable_reference(variable_reference) {}

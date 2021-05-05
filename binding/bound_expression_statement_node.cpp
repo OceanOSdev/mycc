@@ -1,7 +1,12 @@
 #include "bound_expression_statement_node.h"
 #include "bound_expression_node.h"
+#include "bound_node_factory.h"
 
 namespace Binding {
+
+BoundExpressionStatementNode* Factory::statement(BoundExpressionNode* expression) {
+    return new BoundExpressionStatementNode(expression);
+}
 
 BoundExpressionStatementNode::BoundExpressionStatementNode(BoundExpressionNode* expression) :
     m_expression(expression) {}

@@ -1,7 +1,12 @@
 #include "parameter_symbol.h"
 #include "type_symbol.h"
+#include "symbol_factory.h"
 
 namespace Symbols {
+
+ParameterSymbol* Factory::parameter(std::string name, const TypeSymbol* type) {
+    return new ParameterSymbol(name, type, false, false);
+}
 
 ParameterSymbol::ParameterSymbol(std::string n, const TypeSymbol* t, bool is_arr, bool is_const) :
     Symbol(n), m_type(t), m_is_array(is_arr), m_is_const(is_const) {}

@@ -2,8 +2,34 @@
 #include "type_symbol.h"
 #include "parameter_symbol.h"
 #include <compare>
+#include "symbol_factory.h"
 
 namespace Symbols {
+
+FunctionSymbol* Factory::function(std::string name, const TypeSymbol* type) {
+    return function(name, type, std::vector<Symbols::ParameterSymbol*>{});
+}
+
+FunctionSymbol* Factory::function(std::string name, const TypeSymbol* type, std::vector<ParameterSymbol*> params) {
+    return new FunctionSymbol(name, type, params);
+}
+
+FunctionSymbol* Factory::function(std::string name, const TypeSymbol* type, std::vector<const TypeSymbol*> param_types) {
+    std::vector<ParameterSymbol*> params;
+    for (std::size_t i = 0; i < param_types.size(); i ++) {
+        std::string param_name = "param_" + std::to_string(i);
+        params.push_back(parameter(param_name, param_types[i]));
+    }
+    return function(name, type, params);
+}
+
+FunctionSymbol* Factory::init_function() {
+    return function("<init>", &TypeSymbol::Void);
+}
+
+FunctionSymbol* Factory::clinit_function() {
+    return function("<clinit>", &TypeSymbol::Void);
+}
 
 FunctionSymbol::FunctionSymbol(std::string name, const TypeSymbol* type, std::vector<ParameterSymbol*> params, int line_defined) :
     Symbol(name), m_type(type), m_params(params), m_line_defined(line_defined) {}

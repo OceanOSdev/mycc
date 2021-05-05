@@ -15,6 +15,7 @@ struct TypeAttribute {
     bool is_numeric_type = false;
     bool is_array = false;
     bool is_const = false;
+    TypeAttribute(bool is_strct = false, bool is_int = false, bool is_num = false, bool is_arr = false, bool is_c = false);
     std::partial_ordering operator<=>(const TypeAttribute& other) const;
 };
 

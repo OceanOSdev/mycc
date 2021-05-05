@@ -1,6 +1,7 @@
 #include "variable_symbol.h"
 #include "type_symbol.h"
 #include "parameter_symbol.h"
+#include "symbol_factory.h"
 
 namespace Symbols {
 
@@ -39,6 +40,41 @@ bool VariableSymbol::is_global() const { return m_is_global; }
  * The type of symbol this is.
  */
 SymbolKind VariableSymbol::kind() const { return SymbolKind::VARIABLE; }
+
+
+
+
+VariableSymbol* Factory::char_var(std::string identifier) {
+        return new VariableSymbol(identifier, &TypeSymbol::Char);
+}
+
+VariableSymbol* Factory::int_var(std::string identifier) {
+        return new VariableSymbol(identifier, &TypeSymbol::Int);
+}
+
+VariableSymbol* Factory::float_var(std::string identifier) {
+        return new VariableSymbol(identifier, &TypeSymbol::Float);
+}
+
+VariableSymbol* Factory::string_var(std::string identifier) {
+        return new VariableSymbol(identifier, &TypeSymbol::String);
+}
+
+VariableSymbol* Factory::obj_var(std::string identifier, const TypeSymbol* type) {
+        return new VariableSymbol(identifier, type);
+}
+
+VariableSymbol* Factory::array(VariableSymbol* variable, int array_size) {
+        auto old_type = variable->var_type();
+        auto new_type = old_type->as_array_type();
+        return new VariableSymbol(variable->name(), new_type, true, array_size);
+}
+
+VariableSymbol* Factory::constant(VariableSymbol* variable) {
+        auto old_type = variable->var_type();
+        auto new_type = old_type->as_const_type();
+        return new VariableSymbol(variable->name(), new_type, false, -1, true);
+}
 
 
 }

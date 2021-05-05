@@ -1,6 +1,8 @@
 #include "bound_function_definition_node.h"
 #include "../symbols/function_symbol.h"
 #include "bound_block_statement_node.h"
+#include "bound_node_factory.h"
+#include "../symbols/symbol_factory.h"
 
 namespace Binding {
 
@@ -27,5 +29,22 @@ BoundBlockStatementNode* BoundFunctionDefinitionNode::statements() const {
 BoundNodeKind BoundFunctionDefinitionNode::kind() const {
     return BoundNodeKind::FunctionDefinition;
 }
+
+BoundFunctionDefinitionNode* Factory::function_def(Symbols::FunctionSymbol* symbol, std::vector<BoundStatementNode*> statements) {
+    return function_def(symbol, block(statements));
+}
+
+BoundFunctionDefinitionNode* Factory::function_def(Symbols::FunctionSymbol* symbol, BoundBlockStatementNode* body) {
+    return new BoundFunctionDefinitionNode(symbol, body);
+}
+
+BoundFunctionDefinitionNode* Factory::function_init(BoundBlockStatementNode* block) {
+    return function_def(Symbols::Factory::init_function(), block);
+}
+
+BoundFunctionDefinitionNode* Factory::function_clinit(BoundBlockStatementNode* block) {
+    return function_def(Symbols::Factory::clinit_function(), block);
+}
+
 
 }

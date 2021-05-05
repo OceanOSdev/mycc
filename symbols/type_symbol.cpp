@@ -1,6 +1,33 @@
 #include "type_symbol.h"
+#include "symbol_factory.h"
 
 namespace Symbols {
+
+const TypeSymbol* Factory::type(std::string identifier) {
+        return new TypeSymbol(identifier, new TypeAttribute(true));
+}
+const TypeSymbol* Factory::char_type() {
+        return &TypeSymbol::Char;
+}
+
+const TypeSymbol* Factory::int_type() {
+        return &TypeSymbol::Int;
+}
+
+const TypeSymbol* Factory::float_type() {
+        return &TypeSymbol::Float;
+}
+
+const TypeSymbol* Factory::void_type() {
+        return &TypeSymbol::Void;
+}
+
+TypeAttribute::TypeAttribute(bool is_strct, bool is_int, bool is_num, bool is_arr, bool is_c) : 
+        is_struct(is_strct),
+        is_integer_type(is_int),
+        is_numeric_type(is_num),
+        is_array(is_arr),
+        is_const(is_c) {}
 
 std::partial_ordering TypeAttribute::operator<=>(const TypeAttribute& other) const {
         if ((is_struct && !other.is_struct) || (!is_struct && other.is_struct) ||
@@ -241,5 +268,7 @@ const TypeSymbol TypeSymbol::Int = TypeSymbol("int", {false,true,true});
 const TypeSymbol TypeSymbol::Float =  TypeSymbol("float", {false,false,true});
 const TypeSymbol TypeSymbol::String = TypeSymbol("char", {false,true,true,true});
 const TypeSymbol TypeSymbol::Error = TypeSymbol("??", {false,false,false});
+
+
 
 }

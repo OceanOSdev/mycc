@@ -1,8 +1,13 @@
 #include "bound_assignment_expression_node.h"
 #include "bound_variable_reference_expression_node.h"
 #include "../symbols/type_symbol.h"
+#include "bound_node_factory.h"
 
 namespace Binding {
+
+BoundAssignmentExpressionNode* Factory::assignment(Symbols::VariableSymbol* variable, BoundExpressionNode* expression) {
+    return new BoundAssignmentExpressionNode(BoundAssignmentOpKind::ASSIGN, Factory::var_ref(variable), expression);
+}
 
 BoundAssignmentExpressionNode::BoundAssignmentExpressionNode(BoundAssignmentOpKind assignment_op_kind, BoundVariableReferenceExpressionNode* variable, BoundExpressionNode* expression) :
     m_assignment_op_kind(assignment_op_kind), m_variable_reference(variable), m_expression(expression) {}

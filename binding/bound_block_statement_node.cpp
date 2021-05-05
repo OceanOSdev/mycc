@@ -1,6 +1,11 @@
 #include "bound_block_statement_node.h"
+#include "bound_node_factory.h"
 
 namespace Binding {
+
+BoundBlockStatementNode* Factory::block(std::vector<BoundStatementNode*> statements) {
+    return new BoundBlockStatementNode(statements);
+}
 
 BoundBlockStatementNode::BoundBlockStatementNode(std::vector<BoundStatementNode*> statements) :
     m_statements(statements) {}

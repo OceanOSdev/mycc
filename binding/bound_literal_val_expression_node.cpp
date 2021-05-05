@@ -1,7 +1,22 @@
 #include "bound_literal_val_expression_node.h"
 #include "../symbols/type_symbol.h"
+#include "bound_node_factory.h"
 
 namespace Binding {
+
+BoundLiteralValExpressionNode* Factory::literal(char literal) {
+    return new BoundLiteralValExpressionNode(literal);
+}
+BoundLiteralValExpressionNode* Factory::literal(int literal) {
+    return new BoundLiteralValExpressionNode(literal);
+}
+BoundLiteralValExpressionNode* Factory::literal(float literal) {
+    return new BoundLiteralValExpressionNode(literal);
+}
+BoundLiteralValExpressionNode* Factory::literal(std::string literal) {
+    return new BoundLiteralValExpressionNode(literal);
+}
+
 
 BoundLiteralValExpressionNode::BoundLiteralValExpressionNode(int value) :
     m_value(value), m_type((&Symbols::TypeSymbol::Int)->as_const_type()) {}
