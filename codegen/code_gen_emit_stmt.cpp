@@ -76,7 +76,7 @@ void CodeGenerator::emit_return_statement(Binding::BoundReturnStatementNode* ret
 }
 
 void CodeGenerator::emit_goto_statement(Binding::BoundGotoStatementNode* goto_statement) {
-    auto label = goto_statement->label()->name();
+    auto label = goto_statement->label();
     auto arg = new JVMProcessor::LabelInstructionArgument(label);
     m_builder->emit_branch_op_code(JVMProcessor::JVMOpCode::_goto, arg);
 }
@@ -85,8 +85,9 @@ void CodeGenerator::emit_conditional_goto_statement(__attribute__((unused)) Bind
 
 }
 
-void CodeGenerator::emit_label_statement(__attribute__((unused)) Binding::BoundLabelStatementNode* label_statement) {
-
+void CodeGenerator::emit_label_statement(Binding::BoundLabelStatementNode* label_statement) {
+    auto label = label_statement->label();
+    m_builder->mark_label(label);
 }
 
 void CodeGenerator::emit_variable_group_declaration(Binding::BoundVariableGroupDeclarationNode* var_group_decl) {

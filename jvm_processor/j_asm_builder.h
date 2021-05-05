@@ -6,10 +6,12 @@
 #include <vector>
 #include <string>
 #include <set>
+#include <unordered_map>
 
 namespace Binding {
     class BoundVariableDeclarationNode;
     class BoundLiteralValExpressionNode;
+    class BoundLabel;
 }
 
 namespace Symbols {
@@ -70,13 +72,28 @@ private:
     BuilderState* m_builder_state;
     std::vector<Instruction*> m_instructions;
     std::vector<Symbols::VariableSymbol*> m_locals;
-    std::vector<LabelFixUpData*> m_fixups; // <-- todo: something with this, ill get back to it later.
+    std::vector<LabelFixUpData*> m_fixups;
+    std::unordered_map<Binding::BoundLabel*, int> m_label_instr_map; 
+    
     bool m_finalized;
 
     int get_local_variable_index(Symbols::VariableSymbol* local);
     void emit_local_load_or_store_int(int local_index, LSFlag flag = LSFlag::Load);
     void emit_local_load_or_store_float(int local_index, LSFlag flag = LSFlag::Load);
     void emit_local_load_or_store_reference(int local_index, LSFlag flag = LSFlag::Load);
+
+    void mark_branch_for_fix_up(int instruction_idx, Binding::BoundLabel* label);
+    void track_label(Binding::BoundLabel* label, int instruction_idx);
+    void run_label_fixes();
+
+    /**
+     * @brief Should be the primary way to record instructions so
+     * that the builder state does not get out of sync with 
+     * the instruction list.
+     * 
+     * @param instruction The instruction to record.
+     */
+    void record_instruction(Instruction* instruction);
 
 public:
     JAsmBuilder();
@@ -94,11 +111,17 @@ public:
     void emit_local_load(Symbols::VariableSymbol* local);
     void emit_local_store(Symbols::VariableSymbol* local);
 
-
-
     std::vector<std::string> current_instruction_listing() const;
 
     FinalizedBody* finalize();
+
+    /**
+     * @brief Tell the emitter to track this label for future
+     * potential fix ups.
+     * 
+     * @param label The label to mark.
+     */
+    void mark_label(Binding::BoundLabel* label);
 
     /**
      * @brief The largest number of items that have been on

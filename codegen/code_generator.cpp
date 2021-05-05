@@ -10,6 +10,7 @@
 #include "../binding/bound_global_statement_node.h"
 #include "../binding/bound_variable_group_declaration_node.h"
 #include "../binding/bound_struct_declaration_node.h"
+#include "../binding/bound_block_statement_node.h"
 #include "../binding/bound_statement_node.h"
 
 
@@ -38,6 +39,7 @@ bool CodeGenerator::emit() {
     std::string code_indent = indent + indent;
     bool first = true;
     init();
+    emit_required_methods();
     using jvm_emit = JVMProcessor::JAsmBuilder;
     for (auto method : m_methods_to_emit) {
         auto symbol = method->method();
@@ -95,6 +97,14 @@ void CodeGenerator::init() {
     if (!m_fields_needing_clinit.empty()) synthesize_clinit_method();
 }
 
+void CodeGenerator::emit_required_methods() {
+    for (auto method : m_methods_to_emit) {
+        if (method->is_defined()) {
+            emit_method(method);
+        }
+    }
+}
+
 bool CodeGenerator::is_debug() const {
     return m_debug_mode;
 }
@@ -103,12 +113,15 @@ void CodeGenerator::emit_struct_declaration(__attribute__((unused)) Binding::Bou
 
 }
 
-void CodeGenerator::emit_method(__attribute__((unused)) MethodReference* method) {
+void CodeGenerator::emit_method(MethodReference* method) {
     m_builder = new JVMProcessor::JAsmBuilder();
-
-    //JVMProcessor::JAsmBuilder::emit_method_definition_header()
-
-
+    bool implicit_return = Symbols::TypeSymbol::are_types_equal(method->method()->type(), Symbols::Factory::void_type());
+    emit_statement(method->body());
+    if (implicit_return)
+        m_builder->emit_return_op_code(); // add implicit return to void methods.
+    
+    auto finalized = m_builder->finalize();
+    m_compiled_method_bodies[method->method()] = finalized;
 }
 
 void CodeGenerator::emit_field(Binding::BoundVariableDeclarationNode* field, bool is_static) {

@@ -103,6 +103,7 @@ private:
     std::unordered_map<std::string, MethodReference*> m_method_map;
     
     void init();
+    void emit_required_methods();
     
     /**
      * @brief Because we don't need to actually emit all methods in our

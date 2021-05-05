@@ -11,6 +11,7 @@
 #include "jvm_opcodes.h"
 #include "jvm_opcode_info.h"
 #include "finalized_body.h"
+#include "label_fix_up_data.h"
 
 namespace JVMProcessor {
 
@@ -59,8 +60,9 @@ void JAsmBuilder::emit_op_code(JVMOpCode op_code, int stack_adj) {
         throw new std::runtime_error("Do not emit control transferring op codes directly");
 
     m_builder_state->adjust_stack(stack_adj);
-    m_builder_state->add_op_code(op_code);
-    m_instructions.push_back(new Instruction(op_code));
+    record_instruction(new Instruction(op_code));
+    //m_builder_state->add_op_code(op_code);
+    //m_instructions.push_back(new Instruction(op_code));
 }
 
 void JAsmBuilder::emit_op_code(JVMOpCode op_code, InstructionArgument* arg) {
@@ -78,8 +80,9 @@ void JAsmBuilder::emit_op_code(JVMOpCode op_code, InstructionArgument* arg, int 
         throw new std::runtime_error("Do not emit control transferring op codes directly");
 
     m_builder_state->adjust_stack(stack_adj);
-    m_builder_state->add_op_code(op_code);
-    m_instructions.push_back(new Instruction(op_code, arg));
+    record_instruction(new Instruction(op_code, arg));
+    //m_builder_state->add_op_code(op_code);
+    //m_instructions.push_back(new Instruction(op_code, arg));
 }
 
 void JAsmBuilder::emit_return_op_code(ReturnOpType ret_op_type) {
@@ -95,8 +98,9 @@ void JAsmBuilder::emit_return_op_code(ReturnOpType ret_op_type) {
         default: throw new std::runtime_error("Invalid ret operator type"); // <-- should never happen.
     }
 
-    m_builder_state->add_op_code(op_code);
-    m_instructions.push_back(new Instruction(op_code));
+    record_instruction(new Instruction(op_code));
+    //m_builder_state->add_op_code(op_code);
+    //m_instructions.push_back(new Instruction(op_code));
 }
 
 void JAsmBuilder::emit_branch_op_code(JVMOpCode op_code, InstructionArgument* arg) {
@@ -109,8 +113,11 @@ void JAsmBuilder::emit_branch_op_code(JVMOpCode op_code, InstructionArgument* ar
     m_builder_state->adjust_stack(OpCodeInfo::net_stack_modification(op_code));
     if (op_code == JVMOpCode::nop) return;
 
-    m_builder_state->add_op_code(op_code);
-    m_instructions.push_back(new Instruction(op_code, arg));    
+    auto label_arg = dynamic_cast<LabelInstructionArgument*>(arg);
+    mark_branch_for_fix_up(m_builder_state->op_codes_emitted(), label_arg->bound_label());
+    record_instruction(new Instruction(op_code, arg));
+    //m_builder_state->add_op_code(op_code);
+    //m_instructions.push_back(new Instruction(op_code, arg));    
 }
 
 
@@ -224,4 +231,27 @@ int JAsmBuilder::get_local_variable_index(Symbols::VariableSymbol* local) {
     }
     return -1;
 }
+
+void JAsmBuilder::mark_branch_for_fix_up(int instruction_idx, Binding::BoundLabel* label) {
+    auto fix_up_data  = new LabelFixUpData(instruction_idx, label);
+    m_fixups.push_back(fix_up_data);
+}
+
+void JAsmBuilder::track_label(Binding::BoundLabel* label, int instruction_idx) {
+    m_label_instr_map[label] = instruction_idx;
+}
+
+void JAsmBuilder::run_label_fixes() {
+
+}
+
+void JAsmBuilder::record_instruction(Instruction* instruction) {
+    m_builder_state->add_op_code(instruction->op_code());
+    m_instructions.push_back(instruction);
+}
+
+void JAsmBuilder::mark_label(Binding::BoundLabel* label) {
+    track_label(label, m_builder_state->op_codes_emitted());
+}
+
 }

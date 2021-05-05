@@ -13,6 +13,10 @@ namespace Symbols {
     class VariableSymbol;
 }
 
+namespace Binding {
+    class BoundLabel;
+}
+
 namespace JVMProcessor {
 
 enum InstructionArgumentKind : uint16_t {
@@ -67,14 +71,16 @@ public:
  */
 class LabelInstructionArgument : public InstructionArgument {
 private:
-    std::string m_label;
+    Binding::BoundLabel* m_label;
 public:
-    LabelInstructionArgument(std::string label);
+    LabelInstructionArgument(Binding::BoundLabel* label);
 
     /**
      * @brief The label name.
      */
     std::string label() const;
+
+    Binding::BoundLabel* bound_label() const;
 
     InstructionArgumentKind kind() const override;
 

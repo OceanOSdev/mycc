@@ -114,7 +114,7 @@ BINDING_SRCS = $(addprefix  $(BINDING_DIR)/, $(BINDING_SRC_NO_PATH))
 BINDING_OBJS = $(patsubst %.cpp,$(OBJDIR)/%.o,$(BINDING_SRC_NO_PATH))
 
 CODEGEN_DIR = codegen
-CODEGEN_SRC_NO_PATH = code_gen_payload.cpp label_fix_up_data.cpp code_gen_utils.cpp code_gen_emit_stmt.cpp code_gen_emit_expr.cpp 
+CODEGEN_SRC_NO_PATH = code_gen_payload.cpp code_gen_utils.cpp code_gen_emit_stmt.cpp code_gen_emit_expr.cpp 
 CODEGEN_SRC_NO_PATH += method_reference.cpp code_gen_synth.cpp code_generator.cpp
 CODEGEN_SRCS = $(addprefix $(CODEGEN_DIR)/, $(CODEGEN_SRC_NO_PATH))
 CODEGEN_OBJS = $(patsubst %.cpp,$(OBJDIR)/%.o,$(CODEGEN_SRC_NO_PATH))
@@ -127,7 +127,7 @@ FLOWANAL_OBJS = $(patsubst %.cpp,$(OBJDIR)/%.o,$(FLOWANAL_SRC_NO_PATH))
 JVM_PROCESSOR_DIR = jvm_processor
 JVM_PROCESSOR_SRC_NO_PATH = jvm_opcode_info.cpp instruction_argument_empty.cpp instruction_argument_field.cpp instruction_argument_consts.cpp 
 JVM_PROCESSOR_SRC_NO_PATH += instruction_argument_label.cpp instruction_argument_method.cpp instruction_argument_type_id.cpp
-JVM_PROCESSOR_SRC_NO_PATH += instruction.cpp builder_state.cpp j_asm_builder_directives.cpp j_asm_builder.cpp
+JVM_PROCESSOR_SRC_NO_PATH += instruction.cpp builder_state.cpp j_asm_builder_directives.cpp label_fix_up_data.cpp j_asm_builder.cpp
 JVM_PROCESSOR_SRCS = $(addprefix $(JVM_PROCESSOR_DIR)/, $(JVM_PROCESSOR_SRC_NO_PATH))
 JVM_PROCESSOR_OBJS = $(patsubst %.cpp,$(OBJDIR)/%.o,$(JVM_PROCESSOR_SRC_NO_PATH))
 
