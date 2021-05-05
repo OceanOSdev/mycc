@@ -153,6 +153,15 @@ private:
     // ====================
 
     void emit_expression(Binding::BoundExpressionNode* expression, bool used);
+    /**
+     * @brief Guarded by emit_expression as to allow common optimizations before 
+     * recursively descending down the bound tree.
+     * 
+     * @param expression The expression to emit.
+     * @param used Whether or not the result of this expression is depended on.
+     */
+    void emit_expression_driver(Binding::BoundExpressionNode* expression, bool used);
+
 
     // ====================
     //    Helper Methods

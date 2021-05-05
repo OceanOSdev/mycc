@@ -26,6 +26,7 @@ enum JVMOpCode : uint8_t {
     fconst_2 = 0x0d,
 
     bipush = 0x10,
+    sipush = 0x11,
     ldc = 0x12,
     
     iload = 0x15,

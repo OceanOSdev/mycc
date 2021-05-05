@@ -77,6 +77,7 @@ int8_t stack_pop_modifier(JVMOpCode op_code) {
         case fconst_1: [[fallthrough]];
         case fconst_2: [[fallthrough]];
         case bipush: [[fallthrough]];
+        case sipush: [[fallthrough]];
         case ldc: [[fallthrough]];
         case iload: [[fallthrough]];
         case fload: [[fallthrough]];
@@ -211,6 +212,7 @@ int8_t stack_push_modifier(JVMOpCode op_code) {
         case fconst_1: [[fallthrough]];
         case fconst_2: [[fallthrough]];
         case bipush: [[fallthrough]];
+        case sipush: [[fallthrough]];
         case ldc: [[fallthrough]];
         case iload: [[fallthrough]];
         case fload: [[fallthrough]];
@@ -372,6 +374,7 @@ std::string op_code_name(JVMOpCode op_code) {
         case fconst_1: return "fconst_1";
         case fconst_2: return "fconst_2";
         case bipush: return "bipush";
+        case sipush: return "sipush";
         case ldc: return "ldc";
         case iload: return "iload";
         case fload: return "fload";
@@ -476,6 +479,8 @@ std::string op_code_name(JVMOpCode op_code) {
 InstructionArgumentKind required_argument_kind(JVMOpCode op_code) {
     switch (op_code) {
         case bipush: return InstructionArgumentKind::Char_Constant;
+        
+        case sipush: return InstructionArgumentKind::Integer_Constant; // we'll still emit sipush 
 
         case ldc: return InstructionArgumentKind::Any_Constant;
 

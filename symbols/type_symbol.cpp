@@ -259,7 +259,7 @@ bool TypeSymbol::is_bytecode_reference_type(const TypeSymbol* type) {
             type->attributes().is_struct ||
             is_error_or_incomplete_type(type)) 
             return true;
-        return are_types_equivalent(type, &Float);
+        return !are_types_equivalent(type, &Float);
 }
 
 const TypeSymbol TypeSymbol::Void = TypeSymbol("void", {false,false,false});

@@ -120,6 +120,44 @@ void JAsmBuilder::emit_branch_op_code(JVMOpCode op_code, InstructionArgument* ar
     //m_instructions.push_back(new Instruction(op_code, arg));    
 }
 
+void JAsmBuilder::emit_constant(int arg) {
+    JVMOpCode op_code;
+    if (-1 <= arg && arg <= 5) {
+        uint8_t offset = (uint8_t)JVMOpCode::iconst_0;
+        offset += (int8_t)arg;
+        op_code = static_cast<JVMOpCode>(offset);
+        emit_op_code(op_code);
+    } else {
+        op_code = op_code_for_emit_int_value(arg);
+        emit_op_code(op_code, new IConstInstructionArgument(arg));
+    }
+}
+
+void JAsmBuilder::emit_constant(float arg) {
+    if (arg == 0) 
+        emit_op_code(JVMOpCode::fconst_0);
+    else if (arg == 1) 
+        emit_op_code(JVMOpCode::fconst_1);
+    else if (arg == 2) 
+        emit_op_code(JVMOpCode::fconst_2);
+    else
+        emit_op_code(JVMOpCode::ldc, new FConstInstructionArgument(arg));
+}
+
+void JAsmBuilder::emit_constant(std::string arg) {
+    emit_op_code(JVMOpCode::ldc, new SConstInstructionArgument(arg));
+}
+
+
+JVMOpCode JAsmBuilder::op_code_for_emit_int_value(int value) {
+    if (-128 <= value && value < 127)
+        return JVMOpCode::bipush;
+    if (-32768 <= value && value < 32767)
+        return JVMOpCode::sipush;
+    
+    return JVMOpCode::ldc;
+}
+
 
 void JAsmBuilder::emit_local_load(Symbols::VariableSymbol* local) {
     int local_index = get_local_variable_index(local);
@@ -197,7 +235,7 @@ std::vector<std::string> JAsmBuilder::current_instruction_listing() const {
 
 FinalizedBody* JAsmBuilder::finalize() {
     std::vector<std::string> instr_list;
-
+    run_label_fixes();
     for (auto instr : m_instructions) 
         instr_list.push_back(instr->str());
 
@@ -242,7 +280,7 @@ void JAsmBuilder::track_label(Binding::BoundLabel* label, int instruction_idx) {
 }
 
 void JAsmBuilder::run_label_fixes() {
-
+    
 }
 
 void JAsmBuilder::record_instruction(Instruction* instruction) {

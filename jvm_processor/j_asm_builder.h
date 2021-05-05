@@ -82,6 +82,9 @@ private:
     void emit_local_load_or_store_float(int local_index, LSFlag flag = LSFlag::Load);
     void emit_local_load_or_store_reference(int local_index, LSFlag flag = LSFlag::Load);
 
+    JVMOpCode op_code_for_emit_int_value(int value);
+
+
     void mark_branch_for_fix_up(int instruction_idx, Binding::BoundLabel* label);
     void track_label(Binding::BoundLabel* label, int instruction_idx);
     void run_label_fixes();
@@ -110,6 +113,11 @@ public:
 
     void emit_local_load(Symbols::VariableSymbol* local);
     void emit_local_store(Symbols::VariableSymbol* local);
+
+    void emit_constant(int arg);
+    void emit_constant(float arg);
+    void emit_constant(std::string arg);
+
 
     std::vector<std::string> current_instruction_listing() const;
 
