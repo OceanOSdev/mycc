@@ -27,6 +27,7 @@ Syntax::SyntaxToken* create_syntax_token_float(std::string text, Syntax::token_t
 Syntax::SyntaxToken* create_syntax_token_char(std::string text, Syntax::token_type_t token, yy::location loc, char cval, std::string file);
 Syntax::SyntaxToken* create_syntax_token_str(std::string text, Syntax::token_type_t token, yy::location loc, std::string sval, std::string file);
 std::string stripQuotes(std::string input);
+char get_escaped_character(char c);
 
 %}
 
@@ -83,7 +84,8 @@ FNAME  [a-zA-Z0-9_]*\.[a-zA-Z0-9_]+
 {NUMBER}*"."?{NUMBER}+"e"{NUMBER}+          { m_driver.curr_text = yytext; auto token = create_syntax_token_float(yytext, Syntax::token_type_t::REALCONST, loc, std::stof(yytext), m_driver.curr_file); auto sym_info = yy::parser::make_REALCONST(token, loc); m_driver.part_one_lexeme_list.push_back(LexemeDataNode(sym_info, yy::parser::token::REALCONST, std::string(yytext), false, "")); return sym_info; }
 {NUMBER}*"."?{NUMBER}+          { m_driver.curr_text = yytext; auto token = create_syntax_token_float(yytext, Syntax::token_type_t::REALCONST, loc, std::stof(yytext), m_driver.curr_file); auto sym_info = yy::parser::make_REALCONST(token, loc); m_driver.part_one_lexeme_list.push_back(LexemeDataNode(sym_info, yy::parser::token::REALCONST, std::string(yytext), false, "")); return sym_info; }
 \"(\\.|[^"\\])*\"               { m_driver.curr_text = yytext; auto token = create_syntax_token_str(yytext, Syntax::token_type_t::STRCONST, loc, stripQuotes(yytext), m_driver.curr_file); auto sym_info = yy::parser::make_STRCONST(token, loc); m_driver.part_one_lexeme_list.push_back(LexemeDataNode(sym_info, yy::parser::token::STRCONST, std::string(yytext), false, "")); return sym_info; }
-\'([^\\]|\\[abnrt\'\\])\'       { m_driver.curr_text = yytext; auto token = create_syntax_token_char(yytext, Syntax::token_type_t::CHARCONST, loc, yytext[1], m_driver.curr_file); auto sym_info = yy::parser::make_CHARCONST(token, loc); m_driver.part_one_lexeme_list.push_back(LexemeDataNode(sym_info, yy::parser::token::CHARCONST, std::string(yytext), false, "")); return sym_info; }
+\'[^\\]\'                       { m_driver.curr_text = yytext; auto token = create_syntax_token_char(yytext, Syntax::token_type_t::CHARCONST, loc, yytext[1], m_driver.curr_file); auto sym_info = yy::parser::make_CHARCONST(token, loc); m_driver.part_one_lexeme_list.push_back(LexemeDataNode(sym_info, yy::parser::token::CHARCONST, std::string(yytext), false, "")); return sym_info; }
+\'\\[abnrt\'\\]\'               { m_driver.curr_text = yytext; auto token = create_syntax_token_char(yytext, Syntax::token_type_t::CHARCONST, loc, get_escaped_character(yytext[2]), m_driver.curr_file); auto sym_info = yy::parser::make_CHARCONST(token, loc); m_driver.part_one_lexeme_list.push_back(LexemeDataNode(sym_info, yy::parser::token::CHARCONST, std::string(yytext), false, "")); return sym_info; }
 "("                             { m_driver.curr_text = yytext; auto token = create_syntax_token(yytext, Syntax::token_type_t::LPAR, loc, m_driver.curr_file); auto sym_info = yy::parser::make_LPAR(token, loc); m_driver.part_one_lexeme_list.push_back(LexemeDataNode(sym_info, yy::parser::token::LPAR, std::string(yytext), false, "")); return sym_info; }
 ")"                             { m_driver.curr_text = yytext; auto token = create_syntax_token(yytext, Syntax::token_type_t::RPAR, loc, m_driver.curr_file); auto sym_info = yy::parser::make_RPAR(token, loc); m_driver.part_one_lexeme_list.push_back(LexemeDataNode(sym_info, yy::parser::token::RPAR, std::string(yytext), false, "")); return sym_info; }
 "["                             { m_driver.curr_text = yytext; auto token = create_syntax_token(yytext, Syntax::token_type_t::LBRACKET, loc, m_driver.curr_file); auto sym_info = yy::parser::make_LBRACKET(token, loc); m_driver.part_one_lexeme_list.push_back(LexemeDataNode(sym_info, yy::parser::token::LBRACKET, std::string(yytext), false, "")); return sym_info; }
@@ -147,4 +149,13 @@ Syntax::SyntaxToken* create_syntax_token_str(std::string text, Syntax::token_typ
 
 std::string stripQuotes(std::string input) {
   return input.substr(1, input.length() - 2);
+}
+
+char get_escaped_character(char c) {
+  if (c == 'a') return '\a';
+  if (c == 'b') return '\b';
+  if (c == 'n') return '\n';
+  if (c == 'r') return '\r';
+  if (c == 't') return '\t';
+  return c;
 }
