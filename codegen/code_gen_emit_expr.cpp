@@ -32,9 +32,10 @@ void CodeGenerator::emit_expression(Binding::BoundExpressionNode* expression, bo
         if (!used) return; // If we're not using it there's no reason to pollute the stack with it.
         auto lit = dynamic_cast<Binding::BoundLiteralValExpressionNode*>(expression);
         auto type = lit->type();
-        if (Symbols::TypeSymbol::are_types_equal(&Symbols::TypeSymbol::Char, type))
-            m_builder->emit_constant((int)lit->char_value());
-        else if (Symbols::TypeSymbol::are_types_equal(&Symbols::TypeSymbol::Int, type))
+        if (Symbols::TypeSymbol::are_types_equal(&Symbols::TypeSymbol::Char, type)) {
+            char c_val = lit->char_value();
+            m_builder->emit_constant((int)c_val);
+        } else if (Symbols::TypeSymbol::are_types_equal(&Symbols::TypeSymbol::Int, type))
             m_builder->emit_constant(lit->int_value());
         else if (Symbols::TypeSymbol::are_types_equal(&Symbols::TypeSymbol::Float, type))
             m_builder->emit_constant(lit->float_value());

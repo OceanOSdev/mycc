@@ -52,7 +52,7 @@ void CodeGenerator::synthesize_clinit_method() {
 
 std::vector<std::string> gen_part_four_body(std::string main_class) {
     return {
-        "invokestatic Method " + JVMProcessor::JAsmBuilder::str_as_emittable_identifier(main_class) + " ()I",
+        "invokestatic Method " + JVMProcessor::JAsmBuilder::str_as_emittable_identifier(main_class) + " main ()I",
         "istore_1",
         "getstatic Field java/lang/System out Ljava/io/PrintStream;",
         "ldc 'Return code: '",
@@ -66,7 +66,7 @@ std::vector<std::string> gen_part_four_body(std::string main_class) {
 
 std::vector<std::string> gen_part_five_body(std::string main_class) {
     return {
-        "invokestatic Method " + JVMProcessor::JAsmBuilder::str_as_emittable_identifier(main_class) + " ()I",
+        "invokestatic Method " + JVMProcessor::JAsmBuilder::str_as_emittable_identifier(main_class) + " main ()I",
         "pop",
         "return"
     };
