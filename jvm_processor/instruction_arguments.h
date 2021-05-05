@@ -228,6 +228,14 @@ private:
     Symbols::VariableSymbol* m_member;
 public:
     FieldAccessorInstructionArgument(Symbols::StructSymbol* _struct, Symbols::VariableSymbol* member);
+    /**
+     * @brief Field accessor instruction argument in the event that we're actually just accessing
+     * a global variable in the original source code. 
+     * 
+     * @param filename_base The base filename (no extensions) of the global variable container.
+     * @param member The variable symbol of the global variable.
+     */
+    FieldAccessorInstructionArgument(std::string filename_base, Symbols::VariableSymbol* member);
 
     /**
      * @brief The encapsulating struct name.

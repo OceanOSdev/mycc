@@ -26,6 +26,7 @@
 #include "../symbols/variable_symbol.h"
 #include "../symbols/struct_symbol.h"
 #include "../symbols/parameter_symbol.h"
+#include "../symbols/symbol_factory.h"
 
 /* SYNTAX TREE NODE INCLUDES */
 #include "../syntax/syntax_kind.h"
@@ -61,6 +62,12 @@ BoundScope* Binder::init_global_scope() {
     scope->try_declare_type(&Symbols::TypeSymbol::Void);
     // Maybe declare error type?
     //scope->try_declare_type(&Symbols::TypeSymbol::Error);
+
+    auto _putchar_symbol = Symbols::Factory::function("putchar", &Symbols::TypeSymbol::Int, {&Symbols::TypeSymbol::Int}, true);
+    auto _getchar_symbol = Symbols::Factory::simple_function("getchar", &Symbols::TypeSymbol::Int, true);
+
+    scope->try_declare_function(_putchar_symbol);
+    scope->try_declare_function(_getchar_symbol);
 
     return scope;
 }

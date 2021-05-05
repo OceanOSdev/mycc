@@ -6,29 +6,29 @@
 
 namespace Symbols {
 
-FunctionSymbol* Factory::function(std::string name, const TypeSymbol* type) {
-    return function(name, type, std::vector<Symbols::ParameterSymbol*>{});
+FunctionSymbol* Factory::simple_function(std::string name, const TypeSymbol* type, bool defined) {
+    return function(name, type, std::vector<Symbols::ParameterSymbol*>{}, defined);
 }
 
-FunctionSymbol* Factory::function(std::string name, const TypeSymbol* type, std::vector<ParameterSymbol*> params) {
-    return new FunctionSymbol(name, type, params);
+FunctionSymbol* Factory::function(std::string name, const TypeSymbol* type, std::vector<ParameterSymbol*> params, bool defined) {
+    return new FunctionSymbol(name, type, params, defined ? 1 : -1); // give it an arbitrary line defintion as we only use it to check if it has been defined.
 }
 
-FunctionSymbol* Factory::function(std::string name, const TypeSymbol* type, std::vector<const TypeSymbol*> param_types) {
+FunctionSymbol* Factory::function(std::string name, const TypeSymbol* type, std::vector<const TypeSymbol*> param_types, bool defined) {
     std::vector<ParameterSymbol*> params;
     for (std::size_t i = 0; i < param_types.size(); i ++) {
         std::string param_name = "param_" + std::to_string(i);
         params.push_back(parameter(param_name, param_types[i]));
     }
-    return function(name, type, params);
+    return function(name, type, params, defined);
 }
 
 FunctionSymbol* Factory::init_function() {
-    return function("<init>", &TypeSymbol::Void);
+    return simple_function("<init>", &TypeSymbol::Void);
 }
 
 FunctionSymbol* Factory::clinit_function() {
-    return function("<clinit>", &TypeSymbol::Void);
+    return simple_function("<clinit>", &TypeSymbol::Void);
 }
 
 FunctionSymbol::FunctionSymbol(std::string name, const TypeSymbol* type, std::vector<ParameterSymbol*> params, int line_defined) :

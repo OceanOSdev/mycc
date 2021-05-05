@@ -10,6 +10,7 @@ class TypeSymbol;
 class VariableSymbol;
 class FunctionSymbol;
 class ParameterSymbol;
+class StructSymbol;
 
 namespace Factory {
 
@@ -27,14 +28,16 @@ const TypeSymbol* int_type();
 const TypeSymbol* float_type();
 const TypeSymbol* void_type();
 
-FunctionSymbol* function(std::string name, const TypeSymbol* type);
-FunctionSymbol* function(std::string name, const TypeSymbol* type, std::vector<ParameterSymbol*> params);
-FunctionSymbol* function(std::string name, const TypeSymbol* type, std::vector<const TypeSymbol*> param_types);
+FunctionSymbol* simple_function(std::string name, const TypeSymbol* type, bool defined = false);
+FunctionSymbol* function(std::string name, const TypeSymbol* type, std::vector<ParameterSymbol*> params, bool defined = false);
+FunctionSymbol* function(std::string name, const TypeSymbol* type, std::vector<const TypeSymbol*> param_types, bool defined = false);
 
 FunctionSymbol* init_function();
 FunctionSymbol* clinit_function();
 
 ParameterSymbol* parameter(std::string name, const TypeSymbol* type);
+
+StructSymbol* memberless_struct(std::string name);
 
 }
 }

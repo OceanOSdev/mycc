@@ -129,7 +129,12 @@ void JAsmBuilder::emit_constant(int arg) {
         emit_op_code(op_code);
     } else {
         op_code = op_code_for_emit_int_value(arg);
-        emit_op_code(op_code, new IConstInstructionArgument(arg));
+        InstructionArgument* argument;
+        if (op_code == bipush)
+            argument = new CConstInstructionArgument((char)arg);
+        else
+            argument =  new IConstInstructionArgument(arg);
+        emit_op_code(op_code, argument);
     }
 }
 
@@ -221,6 +226,23 @@ void JAsmBuilder::emit_local_load_or_store_reference(int local_index, LSFlag fla
     }
 }
 
+
+void JAsmBuilder::emit_global_load(Symbols::VariableSymbol* global, std::string containing_class_name) {
+    auto instr_arg = new FieldAccessorInstructionArgument(containing_class_name, global);
+
+    // Since we're putting a halt on structs, we pretty much can always just call getstatic
+    auto op_code = JVMOpCode::getstatic;
+    record_instruction(new Instruction(op_code, instr_arg));
+}
+
+
+void JAsmBuilder::emit_global_store(Symbols::VariableSymbol* global, std::string containing_class_name) {
+    auto instr_arg = new FieldAccessorInstructionArgument(containing_class_name, global);
+
+    // Since we're putting a halt on structs, we pretty much can always just call putstatic
+    auto op_code = JVMOpCode::putstatic;
+    record_instruction(new Instruction(op_code, instr_arg));
+}
 
 
 

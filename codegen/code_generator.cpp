@@ -1,5 +1,6 @@
 #include "code_generator.h"
 #include "code_gen_payload.h"
+#include "method_reference.h"
 
 #include "../jvm_processor/j_asm_builder.h"
 #include "../jvm_processor/finalized_body.h"
@@ -45,7 +46,7 @@ bool CodeGenerator::emit() {
         auto symbol = method->method();
         if (!m_compiled_method_bodies.contains(symbol)) continue; // hasnt been compiled yet, only here for debug.
         auto finalized = m_compiled_method_bodies[symbol];
-        auto method_ref = look_up_method(symbol, method->owner());
+        auto method_ref = look_up_method(symbol); // this is on average an O(n) call, for large files this can get problematic, should probably refactor.
         bool is_static = method_ref->is_static();
 
         if (!first) {
@@ -143,7 +144,7 @@ void CodeGenerator::resolve_methods() {
     namespace s_factory = Symbols::Factory;
     // create function symbols for libc functions
     auto putchar_symbol = s_factory::function("putchar", s_factory::int_type(), {s_factory::int_type()});
-    auto getchar_symbol = s_factory::function("getchar", s_factory::int_type());
+    auto getchar_symbol = s_factory::simple_function("getchar", s_factory::int_type());
     
     ///TODO: resolve such methods for structs.
     auto _init_method_reference = MethodReference::resolve_method(s_factory::init_function(), m_payload->filename_base(), false);
@@ -152,7 +153,7 @@ void CodeGenerator::resolve_methods() {
     auto _putchar_method_reference = MethodReference::resolve_method(putchar_symbol, "libc", true);
     auto _getchar_method_reference = MethodReference::resolve_method(getchar_symbol, "libc", true);    
 
-    auto _to_char_array_method_reference = MethodReference::resolve_method(s_factory::function("toCharArray", s_factory::char_type()->as_array_type()), "java/lang/String", false);
+    auto _to_char_array_method_reference = MethodReference::resolve_method(s_factory::simple_function("toCharArray", s_factory::char_type()->as_array_type()), "java/lang/String", false);
 
     auto j_str_type = s_factory::type("java/lang/String");
     auto j_main_symbol = s_factory::function("main", s_factory::void_type(), {j_str_type->as_array_type()});
@@ -187,7 +188,7 @@ std::string _mangle_name(std::string method_name, std::string owner, Symbols::Fu
             param_type_names += p->type()->jasm_str();
         }
     }
-    return owner + "___" + method_name + param_type_names; // <-- I can't see that conflicting with anything.    
+    return owner + "@@" + method_name + param_type_names; // <-- I can't see that conflicting with anything.    
 }
 
 std::string _mangle_name(std::string method_name, std::string owner) {
@@ -222,14 +223,19 @@ MethodReference* CodeGenerator::look_up_method(std::string name, std::string own
     return m_method_map[key]; // maybe handle possible errors at some point?
 }
 
-MethodReference* CodeGenerator::look_up_method(Symbols::FunctionSymbol* func, std::string owner) {
-    auto owner_name = owner;
-    if (owner_name.compare("") == 0) {
-        owner_name = m_payload->filename_base();
-    }
+MethodReference* CodeGenerator::look_up_method(Symbols::FunctionSymbol* func) {
     auto name = func->name();
-    std::string key = _mangle_name(name, owner_name, func);
-    return m_method_map[key];
+    std::string mangled_key = _mangle_name(name, "[PLACEHOLDER]", func);
+    std::string key = mangled_key.substr(mangled_key.find("@@")+2);
+    for (auto kv : m_method_map) {
+        std::string mangled_name = kv.first;
+        std::string name = mangled_name.substr(mangled_name.find("@@")+2);
+        if (key.compare(name) == 0) {
+            return m_method_map[mangled_name];
+        }
+    }
+    return nullptr; // shouldn't happen.
+    //return m_method_map[key];
 }
 
 }

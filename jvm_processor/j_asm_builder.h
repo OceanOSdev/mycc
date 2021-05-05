@@ -114,6 +114,19 @@ public:
     void emit_local_load(Symbols::VariableSymbol* local);
     void emit_local_store(Symbols::VariableSymbol* local);
 
+    /**
+     * @brief Emits a field load instruction to the instructions list.
+     * 
+     * Since we use static fields to emulate global variables, we need to 
+     * create a psuedo-struct with the name of the source file (w/o the file extension)
+     * so that we can access the static field of emitted "class". 
+     * 
+     * @param global The global variable symbol.
+     * @param containing_class_name The base filename of the source file that defines the global.
+     */
+    void emit_global_load(Symbols::VariableSymbol* global, std::string containing_class_name);
+    void emit_global_store(Symbols::VariableSymbol* global, std::string containing_class_name); // <-- similar situation
+
     void emit_constant(int arg);
     void emit_constant(float arg);
     void emit_constant(std::string arg);

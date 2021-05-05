@@ -8,6 +8,7 @@
 #include "../symbols/type_symbol.h"
 
 #include "../binding/bound_node_kind.h"
+#include "../binding/bound_node_factory.h"
 #include "../binding/bound_block_statement_node.h"
 #include "../binding/bound_return_statement_node.h"
 #include "../binding/bound_goto_statement_node.h"
@@ -17,6 +18,7 @@
 #include "../binding/bound_expression_statement_node.h"
 #include "../binding/bound_struct_declaration_node.h"
 #include "../binding/bound_expression_node.h"
+#include "../binding/bound_assignment_expression_node.h"
 
 namespace CodeGen {
 
@@ -47,6 +49,9 @@ void CodeGenerator::emit_statement(Binding::BoundStatementNode* statement) {
             break;
         case BoundNodeKind::StructDeclaration:
             emit_struct_declaration(dynamic_cast<BoundStructDeclarationNode*>(statement));
+            break;
+        case BoundNodeKind::ExpressionStatement:
+            emit_expression(dynamic_cast<BoundExpressionStatementNode*>(statement)->expression(), false);
             break;
         default:
             throw new std::runtime_error("Invalid statement type while emitting: " + std::to_string(kind));
@@ -98,8 +103,10 @@ void CodeGenerator::emit_variable_group_declaration(Binding::BoundVariableGroupD
 
 void CodeGenerator::emit_variable_declaration(Binding::BoundVariableDeclarationNode* variable_declaration) {
     m_builder->declare_local(variable_declaration->variable_symbol());
-    if (variable_declaration->is_initialized())
-        emit_expression(variable_declaration->initializer(), true);
+    if (variable_declaration->is_initialized()) {
+        auto assignment = Binding::Factory::assignment(variable_declaration->variable_symbol(), variable_declaration->initializer());
+        emit_expression(assignment, false);
+    }
 }
 
 }

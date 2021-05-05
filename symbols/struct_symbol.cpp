@@ -1,7 +1,13 @@
 #include "struct_symbol.h"
 #include "variable_symbol.h"
+#include "symbol_factory.h"
 
 namespace Symbols {
+
+StructSymbol* Factory::memberless_struct(std::string name) {
+    return new StructSymbol(name, {});
+}
+
 
 StructSymbol::StructSymbol(std::string name, std::vector<VariableSymbol*> members) :
     Symbol(name), m_members(members) {}

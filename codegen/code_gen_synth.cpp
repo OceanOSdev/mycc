@@ -1,5 +1,6 @@
 #include "code_generator.h"
 #include "code_gen_payload.h"
+#include "method_reference.h"
 
 #include "../jvm_processor/finalized_body.h"
 #include "../jvm_processor/j_asm_builder.h"

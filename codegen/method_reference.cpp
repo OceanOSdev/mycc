@@ -1,4 +1,5 @@
 #include "code_generator.h"
+#include "method_reference.h"
 #include "../binding/bound_function_definition_node.h"
 
 namespace CodeGen {
