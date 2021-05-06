@@ -11,7 +11,7 @@ namespace JVMProcessor {
  * 
  * The enum value should correspond to the actual opcode value.
  */
-enum JVMOpCode : uint8_t {
+enum class JVMOpCode {
     nop = 0x00,
     aconst_null = 0x01,
     iconst_m1 = 0x02,

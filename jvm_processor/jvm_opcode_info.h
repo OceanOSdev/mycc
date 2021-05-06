@@ -8,7 +8,7 @@
 namespace JVMProcessor {
 enum InstructionArgumentKind : uint16_t;
 
-enum JVMOpCode : uint8_t;
+enum class JVMOpCode;
 
 /**
  * @note Since it isn't necessary to make a whole class to house the methods pertaining

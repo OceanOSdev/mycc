@@ -4,6 +4,7 @@
 
 #include "../jvm_processor/j_asm_builder.h"
 #include "../jvm_processor/finalized_body.h"
+#include "../jvm_processor/instruction.h"
 
 
 #include "../binding/bound_function_definition_node.h"
@@ -36,7 +37,7 @@ CodeGenerator::CodeGenerator(CodeGenPayload* payload, bool debug, bool emit_part
 }
 
 bool CodeGenerator::emit() {
-    const std::string indent = "  ";
+    const std::string indent = "   ";
     std::string code_indent = indent + indent;
     bool first = true;
     init();
@@ -58,8 +59,15 @@ bool CodeGenerator::emit() {
         (*m_outstream) << jvm_emit::emit_method_definition_header(symbol, is_static) << std::endl;
         (*m_outstream) << indent << jvm_emit::emit_method_code_directive(finalized->max_stack_size(), finalized->local_count()) << std::endl;
 
-        for (auto instruction : finalized->body()) {
-            (*m_outstream) << code_indent << instruction << '\n';
+        if (!finalized->is_hard_coded()) {
+            for (auto instruction : finalized->body()) {
+                if (instruction->has_label()) (*m_outstream) << '\n';
+                (*m_outstream) << instruction->str() << '\n';
+            }
+        } else {
+            for (auto instruction : finalized->hard_coded_body()) {
+                (*m_outstream) << indent << indent << instruction << '\n';
+            }
         }
 
         (*m_outstream) << std::endl;
@@ -117,6 +125,10 @@ void CodeGenerator::emit_struct_declaration(__attribute__((unused)) Binding::Bou
 void CodeGenerator::emit_method(MethodReference* method) {
     m_builder = new JVMProcessor::JAsmBuilder();
     bool implicit_return = Symbols::TypeSymbol::are_types_equal(method->method()->type(), Symbols::Factory::void_type());
+    for (auto param : method->method()->params()) {
+        // declare the parameters as the first locals.
+        declare_local(Symbols::VariableSymbol::from_parameter_symbol(param));
+    }
     emit_statement(method->body());
     if (implicit_return)
         m_builder->emit_return_op_code(); // add implicit return to void methods.
@@ -150,10 +162,10 @@ void CodeGenerator::resolve_methods() {
     auto _init_method_reference = MethodReference::resolve_method(s_factory::init_function(), m_payload->filename_base(), false);
     auto _clinit_method_reference = MethodReference::resolve_method(s_factory::clinit_function(), m_payload->filename_base(), false);
     
-    auto _putchar_method_reference = MethodReference::resolve_method(putchar_symbol, "libc", true);
-    auto _getchar_method_reference = MethodReference::resolve_method(getchar_symbol, "libc", true);    
+    _putchar_method_reference = MethodReference::resolve_method(putchar_symbol, "libc", true);
+    _getchar_method_reference = MethodReference::resolve_method(getchar_symbol, "libc", true);    
 
-    auto _to_char_array_method_reference = MethodReference::resolve_method(s_factory::simple_function("toCharArray", s_factory::char_type()->as_array_type()), "java/lang/String", false);
+    _to_char_array_method_reference = MethodReference::resolve_method(s_factory::simple_function("toCharArray", s_factory::char_type()->as_array_type()), "java/lang/String", false);
 
     auto j_str_type = s_factory::type("java/lang/String");
     auto j_main_symbol = s_factory::function("main", s_factory::void_type(), {j_str_type->as_array_type()});

@@ -50,6 +50,8 @@ public:
      * The type of symbol this is.
      */
     SymbolKind kind() const override;
+
+    bool operator==(const VariableSymbol& o) const;
 };
 
 }

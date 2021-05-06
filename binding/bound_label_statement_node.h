@@ -5,11 +5,16 @@
 #include "bound_statement_node.h"
 #include <string>
 
+namespace JVMProcessor {
+    class JAsmBuilder;
+}
+
 namespace Binding {
 
 class BoundLabel {
 private:
     std::string m_name;
+    friend class JVMProcessor::JAsmBuilder;
 public:
     BoundLabel(std::string name);
 

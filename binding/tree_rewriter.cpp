@@ -50,7 +50,7 @@ TreeRewriter::TreeRewriter(int label_offset) : m_label_count(label_offset) {}
 
 BoundLabel* TreeRewriter::generate_label() {
     ++m_label_count;
-    std::string label = "L" + std::to_string(m_label_count);
+    std::string label = "b_L" + std::to_string(m_label_count);
     return new BoundLabel(label);
 }
 

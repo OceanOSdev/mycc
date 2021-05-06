@@ -20,6 +20,9 @@
 #include "../binding/bound_expression_node.h"
 #include "../binding/bound_assignment_expression_node.h"
 
+#include "../binding/bound_binary_expression_node.h"
+#include "../binding/bound_binary_op_kind.h"
+
 namespace CodeGen {
 
 void CodeGenerator::emit_statement(Binding::BoundStatementNode* statement) {
@@ -86,8 +89,10 @@ void CodeGenerator::emit_goto_statement(Binding::BoundGotoStatementNode* goto_st
     m_builder->emit_branch_op_code(JVMProcessor::JVMOpCode::_goto, arg);
 }
 
-void CodeGenerator::emit_conditional_goto_statement(__attribute__((unused)) Binding::BoundConditionalGotoStatementNode* cond_goto_statement) {
-
+void CodeGenerator::emit_conditional_goto_statement(Binding::BoundConditionalGotoStatementNode* cond_goto_statement) {
+    auto condition = cond_goto_statement->condition();
+    auto label = cond_goto_statement->label();
+    emit_conditional_branch(condition, label, cond_goto_statement->jump_if_true());
 }
 
 void CodeGenerator::emit_label_statement(Binding::BoundLabelStatementNode* label_statement) {
@@ -109,4 +114,117 @@ void CodeGenerator::emit_variable_declaration(Binding::BoundVariableDeclarationN
     }
 }
 
+
+void CodeGenerator::emit_conditional_branch(Binding::BoundExpressionNode* condition, Binding::BoundLabel*& label, bool jmp_if_true) {
+    bool reiterate = false;
+    /// TODO: optimize for constants?
+
+    do {
+        switch (condition->kind()) {
+            case Binding::BoundNodeKind::BinaryExpression: 
+            {
+                emit_conditional_branch_bin_op(condition, label, jmp_if_true, reiterate);
+                if (reiterate) continue;   
+            }
+            default: break;
+        }
+    } while (reiterate);
+}
+
+void CodeGenerator::emit_conditional_branch_bin_op(Binding::BoundExpressionNode*& expr, Binding::BoundLabel*& destination, bool jmp_if_true, bool& should_repeat) {
+    bool test_both_arguments = jmp_if_true;
+    should_repeat = false;
+    auto bin_expr = dynamic_cast<Binding::BoundBinaryExpressionNode*>(expr);
+
+    switch (bin_expr->op()->op_kind()) {
+        case Binding::BoundBinaryOpKind::LogicalOr:
+            test_both_arguments = !test_both_arguments;
+            [[fallthrough]];
+        case Binding::BoundBinaryOpKind::LogicalAnd:
+        {
+            if (test_both_arguments) {
+                Binding::BoundLabel* fall_through = nullptr;
+                emit_conditional_branch(bin_expr->left(), fall_through, !jmp_if_true);
+                emit_conditional_branch(bin_expr->right(), destination, jmp_if_true);
+                if (fall_through != nullptr)
+                    m_builder->mark_label(fall_through);
+            } else {
+                emit_conditional_branch(bin_expr->left(), destination, jmp_if_true);
+                expr = bin_expr->right();
+                should_repeat = true;
+            }
+            break;
+        }
+        case Binding::BoundBinaryOpKind::Equals: [[fallthrough]];
+        case Binding::BoundBinaryOpKind::NotEquals: [[fallthrough]];
+        case Binding::BoundBinaryOpKind::LessThan: [[fallthrough]];
+        case Binding::BoundBinaryOpKind::LessThanOrEquals: [[fallthrough]];
+        case Binding::BoundBinaryOpKind::GreaterThan: [[fallthrough]];
+        case Binding::BoundBinaryOpKind::GreaterThanOrEquals:
+        {
+            emit_expression(bin_expr->left(), true);
+            emit_expression(bin_expr->right(), true);
+            JVMProcessor::JVMOpCode reverse_op_code;
+            JVMProcessor::JVMOpCode op_code = get_jump_code(bin_expr->op(), jmp_if_true, reverse_op_code);
+            if (destination == nullptr) {
+                // try to create a unique name 
+                // (only has to be unique to this method since the lifetime of our builder 
+                // is the duration of our emitting of this method)
+                std::string cur_stack_str = std::to_string(m_builder->current_stack_size());
+                std::string op_codes_emitted_str = std::to_string(m_builder->instructions_emitted());
+                destination = new Binding::BoundLabel(cur_stack_str + "_" + op_codes_emitted_str);
+            }
+
+            auto arg = new JVMProcessor::LabelInstructionArgument(destination);
+            m_builder->emit_branch_op_code(op_code, arg);
+            break;
+        }
+        default: break;
+    }
+}
+
+using j_op_code = JVMProcessor::JVMOpCode;
+const int jvm_op_code_row_length = 4;
+const int order_cmp_offset = 0;
+const int eq_cmp_offset = 16;
+const int invert_idx_offset = 4; // could use jvm_op_code_row_length, but this name makes it more clear as to what I'm doing with it.
+
+const j_op_code conditional_jump_op_codes[] = {
+    //  <                 //  <=                //  >                 //  >=
+    j_op_code::if_icmplt, j_op_code::if_icmple, j_op_code::if_icmpgt, j_op_code::if_icmpge, // regular
+    j_op_code::if_icmpge, j_op_code::if_icmpgt, j_op_code::if_icmple, j_op_code::if_icmplt, // reverse
+    j_op_code::iflt,      j_op_code::ifle,      j_op_code::ifgt,      j_op_code::ifge,      // regular (float)
+    j_op_code::ifge,      j_op_code::ifgt,      j_op_code::ifle,      j_op_code::iflt,      // reverse (float)
+
+    //  ==                //  !=                // two repetitions to pad the row so that the rev offset can remain consistent
+    j_op_code::if_icmpeq, j_op_code::if_icmpne, j_op_code::if_icmpeq, j_op_code::if_icmpne, // regular
+    j_op_code::if_icmpne, j_op_code::if_icmpeq, j_op_code::if_icmpne, j_op_code::if_icmpeq, // reverse
+    j_op_code::ifeq,      j_op_code::ifne,      j_op_code::ifeq,      j_op_code::ifne,      // regular (float)
+    j_op_code::ifne,      j_op_code::ifeq,      j_op_code::ifne,      j_op_code::ifeq,      // regular (float)
+};
+
+JVMProcessor::JVMOpCode CodeGenerator::get_jump_code(Binding::BoundBinaryOperatorNode* bin_op, bool jmp_if_true, JVMProcessor::JVMOpCode& reverse_op_code) {
+    int op_idx;
+    switch (bin_op->op_kind()) {
+        case Binding::BoundBinaryOpKind::Equals: op_idx = eq_cmp_offset; break;
+        case Binding::BoundBinaryOpKind::NotEquals: op_idx = eq_cmp_offset + 1; break;
+        case Binding::BoundBinaryOpKind::LessThan: op_idx = order_cmp_offset; break;
+        case Binding::BoundBinaryOpKind::LessThanOrEquals: op_idx = order_cmp_offset + 1; break;
+        case Binding::BoundBinaryOpKind::GreaterThan: op_idx = order_cmp_offset + 2; break;
+        case Binding::BoundBinaryOpKind::GreaterThanOrEquals:op_idx = order_cmp_offset + 3; break;
+        default: throw new std::runtime_error("Invalid jump code");
+    }
+
+    using namespace Symbols;
+    if (TypeSymbol::are_types_equal(bin_op->type(), &TypeSymbol::Float)) {
+        op_idx += 4 * jvm_op_code_row_length; // the equivalent comparison op for floats is 16 elements ahead of the original offset.
+    }
+
+    int reverse_op_idx = op_idx;
+    if (!jmp_if_true) op_idx += invert_idx_offset;
+    else reverse_op_idx += invert_idx_offset;
+
+    reverse_op_code = conditional_jump_op_codes[reverse_op_idx];
+    return conditional_jump_op_codes[op_idx];
+}
 }

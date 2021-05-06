@@ -7,14 +7,17 @@
 
 namespace JVMProcessor {
 
-enum JVMOpCode : uint8_t;
+enum class JVMOpCode;
 class InstructionArgument;
 
 class Instruction {
 private:
     JVMOpCode m_op_code;
     InstructionArgument* m_argument;
+    std::string m_opt_label_tag;
+    bool m_has_label;
 public:
+    Instruction(std::string label_tag);
     Instruction(JVMOpCode op_code, InstructionArgument* argument);
     Instruction(JVMOpCode op_code);
 
@@ -40,6 +43,18 @@ public:
      * @return A java assembly formatted string representation of this instruction.
      */
     std::string str() const;
+
+    /**
+     * @brief Whether or not this instruction is prefixed with a label.
+     */
+    bool has_label() const;
+
+    /**
+     * @brief Prefix this instruction with a label.
+     * 
+     * @param new_label The new label to prefix the instruction with.
+     */
+    void set_label(std::string new_label);
 };
 
 

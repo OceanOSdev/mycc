@@ -26,7 +26,7 @@ class InstructionArgument;
 class Instruction;
 class FinalizedBody;
 
-enum JVMOpCode : uint8_t;
+enum class JVMOpCode;
 enum BlockDirectiveType : uint8_t {
     ClassDirective,
     MethodDirective,
@@ -135,6 +135,16 @@ public:
     std::vector<std::string> current_instruction_listing() const;
 
     FinalizedBody* finalize();
+
+    /**
+     * @brief The number of instructions the builder has emit. 
+     */
+    int instructions_emitted() const;
+
+    /**
+     * @brief The current stack size.
+     */
+    int current_stack_size() const;
 
     /**
      * @brief Tell the emitter to track this label for future

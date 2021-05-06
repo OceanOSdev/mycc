@@ -13,6 +13,7 @@ namespace Binding {
     class BoundStatementNode;
     class BoundBlockStatementNode;
     class BoundLabelStatementNode;
+    class BoundLabel;
     class BoundGotoStatementNode;
     class BoundConditionalGotoStatementNode;
     class BoundReturnStatementNode;
@@ -29,6 +30,8 @@ namespace Binding {
     class BoundBinaryExpressionNode;
     class BoundUnaryExpressionNode;
     class BoundExpressionNode;
+
+    class BoundBinaryOperatorNode;
 }
 
 namespace Symbols {
@@ -39,6 +42,7 @@ namespace Symbols {
 namespace JVMProcessor {
     class FinalizedBody;
     class JAsmBuilder;
+    enum class JVMOpCode;
 }
 
 namespace CodeGen {
@@ -106,6 +110,12 @@ private:
     void emit_label_statement(Binding::BoundLabelStatementNode* label_statement);
     void emit_variable_group_declaration(Binding::BoundVariableGroupDeclarationNode* var_group_decl);
     void emit_variable_declaration(Binding::BoundVariableDeclarationNode* variable_declaration);
+
+    void emit_conditional_branch(Binding::BoundExpressionNode* condition, Binding::BoundLabel*& label, bool jmp_if_true);
+    void emit_conditional_branch_bin_op(Binding::BoundExpressionNode*& expr, Binding::BoundLabel*& destination, bool jmp_if_true, bool& should_repeat);
+
+    static JVMProcessor::JVMOpCode get_jump_code(Binding::BoundBinaryOperatorNode* bin_op, bool jmp_if_true, JVMProcessor::JVMOpCode& reverse_op_code);
+
 
     // ====================
     //     Expressions

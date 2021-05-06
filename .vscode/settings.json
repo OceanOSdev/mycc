@@ -1,6 +1,7 @@
 {
     "files.associations": {
         "*.sql": "sql",
+        "*.j": "jvm-bytecode",
         "iosfwd": "cpp",
         "cmath": "cpp",
         "cstddef": "cpp",
@@ -63,6 +64,7 @@
         "sstream": "cpp",
         "cinttypes": "cpp",
         "variant": "cpp",
-        "set": "cpp"
+        "set": "cpp",
+        "cassert": "cpp"
     }
 }

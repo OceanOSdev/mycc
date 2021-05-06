@@ -76,5 +76,14 @@ VariableSymbol* Factory::constant(VariableSymbol* variable) {
         return new VariableSymbol(variable->name(), new_type, false, -1, true);
 }
 
+bool VariableSymbol::operator==(const VariableSymbol& o) const {
+        if (m_name != o.m_name) return false;
+        if (!TypeSymbol::are_types_equal(m_type, o.m_type)) return false;
+        if (arr != o.arr) return false;
+        if (arr_c != o.arr_c) return false;
+        if (m_is_const != o.m_is_const) return false;
+        if (m_is_global != o.m_is_global) return false;
+        return true;
+}
 
 }

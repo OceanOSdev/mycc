@@ -7,7 +7,7 @@
 
 namespace JVMProcessor {
 
-enum JVMOpCode : uint8_t;
+enum class JVMOpCode;
 
 /**
  * @brief For debugging purposes, we create an enum to

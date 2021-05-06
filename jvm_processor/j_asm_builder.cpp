@@ -4,6 +4,8 @@
 #include "../symbols/variable_symbol.h"
 #include "../symbols/type_symbol.h"
 
+#include "../binding/bound_label_statement_node.h"
+
 #include "j_asm_builder.h"
 #include "builder_state.h"
 #include "instruction.h"
@@ -19,13 +21,28 @@ namespace JVMProcessor {
 //    Finalized Body
 // ====================
 
-FinalizedBody::FinalizedBody(std::vector<std::string> body, int locals, int max_stack) :
+FinalizedBody::FinalizedBody(std::vector<Instruction*> body, int locals, int max_stack) :
     m_body(body),
     m_local_count(locals),
-    m_max_stack(max_stack) {}
+    m_max_stack(max_stack),
+    m_is_hard_coded(false) {}
 
-std::vector<std::string> FinalizedBody::body() const {
+FinalizedBody::FinalizedBody(std::vector<std::string> body, int locals, int max_stack) :
+    m_hard_coded_body(body),
+    m_local_count(locals),
+    m_max_stack(max_stack),
+    m_is_hard_coded(true) {}
+
+std::vector<Instruction*> FinalizedBody::body() const {
     return m_body;
+}
+
+std::vector<std::string> FinalizedBody::hard_coded_body() const {
+    return m_hard_coded_body;
+}
+
+bool FinalizedBody::is_hard_coded() const {
+    return m_is_hard_coded;
 }
 
 int FinalizedBody::local_count() const {
@@ -130,7 +147,7 @@ void JAsmBuilder::emit_constant(int arg) {
     } else {
         op_code = op_code_for_emit_int_value(arg);
         InstructionArgument* argument;
-        if (op_code == bipush)
+        if (op_code == JVMOpCode::bipush)
             argument = new CConstInstructionArgument((char)arg);
         else
             argument =  new IConstInstructionArgument(arg);
@@ -256,13 +273,23 @@ std::vector<std::string> JAsmBuilder::current_instruction_listing() const {
 }
 
 FinalizedBody* JAsmBuilder::finalize() {
-    std::vector<std::string> instr_list;
+    std::vector<Instruction*> instr_list;
     run_label_fixes();
     for (auto instr : m_instructions) 
-        instr_list.push_back(instr->str());
+        instr_list.push_back(instr);
 
     return new FinalizedBody(instr_list, m_locals.size(), m_builder_state->max_stack_size());
 }
+
+
+int JAsmBuilder::instructions_emitted() const {
+    return m_builder_state->op_codes_emitted();
+}
+
+int JAsmBuilder::current_stack_size() const {
+    return m_builder_state->current_stack_size();
+}
+
 
 int JAsmBuilder::max_stack_size() const {
     /* We could throw an exception if we haven't finalized
@@ -287,7 +314,7 @@ void JAsmBuilder::declare_local(Symbols::VariableSymbol* local_variable) {
 
 int JAsmBuilder::get_local_variable_index(Symbols::VariableSymbol* local) {
     for (std::size_t i = 0; i < m_locals.size(); i ++) {
-        if (m_locals[i] == local) return (int)i;
+        if (*(m_locals[i]) == *local) return (int)i;
     }
     return -1;
 }
@@ -302,7 +329,32 @@ void JAsmBuilder::track_label(Binding::BoundLabel* label, int instruction_idx) {
 }
 
 void JAsmBuilder::run_label_fixes() {
-    
+
+    // I use two vectors instead of a map so that I can gaurantee
+    // that the order I emit the fixed labels is the same order
+    // that I saw them in.
+    std::vector<LabelInstructionArgument*> existing_labels;
+    std::vector<int> calculated_label_pos;
+
+    for (auto fixup : m_fixups) {
+        auto target_label = fixup->label();
+        auto target_instruction_idx = m_label_instr_map[target_label];
+        //__attribute__((unused)) auto target_instruction = m_instructions[target_instruction_idx];
+        auto inst_to_fix = m_instructions[fixup->instruction_index()];
+
+        existing_labels.push_back(dynamic_cast<LabelInstructionArgument*>(inst_to_fix->argument()));
+
+        calculated_label_pos.push_back(target_instruction_idx);
+        //((LabelInstructionArgument*)(inst_to_fix->argument()))->bound_label()->m_name = "L" + std::to_string(counter++);
+    }
+
+    for (std::size_t idx = 0; idx < existing_labels.size(); idx ++) {
+        std::string new_label = "L" + std::to_string(idx + 1);
+        existing_labels[idx]->bound_label()->m_name = new_label;
+        //auto instr_loc = m_instructions.begin() + calculated_label_pos[idx];
+        m_instructions[calculated_label_pos[idx]]->set_label(new_label);
+        //m_instructions.insert(instr_loc, new Instruction(new_label));
+    }
 }
 
 void JAsmBuilder::record_instruction(Instruction* instruction) {
