@@ -124,6 +124,7 @@ int8_t stack_pop_modifier(JVMOpCode op_code) {
         case JVMOpCode::pop: return 1;
         case JVMOpCode::pop2: return 2;
         case JVMOpCode::dup: return 1; // pops off before pushing two back on
+        case JVMOpCode::dup_x2: return 3; // pops three off before pushing four back on.
         case JVMOpCode::dup2: return 2; // pops two off before pushing them back on twice
         case JVMOpCode::swap: return 2; // pops two off before reversing and pushing them back on
         
@@ -258,6 +259,7 @@ int8_t stack_push_modifier(JVMOpCode op_code) {
         case JVMOpCode::pop2: return 0;
 
         case JVMOpCode::dup: return 2;
+        case JVMOpCode::dup_x2: return 4;
         case JVMOpCode::dup2: return 4;
         case JVMOpCode::swap: return 2;
         
@@ -417,6 +419,7 @@ std::string op_code_name(JVMOpCode op_code) {
         case JVMOpCode::pop: return "pop";
         case JVMOpCode::pop2: return "pop2";
         case JVMOpCode::dup: return "dup";
+        case JVMOpCode::dup_x2: return "dup_x2";
         case JVMOpCode::dup2: return "dup2";
         case JVMOpCode::swap: return "swap";
         case JVMOpCode::iadd: return "iadd";

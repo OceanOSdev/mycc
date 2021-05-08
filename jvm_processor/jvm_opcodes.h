@@ -72,6 +72,7 @@ enum class JVMOpCode {
     pop = 0x57,
     pop2 = 0x58,
     dup = 0x59,
+    dup_x2 = 0x5b,
     dup2 = 0x5c,
     swap = 0x5f,
 

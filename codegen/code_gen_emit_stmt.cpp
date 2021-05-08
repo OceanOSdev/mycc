@@ -6,6 +6,7 @@
 #include "../jvm_processor/instruction_arguments.h"
 
 #include "../symbols/type_symbol.h"
+#include "../symbols/variable_symbol.h"
 
 #include "../binding/bound_node_kind.h"
 #include "../binding/bound_node_factory.h"
@@ -19,6 +20,7 @@
 #include "../binding/bound_struct_declaration_node.h"
 #include "../binding/bound_expression_node.h"
 #include "../binding/bound_assignment_expression_node.h"
+#include "../binding/bound_literal_val_expression_node.h"
 
 #include "../binding/bound_binary_expression_node.h"
 #include "../binding/bound_unary_expression_node.h"
@@ -112,6 +114,15 @@ void CodeGenerator::emit_variable_declaration(Binding::BoundVariableDeclarationN
     if (variable_declaration->is_initialized()) {
         auto assignment = Binding::Factory::assignment(variable_declaration->variable_symbol(), variable_declaration->initializer());
         emit_expression(assignment, false);
+    } else if (variable_declaration->variable_symbol()->is_array()) {
+        auto type = variable_declaration->variable_symbol()->var_type();
+        // we don't want to emit the '[' character present in the array type 
+        // (or the const thing, if that even gets passed along)
+        type = type->as_array_element_type()->as_mutable_type();
+        auto arg = new JVMProcessor::TypeIdInstructionArgument(type);
+        emit_expression(Binding::Factory::literal(variable_declaration->variable_symbol()->array_size()),true);
+        m_builder->emit_op_code(JVMProcessor::JVMOpCode::newarray, arg);
+        emit_store(variable_declaration->variable_symbol());
     }
 }
 

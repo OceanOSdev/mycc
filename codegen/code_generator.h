@@ -29,6 +29,7 @@ namespace Binding {
     class BoundDecrementExpressionNode;
     class BoundBinaryExpressionNode;
     class BoundUnaryExpressionNode;
+    class BoundIndexExpressionNode;
     class BoundExpressionNode;
 
     class BoundBinaryOperatorNode;
@@ -134,11 +135,14 @@ private:
     void emit_call_expression(Binding::BoundCallExpressionNode* call_expression, bool used);
     void emit_cast_expression(Binding::BoundCastExpressionNode* cast_expression, bool used);
     void emit_load(Binding::BoundVariableReferenceExpressionNode* variable_reference_expression);
+    void emit_load(Symbols::VariableSymbol* variable_reference);
     void emit_store(Binding::BoundVariableReferenceExpressionNode* variable_reference_expression);
+    void emit_store(Symbols::VariableSymbol* variable_reference);
     void emit_increment_expression(Binding::BoundIncrementExpressionNode* increment_expression, bool used);
     void emit_decrement_expression(Binding::BoundDecrementExpressionNode* decrement_expression, bool used);
     void emit_binary_expression(Binding::BoundBinaryExpressionNode* binary_expression, bool used);
     void emit_unary_expression(Binding::BoundUnaryExpressionNode* unary_expression, bool used);
+    void emit_index_expression(Binding::BoundIndexExpressionNode* index_expression, bool used);
 
     // ====================
     //    Helper Methods

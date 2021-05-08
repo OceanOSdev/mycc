@@ -7,6 +7,8 @@ TypeIdInstructionArgument::TypeIdInstructionArgument(const Symbols::TypeSymbol* 
     m_type(type) {}
 
 std::string TypeIdInstructionArgument::type_id() const {
+    if (Symbols::TypeSymbol::are_types_equivalent(m_type, &Symbols::TypeSymbol::Float))
+        return m_type->name();
     return m_type->jasm_str(false);
 }
 

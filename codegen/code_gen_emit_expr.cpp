@@ -20,6 +20,7 @@
 #include "../binding/bound_increment_expression_node.h"
 #include "../binding/bound_binary_expression_node.h"
 #include "../binding/bound_unary_expression_node.h"
+#include "../binding/bound_index_expression_node.h"
 #include "../binding/bound_node_kind.h"
 
 namespace CodeGen {
@@ -79,6 +80,9 @@ void CodeGenerator::emit_expression_driver(Binding::BoundExpressionNode* express
         case BoundNodeKind::DecrementExpression: break;
         case BoundNodeKind::BinaryExpression: break;
         case BoundNodeKind::UnaryExpression: break;
+        case BoundNodeKind::IndexExpression: 
+            emit_index_expression(dynamic_cast<Binding::BoundIndexExpressionNode*>(expression), used);
+            break;
         default:
             throw new std::runtime_error("Invalid expression type while emitting: " + std::to_string(kind));
     }
@@ -86,11 +90,27 @@ void CodeGenerator::emit_expression_driver(Binding::BoundExpressionNode* express
 
 
 void CodeGenerator::emit_assignment_expression(Binding::BoundAssignmentExpressionNode* assignment, bool used) {
-    emit_expression(assignment->expression(), true);
-    // in the event we have an expression like 'int a = (b = 4)' we need to duplicate (b=4) on the stack
-    // so that later code gen has access to it.
-    if (used) m_builder->emit_op_code(JVMProcessor::JVMOpCode::dup);
-    emit_store(assignment->variable_reference());
+    auto is_arr = assignment->variable_reference()->kind() == Binding::BoundNodeKind::IndexExpression;
+    if (!is_arr) {
+        emit_expression(assignment->expression(), true);
+        // in the event we have an expression like 'int a = (b = 4)' we need to duplicate (b=4) on the stack
+        // so that later code gen has access to it.
+        if (used) m_builder->emit_op_code(JVMProcessor::JVMOpCode::dup);
+        emit_store(assignment->variable_reference());
+    } else {
+        // kind of hacky, but we don't want the xaload instruction emitted even if we are using
+        // the value of the assignment since we just emit dup_x2 instead which should handle
+        // keeping the value where it needs to be on the stack.
+        emit_expression(assignment->variable_reference(), false); 
+        emit_expression(assignment->expression(), true);
+        // using dup_x2 instead of dup since calling xastore pops the top three
+        // values off of the stack, so we want to "duplicate" the top value on
+        // the stack, but insert it below the top three values.
+        if (used) m_builder->emit_op_code(JVMProcessor::JVMOpCode::dup_x2);
+        m_builder->emit_array_store(assignment->variable_reference()->variable_reference());
+
+        
+    }
 }
 
 void CodeGenerator::emit_call_expression(Binding::BoundCallExpressionNode* call_expression, bool used) {
@@ -135,34 +155,44 @@ void CodeGenerator::emit_cast_expression(Binding::BoundCastExpressionNode* cast_
 }
 
 void CodeGenerator::emit_load(Binding::BoundVariableReferenceExpressionNode* variable_reference_expression) {
-    auto ref = variable_reference_expression->variable_reference();
+    emit_load(variable_reference_expression->variable_reference());
+}
+
+void CodeGenerator::emit_load(Symbols::VariableSymbol* variable_reference) {
     /// TODO: if variable is constant and its val is a LVE then just push the value to the stack
     /// instead of emitting a load instruction.
-    bool is_field = ref->is_global();
+    bool is_field = variable_reference->is_global();
     if (is_field)
-        m_builder->emit_global_load(ref, m_payload->filename_base());
+        m_builder->emit_global_load(variable_reference, m_payload->filename_base());
     else
-        m_builder->emit_local_load(ref);
-
+        m_builder->emit_local_load(variable_reference);
 }
 
 void CodeGenerator::emit_store(Binding::BoundVariableReferenceExpressionNode* variable_reference_expression) {
-    auto ref = variable_reference_expression->variable_reference();
+    emit_store(variable_reference_expression->variable_reference());
+}
+
+void CodeGenerator::emit_store(Symbols::VariableSymbol* variable_reference) {
     /// TODO: Is checking whether ref is constant or not necessary?
     /// Off of the top of my head I can't see why it would be but
     /// as always, there might be some edge case where such, and invalid
     /// state sneaks in.
 
-    bool is_field = ref->is_global();
+    bool is_field = variable_reference->is_global();
     if (is_field)
-        m_builder->emit_global_store(ref, m_payload->filename_base());
+        m_builder->emit_global_store(variable_reference, m_payload->filename_base());
     else
-        m_builder->emit_local_store(ref);
-
+        m_builder->emit_local_store(variable_reference);
 }
 
 void CodeGenerator::emit_increment_expression(__attribute__((unused)) Binding::BoundIncrementExpressionNode* increment_expression, __attribute__((unused)) bool used) {
-
+ /*
+  * IDEA: if used, check if pre or post increment.
+  * If pre increment (i.e. ++var), then emit load after inc
+  * If post increment (i.e. var++), then emit load before inc
+  * 
+  * If not used, don't emit load at all, only inc
+  */   
 }
 
 void CodeGenerator::emit_decrement_expression(__attribute__((unused)) Binding::BoundDecrementExpressionNode* decrement_expression, __attribute__((unused)) bool used) {
@@ -177,6 +207,13 @@ void CodeGenerator::emit_unary_expression(__attribute__((unused)) Binding::Bound
 
 }
 
+void CodeGenerator::emit_index_expression(Binding::BoundIndexExpressionNode* index_expression, __attribute__((unused)) bool used) {
+    emit_load(index_expression->variable_reference());
+    emit_expression(index_expression->expression(), true);
+    if (used) {
+        m_builder->emit_array_load(index_expression->variable_reference());
+    }
+}
 
 
 }

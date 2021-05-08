@@ -90,7 +90,7 @@ void JAsmBuilder::emit_op_code(JVMOpCode op_code, InstructionArgument* arg, int 
     if (OpCodeInfo::required_argument_kind(op_code) != InstructionArgumentKind::Empty && arg == nullptr)
         throw new std::runtime_error("Invalid number of arguments for op code '" + OpCodeInfo::op_code_name(op_code) + "'");
     
-    if (OpCodeInfo::required_argument_kind(op_code) != arg->kind())
+    if (!(OpCodeInfo::required_argument_kind(op_code) & arg->kind()))
         throw new std::runtime_error("Invalid argument for op code '" + OpCodeInfo::op_code_name(op_code) + "'");
     
     if (OpCodeInfo::is_control_transfer(op_code))
@@ -180,6 +180,35 @@ JVMOpCode JAsmBuilder::op_code_for_emit_int_value(int value) {
     return JVMOpCode::ldc;
 }
 
+void JAsmBuilder::emit_array_store(Symbols::VariableSymbol* array) {
+    auto type = array->var_type()->as_array_element_type()->as_mutable_type();
+    
+    using namespace Symbols;
+    if (TypeSymbol::is_bytecode_reference_type(type)) {
+        emit_op_code(JVMOpCode::aastore);
+    } else if (TypeSymbol::are_types_equal(type, &TypeSymbol::Char)) {
+        emit_op_code(JVMOpCode::castore);
+    } else if (TypeSymbol::are_types_equal(type, &TypeSymbol::Int)) {
+        emit_op_code(JVMOpCode::iastore);
+    } else {
+        emit_op_code(JVMOpCode::fastore);
+    }
+}
+
+void JAsmBuilder::emit_array_load(Symbols::VariableSymbol* array) {
+    auto type = array->var_type()->as_array_element_type()->as_mutable_type();
+    
+    using namespace Symbols;
+    if (TypeSymbol::is_bytecode_reference_type(type)) {
+        emit_op_code(JVMOpCode::aaload);
+    } else if (TypeSymbol::are_types_equal(type, &TypeSymbol::Char)) {
+        emit_op_code(JVMOpCode::caload);
+    } else if (TypeSymbol::are_types_equal(type, &TypeSymbol::Int)) {
+        emit_op_code(JVMOpCode::iaload);
+    } else {
+        emit_op_code(JVMOpCode::faload);
+    }
+}
 
 void JAsmBuilder::emit_local_load(Symbols::VariableSymbol* local) {
     int local_index = get_local_variable_index(local);

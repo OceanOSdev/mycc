@@ -77,7 +77,6 @@ private:
     
     bool m_finalized;
 
-    int get_local_variable_index(Symbols::VariableSymbol* local);
     void emit_local_load_or_store_int(int local_index, LSFlag flag = LSFlag::Load);
     void emit_local_load_or_store_float(int local_index, LSFlag flag = LSFlag::Load);
     void emit_local_load_or_store_reference(int local_index, LSFlag flag = LSFlag::Load);
@@ -102,6 +101,7 @@ public:
     JAsmBuilder();
 
     void adjust_stack(int net_change);
+    int get_local_variable_index(Symbols::VariableSymbol* local);
 
     void emit_op_code(JVMOpCode op_code);
     void emit_op_code(JVMOpCode op_code, int stack_adj);
@@ -110,6 +110,9 @@ public:
 
     void emit_return_op_code(ReturnOpType ret_op_type = ReturnOpType::Void);
     void emit_branch_op_code(JVMOpCode op_code, InstructionArgument* arg);
+
+    void emit_array_store(Symbols::VariableSymbol* array);
+    void emit_array_load(Symbols::VariableSymbol* array);
 
     void emit_local_load(Symbols::VariableSymbol* local);
     void emit_local_store(Symbols::VariableSymbol* local);
