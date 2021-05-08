@@ -76,8 +76,12 @@ void CodeGenerator::emit_expression_driver(Binding::BoundExpressionNode* express
         case BoundNodeKind::VariableReferenceExpression:
             emit_load(dynamic_cast<BoundVariableReferenceExpressionNode*>(expression));
             break;
-        case BoundNodeKind::IncrementExpression: break;
-        case BoundNodeKind::DecrementExpression: break;
+        case BoundNodeKind::IncrementExpression:
+            emit_increment_expression(dynamic_cast<BoundIncrementExpressionNode*>(expression), used);
+            break;
+        case BoundNodeKind::DecrementExpression:
+            emit_decrement_expression(dynamic_cast<BoundDecrementExpressionNode*>(expression), used);
+            break;
         case BoundNodeKind::BinaryExpression: break;
         case BoundNodeKind::UnaryExpression: break;
         case BoundNodeKind::IndexExpression: 
@@ -149,7 +153,7 @@ void CodeGenerator::emit_cast_expression(Binding::BoundCastExpressionNode* cast_
         m_builder->emit_op_code(JVMProcessor::JVMOpCode::i2f);
     } else {
         // m_builder->emit_op_code(JVMProcessor::JVMOpCode::nop);
-        // actually, let's throw an exception instead.
+        // ^ actually, let's throw an exception instead.
         throw new std::runtime_error("Invalid cast during bytecode emitting.");
     }
 }
@@ -185,17 +189,72 @@ void CodeGenerator::emit_store(Symbols::VariableSymbol* variable_reference) {
         m_builder->emit_local_store(variable_reference);
 }
 
-void CodeGenerator::emit_increment_expression(__attribute__((unused)) Binding::BoundIncrementExpressionNode* increment_expression, __attribute__((unused)) bool used) {
- /*
-  * IDEA: if used, check if pre or post increment.
-  * If pre increment (i.e. ++var), then emit load after inc
-  * If post increment (i.e. var++), then emit load before inc
-  * 
-  * If not used, don't emit load at all, only inc
-  */   
+void CodeGenerator::emit_increment_expression(Binding::BoundIncrementExpressionNode* increment_expression, bool used) {
+    auto ref_kind = increment_expression->expression()->kind();
+    if (ref_kind != Binding::BoundNodeKind::VariableReferenceExpression && ref_kind != Binding::BoundNodeKind::IndexExpression) {
+        throw new std::runtime_error("Cannot increment: not an lvalue");
+    }
+    emit_incdec_expression(dynamic_cast<Binding::BoundVariableReferenceExpressionNode*>(increment_expression->expression()), increment_expression->notation(), 1, used); 
 }
 
-void CodeGenerator::emit_decrement_expression(__attribute__((unused)) Binding::BoundDecrementExpressionNode* decrement_expression, __attribute__((unused)) bool used) {
+void CodeGenerator::emit_decrement_expression(Binding::BoundDecrementExpressionNode* decrement_expression, bool used) {
+    auto ref_kind = decrement_expression->expression()->kind();
+    if (ref_kind != Binding::BoundNodeKind::VariableReferenceExpression && ref_kind != Binding::BoundNodeKind::IndexExpression) {
+        throw new std::runtime_error("Cannot decrement: not an lvalue");
+    }
+    emit_incdec_expression(dynamic_cast<Binding::BoundVariableReferenceExpressionNode*>(decrement_expression->expression()), decrement_expression->notation(), -1, used);
+}
+
+void CodeGenerator::emit_incdec_expression(Binding::BoundVariableReferenceExpressionNode* ref_expression, Binding::IDNotation notation, int mutation, bool used) {
+    /*
+     * (WLOG we refer to increment)
+     * IDEA: if used, check if pre or post increment.
+     * If pre increment (i.e. ++var), then emit load after inc
+     * If post increment (i.e. var++), then emit load before inc
+     * 
+     * If not used, don't emit load at all, only inc
+     */
+
+    using namespace Symbols;
+    bool pre = used && (notation == Binding::IDNotation::PREFIX);
+    bool post = used && (notation == Binding::IDNotation::POSTFIX);
+
+    if (ref_expression->kind() != Binding::BoundNodeKind::IndexExpression) {
+        // we are not dealing with an array
+        auto type = ref_expression->variable_reference()->var_type()->as_mutable_type(); // <-- probably dont need as mutable since that should be caught in binder
+        // Int
+        if (TypeSymbol::are_types_equal(type, &TypeSymbol::Int)) {
+            if (post) emit_load(ref_expression); 
+            int ref_idx = m_builder->get_local_variable_index(ref_expression->variable_reference());
+            auto arg = new JVMProcessor::ITupleConstInstructionArgument(ref_idx, mutation);
+            m_builder->emit_op_code(JVMProcessor::JVMOpCode::iinc, arg);
+            if (pre) emit_load(ref_expression);
+            return; // I don't want to write a bunch of elses, so just return immediately when we're done.
+        }
+        // Char
+        if (TypeSymbol::are_types_equal(type, &TypeSymbol::Char)) {
+            if (post) emit_load(ref_expression);
+            emit_load(ref_expression);
+            m_builder->emit_op_code(JVMProcessor::JVMOpCode::iconst_1);
+            auto op_code = mutation == 1 ? JVMProcessor::JVMOpCode::iadd : JVMProcessor::JVMOpCode::isub;
+            m_builder->emit_op_code(op_code);
+            m_builder->emit_op_code(JVMProcessor::JVMOpCode::i2c);
+            emit_store(ref_expression);
+            if (pre) emit_load(ref_expression); /// TODO: Maybe we can refactor Char so that the incdec code can be merged with FLoat?
+            return;
+        }
+        // Float
+        if (TypeSymbol::are_types_equal(type, &TypeSymbol::Float)) {
+            emit_load(ref_expression);
+            if (post) m_builder->emit_op_code(JVMProcessor::JVMOpCode::dup);
+            m_builder->emit_op_code(JVMProcessor::JVMOpCode::fconst_1);
+            auto op_code = mutation == 1 ? JVMProcessor::JVMOpCode::fadd : JVMProcessor::JVMOpCode::fsub;
+            m_builder->emit_op_code(op_code);
+            if (pre) m_builder->emit_op_code(JVMProcessor::JVMOpCode::dup);
+            emit_store(ref_expression);
+            return;
+        }
+    }
 
 }
 

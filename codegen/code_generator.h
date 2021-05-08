@@ -33,6 +33,8 @@ namespace Binding {
     class BoundExpressionNode;
 
     class BoundBinaryOperatorNode;
+
+    enum IDNotation: int;
 }
 
 namespace Symbols {
@@ -140,6 +142,7 @@ private:
     void emit_store(Symbols::VariableSymbol* variable_reference);
     void emit_increment_expression(Binding::BoundIncrementExpressionNode* increment_expression, bool used);
     void emit_decrement_expression(Binding::BoundDecrementExpressionNode* decrement_expression, bool used);
+    void emit_incdec_expression(Binding::BoundVariableReferenceExpressionNode* ref_expression, Binding::IDNotation notation, int mutation, bool used);
     void emit_binary_expression(Binding::BoundBinaryExpressionNode* binary_expression, bool used);
     void emit_unary_expression(Binding::BoundUnaryExpressionNode* unary_expression, bool used);
     void emit_index_expression(Binding::BoundIndexExpressionNode* index_expression, bool used);
