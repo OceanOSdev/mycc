@@ -1,4 +1,6 @@
 #include <vector>
+#include <ctime>
+#include <cstdlib>
 #include "arg_parser.h"
 #include "lexeme_data.h"
 #include "logging/logger.h"
@@ -31,6 +33,7 @@ void run_bound_tree_printer(Arguments* args);
 void run_gen_purp_debug(Arguments* args);
 
 int main(int argc, char* argv[]) {
+    std::srand(std::time(nullptr));
     auto arguments = Arguments::parse_arguments(argc, argv);
     argument_handler(arguments);
     return 0;

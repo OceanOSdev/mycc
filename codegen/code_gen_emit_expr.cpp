@@ -150,7 +150,7 @@ void CodeGenerator::emit_store(Binding::BoundVariableReferenceExpressionNode* va
     auto ref = variable_reference_expression->variable_reference();
     /// TODO: Is checking whether ref is constant or not necessary?
     /// Off of the top of my head I can't see why it would be but
-    /// as always, there might be some edge case where such and invalid
+    /// as always, there might be some edge case where such, and invalid
     /// state sneaks in.
 
     bool is_field = ref->is_global();

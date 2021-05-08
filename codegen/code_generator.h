@@ -167,6 +167,8 @@ private:
 
     int calculate_call_stack_delta(Symbols::FunctionSymbol* method);
 
+    Binding::BoundLabel* generate_temp_label() const;
+
     ///TODO: should probably refactor these methods into their own class or something.
 
     void add_method_to_map(MethodReference* method);

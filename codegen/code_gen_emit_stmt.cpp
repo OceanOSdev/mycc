@@ -21,6 +21,7 @@
 #include "../binding/bound_assignment_expression_node.h"
 
 #include "../binding/bound_binary_expression_node.h"
+#include "../binding/bound_unary_expression_node.h"
 #include "../binding/bound_binary_op_kind.h"
 
 namespace CodeGen {
@@ -120,13 +121,35 @@ void CodeGenerator::emit_conditional_branch(Binding::BoundExpressionNode* condit
     /// TODO: optimize for constants?
 
     do {
+        reiterate = false;
         switch (condition->kind()) {
             case Binding::BoundNodeKind::BinaryExpression: 
             {
                 emit_conditional_branch_bin_op(condition, label, jmp_if_true, reiterate);
-                if (reiterate) continue;   
+                if (reiterate) continue;  
+                break; 
             }
-            default: break;
+            case Binding::BoundNodeKind::UnaryExpression:
+            {
+                auto unary_op = dynamic_cast<Binding::BoundUnaryExpressionNode*>(condition);
+                if (unary_op->op()->op_kind() == Binding::BoundUnaryOpKind::LogicalNegation) {
+                    jmp_if_true = !jmp_if_true;
+                    condition = unary_op->expression();
+                    reiterate = true;
+                }
+                break;
+            }
+            default: 
+            {
+                emit_expression(condition, true);
+                JVMProcessor::JVMOpCode op_code = jmp_if_true ? JVMProcessor::JVMOpCode::ifeq : JVMProcessor::JVMOpCode::ifne;
+                if (label == nullptr) {
+                    label = generate_temp_label();
+                }
+                auto arg = new JVMProcessor::LabelInstructionArgument(label);
+                m_builder->emit_branch_op_code(op_code, arg);
+                return;
+            }
         }
     } while (reiterate);
 }
@@ -167,12 +190,7 @@ void CodeGenerator::emit_conditional_branch_bin_op(Binding::BoundExpressionNode*
             JVMProcessor::JVMOpCode reverse_op_code;
             JVMProcessor::JVMOpCode op_code = get_jump_code(bin_expr->op(), jmp_if_true, reverse_op_code);
             if (destination == nullptr) {
-                // try to create a unique name 
-                // (only has to be unique to this method since the lifetime of our builder 
-                // is the duration of our emitting of this method)
-                std::string cur_stack_str = std::to_string(m_builder->current_stack_size());
-                std::string op_codes_emitted_str = std::to_string(m_builder->instructions_emitted());
-                destination = new Binding::BoundLabel(cur_stack_str + "_" + op_codes_emitted_str);
+                destination = generate_temp_label();
             }
 
             auto arg = new JVMProcessor::LabelInstructionArgument(destination);
