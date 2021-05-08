@@ -359,7 +359,7 @@ void JAsmBuilder::track_label(Binding::BoundLabel* label, int instruction_idx) {
 
 void JAsmBuilder::run_label_fixes() {
 
-    // I use two vectors instead of a map so that I can gaurantee
+    // I use two vectors instead of a map so that I can guarantee
     // that the order I emit the fixed labels is the same order
     // that I saw them in.
     std::vector<LabelInstructionArgument*> existing_labels;
