@@ -51,7 +51,7 @@ bool CodeGenerator::emit() {
         bool is_static = method_ref->is_static();
 
         if (!first) {
-            std::cout << '\n';
+            (*m_outstream) << '\n';
         } else {
             first = !first;
         }
