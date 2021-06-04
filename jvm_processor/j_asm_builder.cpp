@@ -78,8 +78,6 @@ void JAsmBuilder::emit_op_code(JVMOpCode op_code, int stack_adj) {
 
     m_builder_state->adjust_stack(stack_adj);
     record_instruction(new Instruction(op_code));
-    //m_builder_state->add_op_code(op_code);
-    //m_instructions.push_back(new Instruction(op_code));
 }
 
 void JAsmBuilder::emit_op_code(JVMOpCode op_code, InstructionArgument* arg) {
