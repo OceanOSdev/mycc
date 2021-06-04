@@ -98,8 +98,6 @@ void JAsmBuilder::emit_op_code(JVMOpCode op_code, InstructionArgument* arg, int 
 
     m_builder_state->adjust_stack(stack_adj);
     record_instruction(new Instruction(op_code, arg));
-    //m_builder_state->add_op_code(op_code);
-    //m_instructions.push_back(new Instruction(op_code, arg));
 }
 
 void JAsmBuilder::emit_return_op_code(ReturnOpType ret_op_type) {
@@ -116,8 +114,6 @@ void JAsmBuilder::emit_return_op_code(ReturnOpType ret_op_type) {
     }
 
     record_instruction(new Instruction(op_code));
-    //m_builder_state->add_op_code(op_code);
-    //m_instructions.push_back(new Instruction(op_code));
 }
 
 void JAsmBuilder::emit_branch_op_code(JVMOpCode op_code, InstructionArgument* arg) {
@@ -132,9 +128,7 @@ void JAsmBuilder::emit_branch_op_code(JVMOpCode op_code, InstructionArgument* ar
 
     auto label_arg = dynamic_cast<LabelInstructionArgument*>(arg);
     mark_branch_for_fix_up(m_builder_state->op_codes_emitted(), label_arg->bound_label());
-    record_instruction(new Instruction(op_code, arg));
-    //m_builder_state->add_op_code(op_code);
-    //m_instructions.push_back(new Instruction(op_code, arg));    
+    record_instruction(new Instruction(op_code, arg)); 
 }
 
 void JAsmBuilder::emit_constant(int arg) {

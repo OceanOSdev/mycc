@@ -189,4 +189,13 @@ const Symbols::TypeSymbol* BoundBinaryExpressionNode::type() const {
     return m_op->type();
 }
 
+bool is_conditional_binary_operator(BoundBinaryOpKind operator_kind) {
+    if (operator_kind == BoundBinaryOpKind::Addition ||
+        operator_kind == BoundBinaryOpKind::Subtraction ||
+        operator_kind == BoundBinaryOpKind::Multiplication ||
+        operator_kind == BoundBinaryOpKind::Division)
+        return false;
+    return true;
+}
+
 }

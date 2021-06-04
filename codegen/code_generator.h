@@ -147,6 +147,10 @@ private:
     void emit_unary_expression(Binding::BoundUnaryExpressionNode* unary_expression, bool used);
     void emit_index_expression(Binding::BoundIndexExpressionNode* index_expression, bool used);
 
+    void emit_binary_conditional_expression(Binding::BoundBinaryExpressionNode* binary_expression, bool jmp_if_true);
+    void emit_conditional_expression(Binding::BoundExpressionNode* condition, bool jmp_if_true);
+
+
     // ====================
     //    Helper Methods
     // ====================

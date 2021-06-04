@@ -27,6 +27,8 @@ enum BoundBinaryOpKind : int{
     LogicalOr
 };
 
+bool is_conditional_binary_operator(BoundBinaryOpKind operator_kind);
+
 }
 
 #endif

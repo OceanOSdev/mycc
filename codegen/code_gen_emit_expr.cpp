@@ -262,15 +262,53 @@ void CodeGenerator::emit_binary_expression(__attribute__((unused)) Binding::Boun
 
 }
 
-void CodeGenerator::emit_unary_expression(__attribute__((unused)) Binding::BoundUnaryExpressionNode* unary_expression, __attribute__((unused)) bool used) {
+void CodeGenerator::emit_unary_expression(Binding::BoundUnaryExpressionNode* unary_expression, bool used) {
+    auto op_kind = unary_expression->op()->op_kind();
+    if (!used) {
+        emit_expression(unary_expression->expression(), false);
+        return;
+    }
 
+    if (op_kind == Binding::BoundUnaryOpKind::LogicalNegation) {
+        emit_conditional_expression(unary_expression->expression(), false);
+        return;
+    }
 }
 
-void CodeGenerator::emit_index_expression(Binding::BoundIndexExpressionNode* index_expression, __attribute__((unused)) bool used) {
+void CodeGenerator::emit_index_expression(Binding::BoundIndexExpressionNode* index_expression, bool used) {
     emit_load(index_expression->variable_reference());
     emit_expression(index_expression->expression(), true);
     if (used) {
         m_builder->emit_array_load(index_expression->variable_reference());
+    }
+}
+
+
+void CodeGenerator::emit_binary_conditional_expression(__attribute__((unused)) Binding::BoundBinaryExpressionNode* binary_expression, __attribute__((unused)) bool jmp_if_true) {
+
+}
+
+void CodeGenerator::emit_conditional_expression(Binding::BoundExpressionNode* condition, bool jmp_if_true) {
+    while (condition->kind() == Binding::BoundNodeKind::UnaryExpression) {
+        auto unary = dynamic_cast<Binding::BoundUnaryExpressionNode*>(condition);
+        /// TODO: make sure that it is a logical negation
+        condition = unary->expression();
+        jmp_if_true = !jmp_if_true;
+    }
+
+    /// TODO: optimize for constant values
+
+    if (condition->kind() == Binding::BoundNodeKind::BinaryExpression) {
+        auto binary = dynamic_cast<Binding::BoundBinaryExpressionNode*>(condition);
+        if (Binding::is_conditional_binary_operator(binary->op()->op_kind())) {
+            emit_binary_conditional_expression(binary, jmp_if_true);
+            return;
+        }
+    }
+
+    emit_expression(condition, true);
+    if (!jmp_if_true) {
+        m_builder->emit_op_code(JVMProcessor::JVMOpCode::ifeq);
     }
 }
 
