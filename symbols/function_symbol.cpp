@@ -71,7 +71,7 @@ void FunctionSymbol::set_line_defined(int line) {
  */
 SymbolKind FunctionSymbol::kind() const { return SymbolKind::FUNCTION; }
 
-bool FunctionSymbol::operator==(const FunctionSymbol& other) {
+bool FunctionSymbol::operator==(const FunctionSymbol& other) const {
     if (std::is_neq(*m_type <=> *other.m_type)) return false;
     if (m_name != other.m_name) return false;
     if (m_params.size() != other.m_params.size()) return false;

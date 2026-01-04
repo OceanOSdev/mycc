@@ -48,7 +48,7 @@ public:
      */
     SymbolKind kind() const override;
 
-    bool operator==(const FunctionSymbol& other);
+    bool operator==(const FunctionSymbol& other) const;
 };
 
 }
