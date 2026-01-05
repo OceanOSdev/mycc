@@ -4,26 +4,26 @@
 
 namespace Binding {
 
-BoundExpressionStatementNode* Factory::statement(BoundExpressionNode* expression) {
-    return new BoundExpressionStatementNode(expression);
+BoundExpressionStatementNode *
+Factory::statement(BoundExpressionNode *expression) {
+  return new BoundExpressionStatementNode(expression);
 }
 
-BoundExpressionStatementNode::BoundExpressionStatementNode(BoundExpressionNode* expression) :
-    m_expression(expression) {}
+BoundExpressionStatementNode::BoundExpressionStatementNode(
+    BoundExpressionNode *expression)
+    : m_expression(expression) {}
 
-BoundExpressionStatementNode::~BoundExpressionStatementNode() {
-
-}
+BoundExpressionStatementNode::~BoundExpressionStatementNode() {}
 
 /*
  * An enum representing the kind of bound node this is
  */
 BoundNodeKind BoundExpressionStatementNode::kind() const {
-    return BoundNodeKind::ExpressionStatement;
+  return BoundNodeKind::ExpressionStatement;
 }
 
-BoundExpressionNode* BoundExpressionStatementNode::expression() const {
-    return m_expression;
+BoundExpressionNode *BoundExpressionStatementNode::expression() const {
+  return m_expression;
 }
 
-}
+} // namespace Binding

@@ -3,19 +3,19 @@
 
 namespace Binding {
 
-BoundReturnStatementNode::BoundReturnStatementNode(BoundExpressionNode* expression) :
-    m_expression(expression) {}
+BoundReturnStatementNode::BoundReturnStatementNode(
+    BoundExpressionNode *expression)
+    : m_expression(expression) {}
 
-
-BoundExpressionNode* BoundReturnStatementNode::expression() const {
-    return m_expression;
+BoundExpressionNode *BoundReturnStatementNode::expression() const {
+  return m_expression;
 }
 
 /*
  * An enum representing the kind of bound node this is
  */
 BoundNodeKind BoundReturnStatementNode::kind() const {
-    return BoundNodeKind::ReturnStatement;
+  return BoundNodeKind::ReturnStatement;
 }
 
-}
+} // namespace Binding

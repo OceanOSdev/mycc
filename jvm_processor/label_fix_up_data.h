@@ -3,23 +3,24 @@
 #define LABEL_FIX_UP_DATA_H
 
 namespace Binding {
-    class BoundLabel;
+class BoundLabel;
 }
 
 namespace JVMProcessor {
 
 class LabelFixUpData {
 private:
-    int m_instruction_index;
-    Binding::BoundLabel* m_label;
+  int m_instruction_index;
+  Binding::BoundLabel *m_label;
+
 public:
-    LabelFixUpData(int instr_idx, Binding::BoundLabel* label);
+  LabelFixUpData(int instr_idx, Binding::BoundLabel *label);
 
-    int instruction_index() const;
+  int instruction_index() const;
 
-    Binding::BoundLabel* label() const;
+  Binding::BoundLabel *label() const;
 };
 
-}
+} // namespace JVMProcessor
 
 #endif

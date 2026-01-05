@@ -8,30 +8,31 @@ namespace Syntax {
 
 class IncrementExpressionNode : public ExpressionNode {
 private:
-    ExpressionNode* id_expr;
-    bool is_post_increment;
+  ExpressionNode *id_expr;
+  bool is_post_increment;
+
 public:
-    IncrementExpressionNode(SyntaxToken* token, ExpressionNode* id, bool post);
+  IncrementExpressionNode(SyntaxToken *token, ExpressionNode *id, bool post);
 
-    ~IncrementExpressionNode();
+  ~IncrementExpressionNode();
 
-    /*
-     * The expression containing the identifier.
-     */
-    ExpressionNode* identifier_expression() const;
+  /*
+   * The expression containing the identifier.
+   */
+  ExpressionNode *identifier_expression() const;
 
-    /*
-     * Indicates whether we are post or pre incrementing.
-     * 
-     * Post-increment: true.
-     * 
-     * Pre-increment: false.
-     */
-    bool is_post() const;
+  /*
+   * Indicates whether we are post or pre incrementing.
+   *
+   * Post-increment: true.
+   *
+   * Pre-increment: false.
+   */
+  bool is_post() const;
 
-    SyntaxKind kind() const override;
+  SyntaxKind kind() const override;
 };
 
-}
+} // namespace Syntax
 
 #endif

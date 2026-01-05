@@ -8,24 +8,26 @@ namespace Binding {
 
 class BoundCastExpressionNode : public BoundExpressionNode {
 private:
-    const Symbols::TypeSymbol* m_cast_type;
-    BoundExpressionNode* m_expression;
+  const Symbols::TypeSymbol *m_cast_type;
+  BoundExpressionNode *m_expression;
+
 public:
-    BoundCastExpressionNode(const Symbols::TypeSymbol* cast_type, BoundExpressionNode* expression);
+  BoundCastExpressionNode(const Symbols::TypeSymbol *cast_type,
+                          BoundExpressionNode *expression);
 
-    BoundExpressionNode* expression() const;
+  BoundExpressionNode *expression() const;
 
-    /*
-     * An enum representing the kind of bound node this is
-     */
-    BoundNodeKind kind() const override;
+  /*
+   * An enum representing the kind of bound node this is
+   */
+  BoundNodeKind kind() const override;
 
-    /*
-     * The type that this expression evaluates to.
-     */
-    const Symbols::TypeSymbol* type() const override;
+  /*
+   * The type that this expression evaluates to.
+   */
+  const Symbols::TypeSymbol *type() const override;
 };
 
-}
+} // namespace Binding
 
 #endif

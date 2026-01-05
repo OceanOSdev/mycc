@@ -3,22 +3,23 @@
 
 namespace Syntax {
 
-GlobalStructDeclarationNode::GlobalStructDeclarationNode(SyntaxToken* token, StructDeclarationNode* struct_dec) :
-    GlobalDeclarationNode(token), m_struct_declaration(struct_dec) {}
+GlobalStructDeclarationNode::GlobalStructDeclarationNode(
+    SyntaxToken *token, StructDeclarationNode *struct_dec)
+    : GlobalDeclarationNode(token), m_struct_declaration(struct_dec) {}
 
 GlobalStructDeclarationNode::~GlobalStructDeclarationNode() {
-    delete m_struct_declaration;
+  delete m_struct_declaration;
 }
 
 /*
  * The struct declaration.
  */
-StructDeclarationNode* GlobalStructDeclarationNode::struct_declaration() const { 
-    return m_struct_declaration; 
+StructDeclarationNode *GlobalStructDeclarationNode::struct_declaration() const {
+  return m_struct_declaration;
 }
 
 SyntaxKind GlobalStructDeclarationNode::kind() const {
-    return SyntaxKind::GlobalStructDeclaration;
+  return SyntaxKind::GlobalStructDeclaration;
 }
 
-}
+} // namespace Syntax

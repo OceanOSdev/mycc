@@ -10,24 +10,27 @@ class BoundExpressionNode;
 
 class BoundConditionalGotoStatementNode : public BoundStatementNode {
 private:
-    BoundLabel* m_label;
-    BoundExpressionNode* m_condition;
-    bool m_jump_if_true;
+  BoundLabel *m_label;
+  BoundExpressionNode *m_condition;
+  bool m_jump_if_true;
+
 public:
-    BoundConditionalGotoStatementNode(BoundLabel* label, BoundExpressionNode* condition, bool jump_if_true = true);
+  BoundConditionalGotoStatementNode(BoundLabel *label,
+                                    BoundExpressionNode *condition,
+                                    bool jump_if_true = true);
 
-    BoundLabel* label() const;
+  BoundLabel *label() const;
 
-    BoundExpressionNode* condition() const;
+  BoundExpressionNode *condition() const;
 
-    bool jump_if_true() const;
+  bool jump_if_true() const;
 
-    /*
-     * An enum representing the kind of bound node this is
-     */
-    BoundNodeKind kind() const override;
+  /*
+   * An enum representing the kind of bound node this is
+   */
+  BoundNodeKind kind() const override;
 };
 
-}
+} // namespace Binding
 
 #endif

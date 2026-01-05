@@ -8,9 +8,9 @@ namespace Binding {
 
 class BoundGlobalDeclarationNode : public BoundNode {
 public:
-    BoundGlobalDeclarationNode() {}
+  BoundGlobalDeclarationNode() {}
 };
 
-}
+} // namespace Binding
 
 #endif

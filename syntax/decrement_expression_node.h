@@ -8,30 +8,31 @@ namespace Syntax {
 
 class DecrementExpressionNode : public ExpressionNode {
 private:
-    ExpressionNode* id_expr;
-    bool is_post_decrement;
+  ExpressionNode *id_expr;
+  bool is_post_decrement;
+
 public:
-    DecrementExpressionNode(SyntaxToken* token, ExpressionNode* id, bool post);
+  DecrementExpressionNode(SyntaxToken *token, ExpressionNode *id, bool post);
 
-    ~DecrementExpressionNode();
+  ~DecrementExpressionNode();
 
-    /*
-     * The expression containing the identifier.
-     */
-    ExpressionNode* identifier_expression() const;
+  /*
+   * The expression containing the identifier.
+   */
+  ExpressionNode *identifier_expression() const;
 
-    /*
-     * Indicates whether we are post or pre decrementing.
-     * 
-     * Post-decrement: true.
-     * 
-     * Pre-decrement: false.
-     */
-    bool is_post() const;
+  /*
+   * Indicates whether we are post or pre decrementing.
+   *
+   * Post-decrement: true.
+   *
+   * Pre-decrement: false.
+   */
+  bool is_post() const;
 
-    SyntaxKind kind() const override;
+  SyntaxKind kind() const override;
 };
 
-}
+} // namespace Syntax
 
 #endif

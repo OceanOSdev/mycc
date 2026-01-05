@@ -5,12 +5,13 @@
 #include <string>
 
 namespace Logging {
-    class Logger;
-    struct PartThreeInfoList;
-}
+class Logger;
+struct PartThreeInfoList;
+} // namespace Logging
 
 namespace QuickSemanticAnalyzer {
-    void log_analysis(Logging::Logger* logger, Logging::PartThreeInfoList* info_list);
+void log_analysis(Logging::Logger *logger,
+                  Logging::PartThreeInfoList *info_list);
 }
 
 #endif

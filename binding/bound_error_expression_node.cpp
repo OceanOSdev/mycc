@@ -11,14 +11,14 @@ BoundErrorExpressionNode::~BoundErrorExpressionNode() {}
  * An enum representing the kind of bound node this is
  */
 BoundNodeKind BoundErrorExpressionNode::kind() const {
-    return BoundNodeKind::ErrorExpression;
+  return BoundNodeKind::ErrorExpression;
 }
 
 /*
  * The type that this expression evaluates to.
  */
-const Symbols::TypeSymbol* BoundErrorExpressionNode::type() const {
-    return &Symbols::TypeSymbol::Error;
+const Symbols::TypeSymbol *BoundErrorExpressionNode::type() const {
+  return &Symbols::TypeSymbol::Error;
 }
 
-}
+} // namespace Binding

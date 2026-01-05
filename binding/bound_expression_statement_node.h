@@ -9,19 +9,20 @@ class BoundExpressionNode;
 
 class BoundExpressionStatementNode : public BoundStatementNode {
 private:
-    BoundExpressionNode* m_expression;
+  BoundExpressionNode *m_expression;
+
 public:
-    BoundExpressionStatementNode(BoundExpressionNode* expression);
-    ~BoundExpressionStatementNode();
+  BoundExpressionStatementNode(BoundExpressionNode *expression);
+  ~BoundExpressionStatementNode();
 
-    /*
-     * An enum representing the kind of bound node this is
-     */
-    BoundNodeKind kind() const override;
+  /*
+   * An enum representing the kind of bound node this is
+   */
+  BoundNodeKind kind() const override;
 
-    BoundExpressionNode* expression() const;
+  BoundExpressionNode *expression() const;
 };
 
-}
+} // namespace Binding
 
 #endif

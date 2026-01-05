@@ -3,56 +3,52 @@
 
 namespace Binding {
 
-BoundIncrementExpressionNode::BoundIncrementExpressionNode(IDNotation notation, BoundExpressionNode* expression) :
-    m_notation(notation), m_expression(expression) {}
+BoundIncrementExpressionNode::BoundIncrementExpressionNode(
+    IDNotation notation, BoundExpressionNode *expression)
+    : m_notation(notation), m_expression(expression) {}
 
-IDNotation BoundIncrementExpressionNode::notation() const {
-    return m_notation;
-}
+IDNotation BoundIncrementExpressionNode::notation() const { return m_notation; }
 
-BoundExpressionNode* BoundIncrementExpressionNode::expression() const {
-    return m_expression;
+BoundExpressionNode *BoundIncrementExpressionNode::expression() const {
+  return m_expression;
 }
 
 /*
  * An enum representing the kind of bound node this is
  */
 BoundNodeKind BoundIncrementExpressionNode::kind() const {
-    return BoundNodeKind::IncrementExpression;
+  return BoundNodeKind::IncrementExpression;
 }
 
 /*
  * The type that this expression evaluates to.
  */
-const Symbols::TypeSymbol* BoundIncrementExpressionNode::type() const {
-    return m_expression->type();
+const Symbols::TypeSymbol *BoundIncrementExpressionNode::type() const {
+  return m_expression->type();
 }
 
+BoundDecrementExpressionNode::BoundDecrementExpressionNode(
+    IDNotation notation, BoundExpressionNode *expression)
+    : m_notation(notation), m_expression(expression) {}
 
+IDNotation BoundDecrementExpressionNode::notation() const { return m_notation; }
 
-BoundDecrementExpressionNode::BoundDecrementExpressionNode(IDNotation notation, BoundExpressionNode* expression) :
-    m_notation(notation), m_expression(expression) {}
-
-IDNotation BoundDecrementExpressionNode::notation() const {
-    return m_notation;
-}
-
-BoundExpressionNode* BoundDecrementExpressionNode::expression() const {
-    return m_expression;
+BoundExpressionNode *BoundDecrementExpressionNode::expression() const {
+  return m_expression;
 }
 
 /*
  * An enum representing the kind of bound node this is
  */
 BoundNodeKind BoundDecrementExpressionNode::kind() const {
-    return BoundNodeKind::DecrementExpression;
+  return BoundNodeKind::DecrementExpression;
 }
 
 /*
  * The type that this expression evaluates to.
  */
-const Symbols::TypeSymbol* BoundDecrementExpressionNode::type() const {
-    return m_expression->type();
+const Symbols::TypeSymbol *BoundDecrementExpressionNode::type() const {
+  return m_expression->type();
 }
 
-}
+} // namespace Binding

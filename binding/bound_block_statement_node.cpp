@@ -3,25 +3,27 @@
 
 namespace Binding {
 
-BoundBlockStatementNode* Factory::block(std::vector<BoundStatementNode*> statements) {
-    return new BoundBlockStatementNode(statements);
+BoundBlockStatementNode *
+Factory::block(std::vector<BoundStatementNode *> statements) {
+  return new BoundBlockStatementNode(statements);
 }
 
-BoundBlockStatementNode::BoundBlockStatementNode(std::vector<BoundStatementNode*> statements) :
-    m_statements(statements) {}
+BoundBlockStatementNode::BoundBlockStatementNode(
+    std::vector<BoundStatementNode *> statements)
+    : m_statements(statements) {}
 
 /*
  * The list of statements encapsulated by the block.
  */
-std::vector<BoundStatementNode*> BoundBlockStatementNode::statements() const {
-    return m_statements;
+std::vector<BoundStatementNode *> BoundBlockStatementNode::statements() const {
+  return m_statements;
 }
 
 /*
  * An enum representing the kind of bound node this is
  */
 BoundNodeKind BoundBlockStatementNode::kind() const {
-    return BoundNodeKind::BlockStatement;
+  return BoundNodeKind::BlockStatement;
 }
 
-}
+} // namespace Binding

@@ -9,56 +9,56 @@ namespace Binding {
 /*
  * ID => Increment/Decrement
  */
-enum IDNotation : int {
-    PREFIX,
-    POSTFIX
-};
+enum IDNotation : int { PREFIX, POSTFIX };
 
 class BoundIncrementExpressionNode : public BoundExpressionNode {
 private:
-    IDNotation m_notation;
-    BoundExpressionNode* m_expression;
+  IDNotation m_notation;
+  BoundExpressionNode *m_expression;
+
 public:
-    BoundIncrementExpressionNode(IDNotation notation, BoundExpressionNode* expression);
+  BoundIncrementExpressionNode(IDNotation notation,
+                               BoundExpressionNode *expression);
 
-    IDNotation notation() const;
+  IDNotation notation() const;
 
-    BoundExpressionNode* expression() const;
+  BoundExpressionNode *expression() const;
 
-    /*
-     * An enum representing the kind of bound node this is
-     */
-    BoundNodeKind kind() const override;
+  /*
+   * An enum representing the kind of bound node this is
+   */
+  BoundNodeKind kind() const override;
 
-    /*
-     * The type that this expression evaluates to.
-     */
-    const Symbols::TypeSymbol* type() const override;
+  /*
+   * The type that this expression evaluates to.
+   */
+  const Symbols::TypeSymbol *type() const override;
 };
-
 
 class BoundDecrementExpressionNode : public BoundExpressionNode {
 private:
-    IDNotation m_notation;
-    BoundExpressionNode* m_expression;
+  IDNotation m_notation;
+  BoundExpressionNode *m_expression;
+
 public:
-    BoundDecrementExpressionNode(IDNotation notation, BoundExpressionNode* expression);
+  BoundDecrementExpressionNode(IDNotation notation,
+                               BoundExpressionNode *expression);
 
-    IDNotation notation() const;
+  IDNotation notation() const;
 
-    BoundExpressionNode* expression() const;
+  BoundExpressionNode *expression() const;
 
-    /*
-     * An enum representing the kind of bound node this is
-     */
-    BoundNodeKind kind() const override;
+  /*
+   * An enum representing the kind of bound node this is
+   */
+  BoundNodeKind kind() const override;
 
-    /*
-     * The type that this expression evaluates to.
-     */
-    const Symbols::TypeSymbol* type() const override;
+  /*
+   * The type that this expression evaluates to.
+   */
+  const Symbols::TypeSymbol *type() const override;
 };
 
-}
+} // namespace Binding
 
 #endif

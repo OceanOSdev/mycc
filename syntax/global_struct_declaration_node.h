@@ -9,20 +9,22 @@ namespace Syntax {
 class SyntaxToken;
 class GlobalStructDeclarationNode : public GlobalDeclarationNode {
 private:
-    StructDeclarationNode* m_struct_declaration;
+  StructDeclarationNode *m_struct_declaration;
+
 public:
-    GlobalStructDeclarationNode(SyntaxToken* token, StructDeclarationNode* struct_dec);
-    
-    ~GlobalStructDeclarationNode();
+  GlobalStructDeclarationNode(SyntaxToken *token,
+                              StructDeclarationNode *struct_dec);
 
-    /*
-     * The struct declaration.
-     */
-    StructDeclarationNode* struct_declaration() const;
+  ~GlobalStructDeclarationNode();
 
-    SyntaxKind kind() const override;
+  /*
+   * The struct declaration.
+   */
+  StructDeclarationNode *struct_declaration() const;
+
+  SyntaxKind kind() const override;
 };
 
-}
+} // namespace Syntax
 
 #endif

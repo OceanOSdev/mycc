@@ -9,21 +9,22 @@ class BoundStatementNode;
 
 class BoundGlobalStatementNode : public BoundGlobalDeclarationNode {
 private:
-    BoundStatementNode* m_statement;
+  BoundStatementNode *m_statement;
+
 public:
-    BoundGlobalStatementNode(BoundStatementNode* statement);
+  BoundGlobalStatementNode(BoundStatementNode *statement);
 
-    /*
-     * The statement that this bound class wraps around.
-     */
-    BoundStatementNode* statement() const;
+  /*
+   * The statement that this bound class wraps around.
+   */
+  BoundStatementNode *statement() const;
 
-    /*
-     * An enum representing the kind of bound node this is
-     */
-    BoundNodeKind kind() const override;
+  /*
+   * An enum representing the kind of bound node this is
+   */
+  BoundNodeKind kind() const override;
 };
 
-}
+} // namespace Binding
 
 #endif

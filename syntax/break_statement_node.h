@@ -8,11 +8,11 @@ namespace Syntax {
 class SyntaxToken;
 class BreakStatementNode : public StatementNode {
 public:
-    BreakStatementNode(SyntaxToken* token);
-    ~BreakStatementNode();
-    SyntaxKind kind() const override;
+  BreakStatementNode(SyntaxToken *token);
+  ~BreakStatementNode();
+  SyntaxKind kind() const override;
 };
 
-}
+} // namespace Syntax
 
 #endif

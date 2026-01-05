@@ -6,7 +6,7 @@
 #include <string>
 
 namespace SyntaxTreePrinter {
-    void print_nodes(Syntax::SyntaxNode* n);
+void print_nodes(Syntax::SyntaxNode *n);
 }
 
 #endif

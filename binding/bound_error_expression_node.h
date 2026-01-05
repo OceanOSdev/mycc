@@ -8,20 +8,20 @@ namespace Binding {
 
 class BoundErrorExpressionNode : public BoundExpressionNode {
 public:
-    BoundErrorExpressionNode();
-    ~BoundErrorExpressionNode();
+  BoundErrorExpressionNode();
+  ~BoundErrorExpressionNode();
 
-    /*
-     * An enum representing the kind of bound node this is
-     */
-    BoundNodeKind kind() const override;
+  /*
+   * An enum representing the kind of bound node this is
+   */
+  BoundNodeKind kind() const override;
 
-    /*
-     * The type that this expression evaluates to.
-     */
-    const Symbols::TypeSymbol* type() const override;
+  /*
+   * The type that this expression evaluates to.
+   */
+  const Symbols::TypeSymbol *type() const override;
 };
 
-}
+} // namespace Binding
 
 #endif

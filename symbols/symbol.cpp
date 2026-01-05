@@ -9,4 +9,4 @@ Symbol::Symbol(std::string name) : m_name(name) {}
  */
 std::string Symbol::name() const { return m_name; }
 
-}
+} // namespace Symbols

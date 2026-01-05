@@ -6,37 +6,37 @@
 #include <string>
 
 namespace JVMProcessor {
-    class JAsmBuilder;
+class JAsmBuilder;
 }
 
 namespace Binding {
 
 class BoundLabel {
 private:
-    std::string m_name;
-    friend class JVMProcessor::JAsmBuilder;
-public:
-    BoundLabel(std::string name);
+  std::string m_name;
+  friend class JVMProcessor::JAsmBuilder;
 
-    std::string name() const;
+public:
+  BoundLabel(std::string name);
+
+  std::string name() const;
 };
 
 class BoundLabelStatementNode : public BoundStatementNode {
 private:
-    BoundLabel* m_label;
+  BoundLabel *m_label;
+
 public:
-    BoundLabelStatementNode(BoundLabel* label);
+  BoundLabelStatementNode(BoundLabel *label);
 
-    BoundLabel* label() const;
+  BoundLabel *label() const;
 
-    /*
-     * An enum representing the kind of bound node this is
-     */
-    BoundNodeKind kind() const override;
-
+  /*
+   * An enum representing the kind of bound node this is
+   */
+  BoundNodeKind kind() const override;
 };
 
-}
-
+} // namespace Binding
 
 #endif
