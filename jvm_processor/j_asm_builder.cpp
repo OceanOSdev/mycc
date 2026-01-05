@@ -386,7 +386,7 @@ void JAsmBuilder::run_label_fixes() {
     auto target_label = fixup->label();
     auto target_instruction_idx = m_label_instr_map[target_label];
     //__attribute__((unused)) auto target_instruction =
-    //m_instructions[target_instruction_idx];
+    // m_instructions[target_instruction_idx];
     auto inst_to_fix = m_instructions[fixup->instruction_index()];
 
     existing_labels.push_back(
