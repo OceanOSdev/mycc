@@ -328,7 +328,9 @@ $(OBJDIR)/code_gen_payload.o: $(BINDING_DIR)/tree_rewriter.cpp
 $(OBJDIR)/bound_tree_printer.o: $(B_TREE_PRINTER_DEP)
 $(OBJDIR)/code_generator.o: $(CODEGEN_DIR)/code_gen_payload.cpp
 
-
+.PHONY: format
+format:
+	@./format.sh
 
 .PHONY: all nodoc debug benchmark verbose clean destroy docs old-doc
 
