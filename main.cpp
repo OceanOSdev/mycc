@@ -5,7 +5,6 @@
 #include "codegen/code_generator.h"
 #include "driver.h"
 #include "lexeme_data.h"
-#include "logging/diagnostics.h"
 #include "logging/logger.h"
 #include "part_two_syntax_check.h"
 #include "qsem.h"
