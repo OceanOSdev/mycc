@@ -1,0 +1,2073 @@
+[
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/mycc.tab.o",
+      "mycc.tab.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/mycc.tab.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/mycc.tab.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/lexer.o",
+      "lexer.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/lexer.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/lexer.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/diagnostics.o",
+      "logging/diagnostics.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/logging/diagnostics.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/diagnostics.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/logger.o",
+      "logging/logger.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/logging/logger.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/logger.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/part_three_info.o",
+      "logging/part_three_info.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/logging/part_three_info.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/part_three_info.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/symbol.o",
+      "symbols/symbol.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/symbols/symbol.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/symbol.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/type_symbol.o",
+      "symbols/type_symbol.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/symbols/type_symbol.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/type_symbol.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/variable_symbol.o",
+      "symbols/variable_symbol.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/symbols/variable_symbol.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/variable_symbol.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/parameter_symbol.o",
+      "symbols/parameter_symbol.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/symbols/parameter_symbol.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/parameter_symbol.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/struct_symbol.o",
+      "symbols/struct_symbol.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/symbols/struct_symbol.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/struct_symbol.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/function_symbol.o",
+      "symbols/function_symbol.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/symbols/function_symbol.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/function_symbol.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/syntax_node.o",
+      "syntax/syntax_node.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/syntax/syntax_node.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/syntax_node.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/syntax_token.o",
+      "syntax/syntax_token.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/syntax/syntax_token.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/syntax_token.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/expression_node.o",
+      "syntax/expression_node.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/syntax/expression_node.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/expression_node.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/variable_group_declaration_node.o",
+      "syntax/variable_group_declaration_node.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/syntax/variable_group_declaration_node.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/variable_group_declaration_node.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/while_statement_node.o",
+      "syntax/while_statement_node.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/syntax/while_statement_node.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/while_statement_node.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/unary_expression_node.o",
+      "syntax/unary_expression_node.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/syntax/unary_expression_node.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/unary_expression_node.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/translation_unit_node.o",
+      "syntax/translation_unit_node.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/syntax/translation_unit_node.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/translation_unit_node.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/ternary_expression_node.o",
+      "syntax/ternary_expression_node.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/syntax/ternary_expression_node.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/ternary_expression_node.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/struct_declaration_node.o",
+      "syntax/struct_declaration_node.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/syntax/struct_declaration_node.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/struct_declaration_node.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/return_statement_node.o",
+      "syntax/return_statement_node.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/syntax/return_statement_node.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/return_statement_node.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/partial_variable_declaration_node.o",
+      "syntax/partial_variable_declaration_node.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/syntax/partial_variable_declaration_node.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/partial_variable_declaration_node.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/name_expression_node.o",
+      "syntax/name_expression_node.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/syntax/name_expression_node.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/name_expression_node.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/member_expression_node.o",
+      "syntax/member_expression_node.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/syntax/member_expression_node.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/member_expression_node.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/literal_val_expression_node.o",
+      "syntax/literal_val_expression_node.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/syntax/literal_val_expression_node.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/literal_val_expression_node.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/index_expression_node.o",
+      "syntax/index_expression_node.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/syntax/index_expression_node.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/index_expression_node.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/increment_expression_node.o",
+      "syntax/increment_expression_node.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/syntax/increment_expression_node.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/increment_expression_node.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/if_statement_node.o",
+      "syntax/if_statement_node.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/syntax/if_statement_node.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/if_statement_node.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/global_variable_group_declaration_node.o",
+      "syntax/global_variable_group_declaration_node.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/syntax/global_variable_group_declaration_node.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/global_variable_group_declaration_node.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/global_struct_declaration_node.o",
+      "syntax/global_struct_declaration_node.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/syntax/global_struct_declaration_node.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/global_struct_declaration_node.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/function_prototype_node.o",
+      "syntax/function_prototype_node.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/syntax/function_prototype_node.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/function_prototype_node.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/function_definition_node.o",
+      "syntax/function_definition_node.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/syntax/function_definition_node.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/function_definition_node.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/function_declaration_node.o",
+      "syntax/function_declaration_node.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/syntax/function_declaration_node.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/function_declaration_node.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/formal_parameter_node.o",
+      "syntax/formal_parameter_node.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/syntax/formal_parameter_node.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/formal_parameter_node.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/for_statement_node.o",
+      "syntax/for_statement_node.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/syntax/for_statement_node.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/for_statement_node.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/expression_statement_node.o",
+      "syntax/expression_statement_node.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/syntax/expression_statement_node.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/expression_statement_node.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/do_while_statement_node.o",
+      "syntax/do_while_statement_node.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/syntax/do_while_statement_node.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/do_while_statement_node.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/decrement_expression_node.o",
+      "syntax/decrement_expression_node.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/syntax/decrement_expression_node.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/decrement_expression_node.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/continue_statement_node.o",
+      "syntax/continue_statement_node.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/syntax/continue_statement_node.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/continue_statement_node.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/cast_expression_node.o",
+      "syntax/cast_expression_node.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/syntax/cast_expression_node.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/cast_expression_node.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/call_expression_node.o",
+      "syntax/call_expression_node.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/syntax/call_expression_node.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/call_expression_node.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/break_statement_node.o",
+      "syntax/break_statement_node.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/syntax/break_statement_node.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/break_statement_node.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/block_statement_node.o",
+      "syntax/block_statement_node.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/syntax/block_statement_node.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/block_statement_node.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/binary_expression_node.o",
+      "syntax/binary_expression_node.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/syntax/binary_expression_node.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/binary_expression_node.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/assignment_expression_node.o",
+      "syntax/assignment_expression_node.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/syntax/assignment_expression_node.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/assignment_expression_node.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/program_node.o",
+      "syntax/program_node.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/syntax/program_node.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/program_node.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/bound_error_expression_node.o",
+      "binding/bound_error_expression_node.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/binding/bound_error_expression_node.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/bound_error_expression_node.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/bound_binary_expression_node.o",
+      "binding/bound_binary_expression_node.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/binding/bound_binary_expression_node.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/bound_binary_expression_node.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/bound_cast_expression_node.o",
+      "binding/bound_cast_expression_node.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/binding/bound_cast_expression_node.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/bound_cast_expression_node.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/bound_expression_statement_node.o",
+      "binding/bound_expression_statement_node.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/binding/bound_expression_statement_node.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/bound_expression_statement_node.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/bound_scope.o",
+      "binding/bound_scope.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/binding/bound_scope.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/bound_scope.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/bound_block_statement_node.o",
+      "binding/bound_block_statement_node.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/binding/bound_block_statement_node.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/bound_block_statement_node.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/bound_function_definition_node.o",
+      "binding/bound_function_definition_node.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/binding/bound_function_definition_node.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/bound_function_definition_node.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/bound_global_statement_node.o",
+      "binding/bound_global_statement_node.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/binding/bound_global_statement_node.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/bound_global_statement_node.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/bound_return_statement_node.o",
+      "binding/bound_return_statement_node.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/binding/bound_return_statement_node.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/bound_return_statement_node.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/bound_variable_group_declaration_node.o",
+      "binding/bound_variable_group_declaration_node.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/binding/bound_variable_group_declaration_node.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/bound_variable_group_declaration_node.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/bound_literal_val_expression_node.o",
+      "binding/bound_literal_val_expression_node.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/binding/bound_literal_val_expression_node.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/bound_literal_val_expression_node.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/bound_struct_declaration_node.o",
+      "binding/bound_struct_declaration_node.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/binding/bound_struct_declaration_node.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/bound_struct_declaration_node.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/bound_variable_reference_expression_node.o",
+      "binding/bound_variable_reference_expression_node.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/binding/bound_variable_reference_expression_node.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/bound_variable_reference_expression_node.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/bound_member_access_expression_node.o",
+      "binding/bound_member_access_expression_node.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/binding/bound_member_access_expression_node.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/bound_member_access_expression_node.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/bound_index_expression_node.o",
+      "binding/bound_index_expression_node.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/binding/bound_index_expression_node.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/bound_index_expression_node.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/bound_assignment_expression_node.o",
+      "binding/bound_assignment_expression_node.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/binding/bound_assignment_expression_node.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/bound_assignment_expression_node.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/bound_unary_expression_node.o",
+      "binding/bound_unary_expression_node.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/binding/bound_unary_expression_node.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/bound_unary_expression_node.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/bound_call_expression_node.o",
+      "binding/bound_call_expression_node.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/binding/bound_call_expression_node.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/bound_call_expression_node.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/bound_ternary_expression_node.o",
+      "binding/bound_ternary_expression_node.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/binding/bound_ternary_expression_node.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/bound_ternary_expression_node.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/bound_increment_expression_node.o",
+      "binding/bound_increment_expression_node.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/binding/bound_increment_expression_node.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/bound_increment_expression_node.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/bound_empty_statement_node.o",
+      "binding/bound_empty_statement_node.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/binding/bound_empty_statement_node.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/bound_empty_statement_node.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/bound_label_statement_node.o",
+      "binding/bound_label_statement_node.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/binding/bound_label_statement_node.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/bound_label_statement_node.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/bound_if_statement_node.o",
+      "binding/bound_if_statement_node.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/binding/bound_if_statement_node.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/bound_if_statement_node.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/bound_goto_statement_node.o",
+      "binding/bound_goto_statement_node.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/binding/bound_goto_statement_node.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/bound_goto_statement_node.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/bound_for_statement_node.o",
+      "binding/bound_for_statement_node.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/binding/bound_for_statement_node.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/bound_for_statement_node.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/bound_do_while_statement_node.o",
+      "binding/bound_do_while_statement_node.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/binding/bound_do_while_statement_node.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/bound_do_while_statement_node.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/bound_while_statement_node.o",
+      "binding/bound_while_statement_node.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/binding/bound_while_statement_node.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/bound_while_statement_node.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/bound_conditional_goto_statement_node.o",
+      "binding/bound_conditional_goto_statement_node.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/binding/bound_conditional_goto_statement_node.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/bound_conditional_goto_statement_node.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/tree_rewriter.o",
+      "binding/tree_rewriter.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/binding/tree_rewriter.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/tree_rewriter.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/binder.o",
+      "binding/binder.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/binding/binder.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/binder.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/binder_stmt.o",
+      "binding/binder_stmt.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/binding/binder_stmt.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/binder_stmt.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/binder_expr.o",
+      "binding/binder_expr.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/binding/binder_expr.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/binder_expr.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/code_gen_payload.o",
+      "codegen/code_gen_payload.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/codegen/code_gen_payload.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/code_gen_payload.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/code_gen_utils.o",
+      "codegen/code_gen_utils.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/codegen/code_gen_utils.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/code_gen_utils.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/code_gen_emit_stmt.o",
+      "codegen/code_gen_emit_stmt.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/codegen/code_gen_emit_stmt.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/code_gen_emit_stmt.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/code_gen_emit_expr.o",
+      "codegen/code_gen_emit_expr.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/codegen/code_gen_emit_expr.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/code_gen_emit_expr.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/method_reference.o",
+      "codegen/method_reference.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/codegen/method_reference.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/method_reference.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/code_gen_synth.o",
+      "codegen/code_gen_synth.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/codegen/code_gen_synth.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/code_gen_synth.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/code_generator.o",
+      "codegen/code_generator.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/codegen/code_generator.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/code_generator.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/basic_block.o",
+      "flow_analysis/basic_block.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/flow_analysis/basic_block.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/basic_block.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/basic_block_branch.o",
+      "flow_analysis/basic_block_branch.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/flow_analysis/basic_block_branch.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/basic_block_branch.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/basic_block_factory.o",
+      "flow_analysis/basic_block_factory.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/flow_analysis/basic_block_factory.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/basic_block_factory.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/control_flow_graph_factory.o",
+      "flow_analysis/control_flow_graph_factory.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/flow_analysis/control_flow_graph_factory.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/control_flow_graph_factory.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/control_flow_graph.o",
+      "flow_analysis/control_flow_graph.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/flow_analysis/control_flow_graph.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/control_flow_graph.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/jvm_opcode_info.o",
+      "jvm_processor/jvm_opcode_info.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/jvm_processor/jvm_opcode_info.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/jvm_opcode_info.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/instruction_argument_empty.o",
+      "jvm_processor/instruction_argument_empty.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/jvm_processor/instruction_argument_empty.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/instruction_argument_empty.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/instruction_argument_field.o",
+      "jvm_processor/instruction_argument_field.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/jvm_processor/instruction_argument_field.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/instruction_argument_field.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/instruction_argument_consts.o",
+      "jvm_processor/instruction_argument_consts.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/jvm_processor/instruction_argument_consts.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/instruction_argument_consts.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/instruction_argument_label.o",
+      "jvm_processor/instruction_argument_label.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/jvm_processor/instruction_argument_label.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/instruction_argument_label.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/instruction_argument_method.o",
+      "jvm_processor/instruction_argument_method.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/jvm_processor/instruction_argument_method.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/instruction_argument_method.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/instruction_argument_type_id.o",
+      "jvm_processor/instruction_argument_type_id.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/jvm_processor/instruction_argument_type_id.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/instruction_argument_type_id.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/instruction.o",
+      "jvm_processor/instruction.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/jvm_processor/instruction.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/instruction.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/builder_state.o",
+      "jvm_processor/builder_state.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/jvm_processor/builder_state.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/builder_state.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/j_asm_builder_directives.o",
+      "jvm_processor/j_asm_builder_directives.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/jvm_processor/j_asm_builder_directives.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/j_asm_builder_directives.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/label_fix_up_data.o",
+      "jvm_processor/label_fix_up_data.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/jvm_processor/label_fix_up_data.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/label_fix_up_data.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/j_asm_builder.o",
+      "jvm_processor/j_asm_builder.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/jvm_processor/j_asm_builder.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/j_asm_builder.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/driver.o",
+      "driver.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/driver.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/driver.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/arg_parser.o",
+      "arg_parser.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/arg_parser.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/arg_parser.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/qsem.o",
+      "qsem.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/qsem.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/qsem.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/part_two_syntax_check.o",
+      "part_two_syntax_check.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/part_two_syntax_check.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/part_two_syntax_check.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/bound_tree_printer.o",
+      "bound_tree_printer.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/bound_tree_printer.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/bound_tree_printer.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/syntax_tree_printer.o",
+      "syntax_tree_printer.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/syntax_tree_printer.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/syntax_tree_printer.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wstrict-aliasing",
+      "-pedantic",
+      "-Wunreachable-code",
+      "-c",
+      "-o",
+      "bin/main.o",
+      "main.cpp"
+    ],
+    "directory": "/home/tmaloney/repos/mycc",
+    "file": "/home/tmaloney/repos/mycc/main.cpp",
+    "output": "/home/tmaloney/repos/mycc/bin/main.o"
+  }
+]
