@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Define the list of files to be formatted using the find command
-FILES=$(find . -type f -iname "*.cpp" -o -iname "*.hpp")
+FILES=$(find . -type f -iname "*.cpp" -o -iname "*.hpp" -o -iname "*.h")
 
 # Get the total number of files being analyzed
 TOTAL_FILES=$(echo "$FILES" | wc -l | tr -d ' ')
