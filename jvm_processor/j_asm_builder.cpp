@@ -183,7 +183,8 @@ JVMOpCode JAsmBuilder::op_code_for_emit_int_value(int value) {
 
 void JAsmBuilder::emit_local_load(Symbols::VariableSymbol* local) {
     int local_index = get_local_variable_index(local);
-    assert(((local_index >= 0), "Local variable is not declared in current scope, cannot emit load."));
+    // WARN: clang warns that the left operand has no effect
+    //assert(((local_index >= 0), "Local variable is not declared in current scope, cannot emit load."));
 
     using namespace Symbols;
     if (TypeSymbol::is_bytecode_reference_type(local->var_type()))
@@ -196,7 +197,8 @@ void JAsmBuilder::emit_local_load(Symbols::VariableSymbol* local) {
 
 void JAsmBuilder::emit_local_store(Symbols::VariableSymbol* local) {
     int local_index = get_local_variable_index(local);
-    assert(((local_index >= 0), "Local variable is not declared in current scope, cannot emit store."));
+    // WARN: clang warns that the left operand has no effect
+    //assert(((local_index >= 0), "Local variable is not declared in current scope, cannot emit store."));
 
     using namespace Symbols;
     if (TypeSymbol::is_bytecode_reference_type(local->var_type()))
