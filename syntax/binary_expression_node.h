@@ -8,32 +8,34 @@
 namespace Syntax {
 class BinaryExpressionNode : public ExpressionNode {
 private:
-    ExpressionNode* left_expr;
-    token_type_t token_type;
-    ExpressionNode* right_expr;
+  ExpressionNode *left_expr;
+  token_type_t token_type;
+  ExpressionNode *right_expr;
+
 public:
-    BinaryExpressionNode(SyntaxToken* token, ExpressionNode* l_expr, token_type_t tt, ExpressionNode* r_expr);
+  BinaryExpressionNode(SyntaxToken *token, ExpressionNode *l_expr,
+                       token_type_t tt, ExpressionNode *r_expr);
 
-    ~BinaryExpressionNode();
+  ~BinaryExpressionNode();
 
-    /*
-     * The expression on the left-hand side of the operator.
-     */
-    ExpressionNode* left_expression() const;
+  /*
+   * The expression on the left-hand side of the operator.
+   */
+  ExpressionNode *left_expression() const;
 
-    /*
-     * The binary operation stored as a token.
-     */
-    token_type_t syntax_token_type() const;
+  /*
+   * The binary operation stored as a token.
+   */
+  token_type_t syntax_token_type() const;
 
-    /*
-     * The expression on the right-hand side of the operator.
-     */
-    ExpressionNode* right_expression() const;
+  /*
+   * The expression on the right-hand side of the operator.
+   */
+  ExpressionNode *right_expression() const;
 
-    SyntaxKind kind() const override;
+  SyntaxKind kind() const override;
 };
 
-}
+} // namespace Syntax
 
 #endif

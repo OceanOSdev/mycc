@@ -5,25 +5,26 @@
 #include "bound_statement_node.h"
 
 namespace Symbols {
-    class StructSymbol;
+class StructSymbol;
 }
 
 namespace Binding {
 
 class BoundStructDeclarationNode : public BoundStatementNode {
 private:
-    Symbols::StructSymbol* m_struct_symbol;
+  Symbols::StructSymbol *m_struct_symbol;
+
 public:
-    BoundStructDeclarationNode(Symbols::StructSymbol* struct_symbol);
+  BoundStructDeclarationNode(Symbols::StructSymbol *struct_symbol);
 
-    Symbols::StructSymbol* struct_symbol() const;
+  Symbols::StructSymbol *struct_symbol() const;
 
-    /*
-     * An enum representing the kind of bound node this is
-     */
-    BoundNodeKind kind() const override;
+  /*
+   * An enum representing the kind of bound node this is
+   */
+  BoundNodeKind kind() const override;
 };
 
-}
+} // namespace Binding
 
 #endif

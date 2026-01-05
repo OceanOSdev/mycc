@@ -8,34 +8,36 @@ namespace Syntax {
 
 class TernaryExpressionNode : public ExpressionNode {
 private:
-    ExpressionNode* mux_expr;
-    ExpressionNode* true_expr;
-    ExpressionNode* false_expr;
+  ExpressionNode *mux_expr;
+  ExpressionNode *true_expr;
+  ExpressionNode *false_expr;
+
 public:
-    TernaryExpressionNode(SyntaxToken* token, ExpressionNode* expr, ExpressionNode* t_expr, ExpressionNode* f_expr);
+  TernaryExpressionNode(SyntaxToken *token, ExpressionNode *expr,
+                        ExpressionNode *t_expr, ExpressionNode *f_expr);
 
-    ~TernaryExpressionNode();
+  ~TernaryExpressionNode();
 
-    /*
-     * The conditional expression.
-     */
-    ExpressionNode* conditional_expression() const;
+  /*
+   * The conditional expression.
+   */
+  ExpressionNode *conditional_expression() const;
 
-    /*
-     * The expression that the ternary expression evals to
-     * if the conditional expression is true.
-     */
-    ExpressionNode* true_expression() const;
+  /*
+   * The expression that the ternary expression evals to
+   * if the conditional expression is true.
+   */
+  ExpressionNode *true_expression() const;
 
-    /*
-     * The expression that the ternary expression evals to
-     * if the conditional expression is false.
-     */
-    ExpressionNode* false_expression() const;
+  /*
+   * The expression that the ternary expression evals to
+   * if the conditional expression is false.
+   */
+  ExpressionNode *false_expression() const;
 
-    SyntaxKind kind() const override;
+  SyntaxKind kind() const override;
 };
 
-}
+} // namespace Syntax
 
 #endif

@@ -9,18 +9,19 @@ class BoundLabel;
 
 class BoundGotoStatementNode : public BoundStatementNode {
 private:
-    BoundLabel* m_label;
+  BoundLabel *m_label;
+
 public:
-    BoundGotoStatementNode(BoundLabel* label);
+  BoundGotoStatementNode(BoundLabel *label);
 
-    BoundLabel* label() const;
+  BoundLabel *label() const;
 
-    /*
-     * An enum representing the kind of bound node this is
-     */
-    BoundNodeKind kind() const override;
+  /*
+   * An enum representing the kind of bound node this is
+   */
+  BoundNodeKind kind() const override;
 };
 
-}
+} // namespace Binding
 
 #endif

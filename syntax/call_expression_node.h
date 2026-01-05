@@ -2,35 +2,37 @@
 #ifndef SYNTAX_CALL_EXPRESSION_NODE_H
 #define SYNTAX_CALL_EXPRESSION_NODE_H
 
+#include "expression_node.h"
 #include <string>
 #include <vector>
-#include "expression_node.h"
 
 namespace Syntax {
 
 class CallExpressionNode : public ExpressionNode {
 private:
-    std::string identifier;
-    std::vector<ExpressionNode*> expression_list;
+  std::string identifier;
+  std::vector<ExpressionNode *> expression_list;
+
 public:
-    CallExpressionNode(SyntaxToken* token, std::string id, std::vector<ExpressionNode*> expr_list);
-    
-    ~CallExpressionNode();
+  CallExpressionNode(SyntaxToken *token, std::string id,
+                     std::vector<ExpressionNode *> expr_list);
 
-    /*
-     * The name of the method (lets be real thats whats getting called) 
-     * being called.
-     */
-    std::string name() const;
+  ~CallExpressionNode();
 
-    /*
-     * The list of expressions being passed as arguments.
-     */
-    std::vector<ExpressionNode*> expressions() const;
+  /*
+   * The name of the method (lets be real thats whats getting called)
+   * being called.
+   */
+  std::string name() const;
 
-    SyntaxKind kind() const override;
+  /*
+   * The list of expressions being passed as arguments.
+   */
+  std::vector<ExpressionNode *> expressions() const;
+
+  SyntaxKind kind() const override;
 };
 
-}
+} // namespace Syntax
 
 #endif

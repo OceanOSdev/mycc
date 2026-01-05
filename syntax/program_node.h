@@ -9,19 +9,20 @@ namespace Syntax {
 class SyntaxToken;
 class ProgramNode : public SyntaxNode {
 private:
-    std::vector<TranslationUnitNode*> m_units;
+  std::vector<TranslationUnitNode *> m_units;
+
 public:
-    ProgramNode(SyntaxToken* token, std::vector<TranslationUnitNode*> units);
-    ~ProgramNode();
+  ProgramNode(SyntaxToken *token, std::vector<TranslationUnitNode *> units);
+  ~ProgramNode();
 
-    /*
-     * Gets the translation units in the program.
-     */
-    std::vector<TranslationUnitNode*> units() const;
+  /*
+   * Gets the translation units in the program.
+   */
+  std::vector<TranslationUnitNode *> units() const;
 
-    SyntaxKind kind() const override;
+  SyntaxKind kind() const override;
 };
 
-}
+} // namespace Syntax
 
 #endif

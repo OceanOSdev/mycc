@@ -8,12 +8,12 @@ namespace Syntax {
 class SyntaxToken;
 class ContinueStatementNode : public StatementNode {
 public:
-    ContinueStatementNode(SyntaxToken* token);
-    ~ContinueStatementNode();
+  ContinueStatementNode(SyntaxToken *token);
+  ~ContinueStatementNode();
 
-    SyntaxKind kind() const override;
+  SyntaxKind kind() const override;
 };
 
-}
+} // namespace Syntax
 
 #endif

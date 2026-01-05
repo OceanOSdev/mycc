@@ -6,33 +6,35 @@
 #include <vector>
 
 namespace Symbols {
-    class FunctionSymbol;
+class FunctionSymbol;
 }
 
 namespace Binding {
 
 class BoundCallExpressionNode : public BoundExpressionNode {
 private:
-    Symbols::FunctionSymbol* m_function;
-    std::vector<BoundExpressionNode*> m_arguments;
+  Symbols::FunctionSymbol *m_function;
+  std::vector<BoundExpressionNode *> m_arguments;
+
 public:
-    BoundCallExpressionNode(Symbols::FunctionSymbol* function, std::vector<BoundExpressionNode*> arguments);
+  BoundCallExpressionNode(Symbols::FunctionSymbol *function,
+                          std::vector<BoundExpressionNode *> arguments);
 
-    Symbols::FunctionSymbol* function() const;
+  Symbols::FunctionSymbol *function() const;
 
-    std::vector<BoundExpressionNode*> arguments() const;
+  std::vector<BoundExpressionNode *> arguments() const;
 
-    /*
-     * The type that this expression evaluates to.
-     */
-    const Symbols::TypeSymbol* type() const override;
+  /*
+   * The type that this expression evaluates to.
+   */
+  const Symbols::TypeSymbol *type() const override;
 
-    /*
-     * An enum representing the kind of bound node this is
-     */
-    BoundNodeKind kind() const override;
+  /*
+   * An enum representing the kind of bound node this is
+   */
+  BoundNodeKind kind() const override;
 };
 
-}
+} // namespace Binding
 
 #endif

@@ -3,30 +3,27 @@
 
 namespace Syntax {
 
-MemberExpressionNode::MemberExpressionNode(SyntaxToken* token, ExpressionNode* e, ExpressionNode* m) : 
-    ExpressionNode(token), lhs(e), rhs(m) {}
+MemberExpressionNode::MemberExpressionNode(SyntaxToken *token,
+                                           ExpressionNode *e, ExpressionNode *m)
+    : ExpressionNode(token), lhs(e), rhs(m) {}
 
-MemberExpressionNode::~MemberExpressionNode() { 
-    delete lhs;
-    delete rhs; 
+MemberExpressionNode::~MemberExpressionNode() {
+  delete lhs;
+  delete rhs;
 }
 
 /*
  * The expression of the encapsulating type.
  */
-ExpressionNode* MemberExpressionNode::encapsulator() const { 
-    return lhs; 
-}
+ExpressionNode *MemberExpressionNode::encapsulator() const { return lhs; }
 
 /*
  * The expression of the member of the encapsulating type.
  */
-ExpressionNode* MemberExpressionNode::member() const { 
-    return rhs; 
-}
+ExpressionNode *MemberExpressionNode::member() const { return rhs; }
 
 SyntaxKind MemberExpressionNode::kind() const {
-    return SyntaxKind::MemberExpression;
+  return SyntaxKind::MemberExpression;
 }
 
-}
+} // namespace Syntax

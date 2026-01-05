@@ -9,21 +9,22 @@ namespace Binding {
 
 class BoundBlockStatementNode : public BoundStatementNode {
 private:
-    std::vector<BoundStatementNode*> m_statements;
+  std::vector<BoundStatementNode *> m_statements;
+
 public:
-    BoundBlockStatementNode(std::vector<BoundStatementNode*> statements);
+  BoundBlockStatementNode(std::vector<BoundStatementNode *> statements);
 
-    /*
-     * The list of statements encapsulated by the block.
-     */
-    std::vector<BoundStatementNode*> statements() const;
+  /*
+   * The list of statements encapsulated by the block.
+   */
+  std::vector<BoundStatementNode *> statements() const;
 
-    /*
-     * An enum representing the kind of bound node this is
-     */
-    BoundNodeKind kind() const override;
+  /*
+   * An enum representing the kind of bound node this is
+   */
+  BoundNodeKind kind() const override;
 };
 
-}
+} // namespace Binding
 
 #endif

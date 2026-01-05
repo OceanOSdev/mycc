@@ -8,15 +8,15 @@ namespace Binding {
 
 class BoundNode {
 public:
-    BoundNode() {}
-    virtual ~BoundNode() = default;
+  BoundNode() {}
+  virtual ~BoundNode() = default;
 
-    /*
-     * An enum representing the kind of bound node this is
-     */
-    virtual BoundNodeKind kind() const = 0;
+  /*
+   * An enum representing the kind of bound node this is
+   */
+  virtual BoundNodeKind kind() const = 0;
 };
 
-}
+} // namespace Binding
 
 #endif

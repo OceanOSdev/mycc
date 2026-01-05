@@ -3,12 +3,12 @@
 
 namespace Syntax {
 
-ContinueStatementNode::ContinueStatementNode(SyntaxToken* token)
+ContinueStatementNode::ContinueStatementNode(SyntaxToken *token)
     : StatementNode(token) {}
 ContinueStatementNode::~ContinueStatementNode() {}
 
 SyntaxKind ContinueStatementNode::kind() const {
-    return SyntaxKind::ContinueStatement;
+  return SyntaxKind::ContinueStatement;
 }
 
-}
+} // namespace Syntax

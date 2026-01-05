@@ -7,27 +7,28 @@
 namespace Binding {
 class BoundIndexExpressionNode : public BoundVariableReferenceExpressionNode {
 private:
-    BoundExpressionNode* m_expression;
+  BoundExpressionNode *m_expression;
+
 public:
-    BoundIndexExpressionNode(Symbols::VariableSymbol* variable_reference, BoundExpressionNode* expression);
+  BoundIndexExpressionNode(Symbols::VariableSymbol *variable_reference,
+                           BoundExpressionNode *expression);
 
-    /*
-     * The expression that evaluates to the index of this index expression.
-     */
-    BoundExpressionNode* expression() const;
+  /*
+   * The expression that evaluates to the index of this index expression.
+   */
+  BoundExpressionNode *expression() const;
 
-    /*
-     * The type that this expression evaluates to.
-     */
-    const Symbols::TypeSymbol* type() const override;
+  /*
+   * The type that this expression evaluates to.
+   */
+  const Symbols::TypeSymbol *type() const override;
 
-    /*
-     * An enum representing the kind of bound node this is
-     */
-    BoundNodeKind kind() const override;
+  /*
+   * An enum representing the kind of bound node this is
+   */
+  BoundNodeKind kind() const override;
 };
 
-}
-
+} // namespace Binding
 
 #endif

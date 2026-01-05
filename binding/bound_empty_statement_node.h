@@ -9,15 +9,14 @@ namespace Binding {
 class BoundEmptyStatementNode : public BoundStatementNode {
 private:
 public:
-    BoundEmptyStatementNode();
+  BoundEmptyStatementNode();
 
-    /*
-     * An enum representing the kind of bound node this is
-     */
-    BoundNodeKind kind() const override;
-
+  /*
+   * An enum representing the kind of bound node this is
+   */
+  BoundNodeKind kind() const override;
 };
 
-}
+} // namespace Binding
 
 #endif

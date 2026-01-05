@@ -9,32 +9,34 @@ namespace Syntax {
 
 class AssignmentExpressionNode : public ExpressionNode {
 private:
-    ExpressionNode* lhs;
-    token_type_t assignment_token;
-    ExpressionNode* rhs;
+  ExpressionNode *lhs;
+  token_type_t assignment_token;
+  ExpressionNode *rhs;
+
 public:
-    AssignmentExpressionNode(SyntaxToken* token, ExpressionNode* id_exp, token_type_t assign, ExpressionNode* expr);
-    
-    ~AssignmentExpressionNode();
+  AssignmentExpressionNode(SyntaxToken *token, ExpressionNode *id_exp,
+                           token_type_t assign, ExpressionNode *expr);
 
-    /*
-     * The expression containing the identifier.
-     */
-    ExpressionNode* identifier_expression() const;
+  ~AssignmentExpressionNode();
 
-    /*
-     * The type of assignment expression being performed on
-     * the identifier.
-     */
-    token_type_t assignment_type() const;
+  /*
+   * The expression containing the identifier.
+   */
+  ExpressionNode *identifier_expression() const;
 
-    /*
-     * The expression that the identifier will be assigned.
-     */
-    ExpressionNode* expression() const;
+  /*
+   * The type of assignment expression being performed on
+   * the identifier.
+   */
+  token_type_t assignment_type() const;
 
-    SyntaxKind kind() const override;
+  /*
+   * The expression that the identifier will be assigned.
+   */
+  ExpressionNode *expression() const;
+
+  SyntaxKind kind() const override;
 };
 
-}
+} // namespace Syntax
 #endif

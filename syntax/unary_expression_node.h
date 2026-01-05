@@ -9,26 +9,28 @@ namespace Syntax {
 
 class UnaryExpressionNode : public ExpressionNode {
 private:
-    token_type_t token_type;
-    ExpressionNode* expr;
+  token_type_t token_type;
+  ExpressionNode *expr;
+
 public:
-    UnaryExpressionNode(SyntaxToken* token, token_type_t tt, ExpressionNode* r_expr);
+  UnaryExpressionNode(SyntaxToken *token, token_type_t tt,
+                      ExpressionNode *r_expr);
 
-    ~UnaryExpressionNode();
+  ~UnaryExpressionNode();
 
-    /*
-     * The binary operation stored as a token.
-     */
-    token_type_t syntax_token_type() const;
+  /*
+   * The binary operation stored as a token.
+   */
+  token_type_t syntax_token_type() const;
 
-    /*
-     * The expression.
-     */
-    ExpressionNode* expression() const;
+  /*
+   * The expression.
+   */
+  ExpressionNode *expression() const;
 
-    SyntaxKind kind() const override;
+  SyntaxKind kind() const override;
 };
 
-}
+} // namespace Syntax
 
 #endif

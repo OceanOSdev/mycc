@@ -8,9 +8,9 @@ namespace Syntax {
 class SyntaxToken;
 class LocalDeclarationNode : public StatementNode {
 public:
-    LocalDeclarationNode(SyntaxToken* token) : StatementNode(token) {}
+  LocalDeclarationNode(SyntaxToken *token) : StatementNode(token) {}
 };
 
-}
+} // namespace Syntax
 
 #endif

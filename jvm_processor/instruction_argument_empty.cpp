@@ -5,11 +5,9 @@
 namespace JVMProcessor {
 
 InstructionArgumentKind EmptyInstructionArgument::kind() const {
-    return InstructionArgumentKind::Empty;
+  return InstructionArgumentKind::Empty;
 }
 
-std::string EmptyInstructionArgument::str() const {
-    return "";
-}
+std::string EmptyInstructionArgument::str() const { return ""; }
 
-}
+} // namespace JVMProcessor

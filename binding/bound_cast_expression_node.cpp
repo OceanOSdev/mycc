@@ -3,25 +3,26 @@
 
 namespace Binding {
 
-BoundCastExpressionNode::BoundCastExpressionNode(const Symbols::TypeSymbol* cast_type, BoundExpressionNode* expression) :
-    m_cast_type(cast_type), m_expression(expression) {}
+BoundCastExpressionNode::BoundCastExpressionNode(
+    const Symbols::TypeSymbol *cast_type, BoundExpressionNode *expression)
+    : m_cast_type(cast_type), m_expression(expression) {}
 
-BoundExpressionNode* BoundCastExpressionNode::expression() const {
-    return m_expression;
+BoundExpressionNode *BoundCastExpressionNode::expression() const {
+  return m_expression;
 }
 
 /*
  * An enum representing the kind of bound node this is
  */
 BoundNodeKind BoundCastExpressionNode::kind() const {
-    return BoundNodeKind::CastExpression;
+  return BoundNodeKind::CastExpression;
 }
 
 /*
  * The type that this expression evaluates to.
  */
-const Symbols::TypeSymbol* BoundCastExpressionNode::type() const {
-    return m_cast_type;
+const Symbols::TypeSymbol *BoundCastExpressionNode::type() const {
+  return m_cast_type;
 }
 
-}
+} // namespace Binding

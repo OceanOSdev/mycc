@@ -10,21 +10,22 @@ namespace Syntax {
 class SyntaxToken;
 class GlobalVariableGroupDeclarationNode : public GlobalDeclarationNode {
 private:
-    VariableGroupDeclarationNode* m_variable_group;
+  VariableGroupDeclarationNode *m_variable_group;
+
 public:
-    GlobalVariableGroupDeclarationNode(SyntaxToken* token, VariableGroupDeclarationNode* var_group);
-    
-    ~GlobalVariableGroupDeclarationNode();
+  GlobalVariableGroupDeclarationNode(SyntaxToken *token,
+                                     VariableGroupDeclarationNode *var_group);
 
-    /*
-     * The variable group declarations.
-     */
-    VariableGroupDeclarationNode* variable_group() const;
+  ~GlobalVariableGroupDeclarationNode();
 
-    SyntaxKind kind() const override;
+  /*
+   * The variable group declarations.
+   */
+  VariableGroupDeclarationNode *variable_group() const;
 
+  SyntaxKind kind() const override;
 };
 
-}
+} // namespace Syntax
 
 #endif

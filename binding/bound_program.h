@@ -2,21 +2,19 @@
 #ifndef BOUND_PROGRAM_H
 #define BOUND_PROGRAM_H
 
+#include <string>
 #include <unordered_map>
 #include <vector>
-#include <string>
 
 namespace Binding {
 class BoundGlobalDeclarationNode;
 
 class BoundProgram {
 private:
-    std::vector<std::string> m_diagnostics;
-    std::vector<BoundGlobalDeclarationNode*> m_global_statements;
-    
-    
+  std::vector<std::string> m_diagnostics;
+  std::vector<BoundGlobalDeclarationNode *> m_global_statements;
 };
 
-}
+} // namespace Binding
 
 #endif

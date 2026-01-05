@@ -8,9 +8,9 @@ namespace Binding {
 
 class BoundStatementNode : public BoundNode {
 public:
-    BoundStatementNode() {}
+  BoundStatementNode() {}
 };
 
-}
+} // namespace Binding
 
 #endif
