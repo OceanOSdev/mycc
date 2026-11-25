@@ -14,7 +14,10 @@ std::vector<std::string> Driver::get_diagnostics() const {
   return m_diagnostics;
 }
 
-void Driver::init_new_input() { m_location.initialize(&curr_file); }
+void Driver::init_new_input() {
+  m_location.initialize(&curr_file);
+  m_reached_eof_or_error = false;
+}
 
 void Driver::switch_input_stream(std::string filename, std::istream *is) {
   // if (m_translation_units != nullptr) {
