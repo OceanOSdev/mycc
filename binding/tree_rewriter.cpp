@@ -745,8 +745,8 @@ BoundExpressionNode *TreeRewriter::rewrite_member_expression(
     return member_expression;
 
   return new BoundMemberAccessExpressionNode(
-      dynamic_cast<BoundMemberAccessExpressionNode *>(encapsulated_ref),
-      dynamic_cast<BoundMemberAccessExpressionNode *>(encapsulating_ref));
+      dynamic_cast<BoundVariableReferenceExpressionNode *>(encapsulated_ref),
+      dynamic_cast<BoundVariableReferenceExpressionNode *>(encapsulating_ref));
 }
 
 BoundExpressionNode *TreeRewriter::rewrite_var_reference_expression(
