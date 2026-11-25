@@ -20,14 +20,6 @@ const char *usage_str =
     "Valid options:\n"
     "\t-o outfile: write to outfile instead of standard output\n";
 
-std::vector<std::string> get_files(int num_args, char *arguments[]) {
-  std::vector<std::string> files;
-  for (--optind; optind < num_args && *arguments[optind] != '-'; optind++) {
-    files.push_back(std::string(arguments[optind]));
-  }
-  return files;
-}
-
 Arguments::Arguments(CompilerMode compiler_mode, bool use_out_file,
                      std::vector<std::string> in_files, std::string out_file)
     : m_compiler_mode(compiler_mode), m_use_output_file(use_out_file),
@@ -40,42 +32,34 @@ Arguments *Arguments::parse_arguments(int argc, char *argv[]) {
   std::string out_file;
 
   int option;
-  while ((option = getopt(argc, argv, "01:2:3:456:7:8:o:")) != -1) {
+  while ((option = getopt(argc, argv, "012345678o:")) != -1) {
     switch (option) {
     case '0':
       current_mode = CompilerMode::MODE_ZERO;
       break;
     case '1':
       current_mode = CompilerMode::MODE_ONE;
-      files = get_files(argc, argv);
       break;
     case '2':
       current_mode = CompilerMode::MODE_TWO;
-      files = get_files(argc, argv);
       break;
     case '3':
       current_mode = CompilerMode::MODE_THREE;
-      files = get_files(argc, argv);
       break;
     case '4':
       current_mode = CompilerMode::MODE_FOUR;
-      files = get_files(argc, argv);
       break;
     case '5':
       current_mode = CompilerMode::MODE_FIVE;
-      files = get_files(argc, argv);
       break;
     case '6':
       current_mode = CompilerMode::MODE_SIX;
-      files = get_files(argc, argv);
       break;
     case '7':
       current_mode = CompilerMode::MODE_SEVEN;
-      files = get_files(argc, argv);
       break;
     case '8':
       current_mode = CompilerMode::MODE_EIGHT;
-      files = get_files(argc, argv);
       break;
     case 'o':
       use_output = true;
@@ -87,7 +71,13 @@ Arguments *Arguments::parse_arguments(int argc, char *argv[]) {
     }
   }
 
-  if (current_mode == CompilerMode::MODE_ERR) {
+  // GNU getopt permutes argv so that all non-option arguments (the input
+  // files) end up after optind, regardless of where they appeared.
+  for (int i = optind; i < argc; i++)
+    files.push_back(std::string(argv[i]));
+
+  if (current_mode == CompilerMode::MODE_ERR ||
+      (current_mode != CompilerMode::MODE_ZERO && files.empty())) {
     std::cerr << usage_str;
     exit(EXIT_FAILURE);
   }

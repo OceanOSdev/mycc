@@ -40,6 +40,10 @@ std::partial_ordering TypeSymbol::operator<=>(const TypeSymbol &other) const {
   auto com = this->attributes() <=> other.attributes();
   if (com != std::partial_ordering::equivalent)
     return com;
+  // Distinct struct types are never interchangeable; only primitive numeric
+  // types are ordered by name (char < int, which drives char->int widening).
+  if (attributes().is_struct && m_name != other.m_name)
+    return std::partial_ordering::unordered;
   return (m_name <=> other.m_name);
 }
 
@@ -268,6 +272,13 @@ bool TypeSymbol::is_error_or_incomplete_type(const TypeSymbol *type) {
 
 bool TypeSymbol::can_be_explicitly_casted(const TypeSymbol *from,
                                           const TypeSymbol *to) {
+  // Only scalar numeric types may be cast (no structs or arrays).
+  auto from_attr = from->attributes();
+  auto to_attr = to->attributes();
+  if (!from_attr.is_numeric_type || !to_attr.is_numeric_type ||
+      from_attr.is_array || to_attr.is_array || from_attr.is_struct ||
+      to_attr.is_struct)
+    return false;
   auto order = (*from <=> *to);
   return std::is_lteq(order) || std::is_gteq(order);
 }

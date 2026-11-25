@@ -341,28 +341,34 @@ TreeRewriter::rewrite_for_statement(BoundForStatementNode *for_statement) {
   // -----------> rewrite as
   //
   // <init>
-  // continue:
+  // top:
   // goto break if <cond> false
   // <body>
+  // continue:
   // <inc>
-  // goto continue
+  // goto top
   // break:
+  //
+  // (continue must land on <inc>, not on the condition, or `continue`
+  // would skip the increment.)
   //
   auto break_label = for_statement->break_label();
   auto continue_label = for_statement->continue_label();
+  auto top_label = generate_label();
   std::vector<BoundStatementNode *> statements;
   if (for_statement->has_initial_expression())
     statements.push_back(
         new BoundExpressionStatementNode(for_statement->initial_expression()));
-  statements.push_back(new BoundLabelStatementNode(continue_label));
+  statements.push_back(new BoundLabelStatementNode(top_label));
   if (for_statement->has_condition_expression())
     statements.push_back(new BoundConditionalGotoStatementNode(
         break_label, for_statement->condition_expression(), false));
   statements.push_back(for_statement->body_statement());
+  statements.push_back(new BoundLabelStatementNode(continue_label));
   if (for_statement->has_third_expression())
     statements.push_back(
         new BoundExpressionStatementNode(for_statement->third_expression()));
-  statements.push_back(new BoundGotoStatementNode(continue_label));
+  statements.push_back(new BoundGotoStatementNode(top_label));
   statements.push_back(new BoundLabelStatementNode(break_label));
   return rewrite_statement(new BoundBlockStatementNode(statements));
 }
@@ -402,18 +408,23 @@ BoundStatementNode *TreeRewriter::rewrite_do_while_statement(
   // while <cond>
   // -----------> rewrite as
   //
-  // continue:
+  // top:
   // <body>
-  // goto continue if <cond>
+  // continue:
+  // goto top if <cond>
   // break:
+  //
+  // (continue must land on the condition test, not the top of the body.)
   //
   auto break_label = do_while_statement->break_label();
   auto continue_label = do_while_statement->continue_label();
+  auto top_label = generate_label();
   std::vector<BoundStatementNode *> statements = {
-      new BoundLabelStatementNode(continue_label),
+      new BoundLabelStatementNode(top_label),
       do_while_statement->body_statement(),
+      new BoundLabelStatementNode(continue_label),
       new BoundConditionalGotoStatementNode(
-          continue_label, do_while_statement->condition_expression()),
+          top_label, do_while_statement->condition_expression()),
       new BoundLabelStatementNode(break_label)};
   return rewrite_statement(new BoundBlockStatementNode(statements));
 }
@@ -745,8 +756,8 @@ BoundExpressionNode *TreeRewriter::rewrite_member_expression(
     return member_expression;
 
   return new BoundMemberAccessExpressionNode(
-      dynamic_cast<BoundMemberAccessExpressionNode *>(encapsulated_ref),
-      dynamic_cast<BoundMemberAccessExpressionNode *>(encapsulating_ref));
+      dynamic_cast<BoundVariableReferenceExpressionNode *>(encapsulated_ref),
+      dynamic_cast<BoundVariableReferenceExpressionNode *>(encapsulating_ref));
 }
 
 BoundExpressionNode *TreeRewriter::rewrite_var_reference_expression(
