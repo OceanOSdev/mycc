@@ -98,6 +98,7 @@
 %locations
 
 %token END 0
+%token INVALID /* lexical error: rejected by every grammar rule */
 %token <Syntax::SyntaxToken*> IDENT
 %token <Syntax::SyntaxToken*> TYPE
 %token <Syntax::SyntaxToken*> CONST 
@@ -436,7 +437,8 @@ void yy::parser::error(const location &loc , const std::string &message) {
     std::ostringstream errstream;
     errstream << "Error near " << driver.curr_file //driver.location().begin.filename 
                 << " line " << loc.begin.line //driver.location().begin.line 
-                << " text '" << driver.part_one_lexeme_list.back().text << "'\n\t" << message << std::endl;
+                << " text '" << driver.part_one_lexeme_list.back().text << "'\n\t"
+                << (driver.part_one_lexeme_list.back().is_error ? driver.part_one_lexeme_list.back().err_desc : message) << std::endl;
     std::string err_msg = errstream.str();
     driver.m_diagnostics.push_back(err_msg);
     driver.m_translation_units.push_back(new Syntax::TranslationUnitNode(nullptr, temporary_glob_decl_list));	
