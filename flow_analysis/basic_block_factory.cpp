@@ -47,6 +47,8 @@ BasicBlockFactory::build(Binding::BoundBlockStatementNode *block) {
       break;
     case Binding::BoundNodeKind::EmptyStatement:
       [[fallthrough]];
+    case Binding::BoundNodeKind::StructDeclaration:
+      [[fallthrough]];
     case Binding::BoundNodeKind::VariableGroupDeclaration:
       [[fallthrough]];
     case Binding::BoundNodeKind::VariableDeclaration:
